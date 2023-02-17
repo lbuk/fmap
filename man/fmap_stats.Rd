@@ -39,7 +39,7 @@ fmap_stats(
 
 \item{median}{Variable from geo_points for calculating median}
 
-\item{count}{Count the number of points. Input TRUE to count points. Defaults to FALSE}
+\item{count}{Count the number of points from geo_points. Input TRUE to count points. Defaults to FALSE}
 }
 \value{
 Summary statistics from the Fresnel Map based on aggregated data from the Fresnel circles.

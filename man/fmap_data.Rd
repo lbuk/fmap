@@ -39,7 +39,7 @@ fmap_data(
 
 \item{median}{Variable from geo_points for calculating median}
 
-\item{count}{Count the number of points. Input TRUE to count points. Defaults to FALSE}
+\item{count}{Count the number of points from geo_points. Input TRUE to count points. Defaults to FALSE}
 }
 \value{
 An sf dataset of Fresnel Map polygons based on aggregations of points-based data with a custom Azimuthal Equidistant (AEQD) CRS.
