@@ -11,7 +11,7 @@
 #' @param sum Variable from geo_points for calculating sum
 #' @param mean Variable from geo_points for calculating mean
 #' @param median Variable from geo_points for calculating median
-#' @param count Count the number of points. Input TRUE to count points. Defaults to FALSE
+#' @param count Count the number of points from geo_points. Input TRUE to count points. Defaults to FALSE
 #' @param output Output of function. Input either 'plot', 'data' or 'stats'. Defaults to 'plot'
 #' @return Multiple Fresnel Maps in a grid and visualised using tmap.
 #' @examples
