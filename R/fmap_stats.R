@@ -1,6 +1,6 @@
 #' Summary Stats from the Fresnel Map
 #'
-#' Function for calculating summary statistics from Fresnel Maps, or thematic maps that visualise geospatial data to the level of equal-area concentric circles.
+#' Function for calculating summary statistics from Fresnel Maps, or thematic maps that visualise geospatial data to the level of equal-area concentric circles (or annuli).
 #'
 #' @param ncircles Number of equal-area concentric circles
 #' @param radius_inner Radius of innermost circle in metres
@@ -15,9 +15,15 @@
 #' @param count Count the number of points. Input TRUE to count points. Defaults to FALSE
 #' @return Summary statistics from the Fresnel Map based on aggregated data from the Fresnel circles.
 #' @examples
-#' data(choleradeaths)
-#' choleradeaths = choleradeaths %>% st_transform(27700)
-#' fmap_stats(radius_inner = 125, ncircles = 8, lat = 51.51334, lon = -0.1366678, geo_points = choleradeaths, sum = "Cholera.Deaths")
+#' # Load the sf dataset of Soho pumps
+#' data(sohopumps)
+#'
+#' # Filter the Broad Street Pump
+#' broadstpump =
+#'   sohopumps %>%
+#'   filter(Soho.Pump == "Broad Street")
+#'
+#' fmap_stats(radius_inner = 125, ncircles = 8, geo_centre = broadstpump, geo_points = choleradeaths, sum = "Cholera.Deaths")
 #' @export
 
 fmap_stats = function(ncircles, radius_inner = NULL, radius_outer = NULL, lat = NULL, lon = NULL, geo_centre = NULL, geo_points, sum = NULL, mean = NULL, median = NULL, count = F) {

@@ -45,10 +45,16 @@ fmap_data(
 An sf dataset of Fresnel Map polygons based on aggregations of points-based data with a custom Azimuthal Equidistant (AEQD) CRS.
 }
 \description{
-Function for creating Fresnel Map polygons by aggregating data to the level of equal-area concentric circles.
+Function for creating Fresnel Map polygons by aggregating data to the level of equal-area concentric circles (or annuli).
 }
 \examples{
-data(choleradeaths)
-choleradeaths = choleradeaths \%>\% st_transform(27700)
-fmap_data(radius_inner = 125, ncircles = 8, lat = 51.51334, lon = -0.1366678, geo_points = choleradeaths, sum = "Cholera.Deaths")
+# Load the sf dataset of Soho pumps
+data(sohopumps)
+
+# Filter the Broad Street Pump
+broadstpump =
+  sohopumps \%>\%
+  filter(Soho.Pump == "Broad Street")
+
+fmap_data(radius_inner = 125, ncircles = 8, geo_centre = broadstpump, geo_points = choleradeaths, sum = "Cholera.Deaths")
 }

@@ -1,6 +1,6 @@
 #' Multiple Fresnel Maps
 #'
-#' Function for creating multiple Fresnel Maps, or thematic maps that visualise geospatial data to the level of equal-area concentric circles, across a range of locations.
+#' Function for creating or deriving data from multiple Fresnel Maps, or thematic maps that visualise geospatial data to the level of equal-area concentric circles (or annuli), across a range of locations.
 #'
 #' @param ncircles Number of equal-area concentric circles
 #' @param radius_inner Radius of innermost circle in metres
@@ -12,16 +12,19 @@
 #' @param mean Variable from geo_points for calculating mean
 #' @param median Variable from geo_points for calculating median
 #' @param count Count the number of points. Input TRUE to count points. Defaults to FALSE
+#' @param output Output of function. Input either 'plot', 'data' or 'stats'. Defaults to 'plot'
 #' @return Multiple Fresnel Maps in a grid and visualised using tmap.
 #' @examples
+#' # Load the sf dataset of cholera deaths
 #' data(choleradeaths)
+#'
+#' # Load the sf dataset of Soho pumps
 #' data(sohopumps)
-#' choleradeaths = choleradeaths %>% st_transform(27700)
-#' sohopumps = sohopumps %>% st_transform(27700)
+#'
 #' fmap_multi(ncircles = 6, radius_outer = 350, geo_points = choleradeaths, geo_centres = sohopumps, facet = "Soho.Pump", sum = "Cholera.Deaths")
 #' @export
 
-fmap_multi = function(ncircles, radius_inner = NULL, radius_outer = NULL, geo_points, geo_centres, facet = NULL, sum = NULL, mean = NULL, median = NULL, count = F) {
+fmap_multi = function(ncircles, radius_inner = NULL, radius_outer = NULL, geo_points, geo_centres, facet = NULL, sum = NULL, mean = NULL, median = NULL, count = F, output = 'plot') {
 
   for(i in ncircles) {
     if(ncircles <= 1) {
@@ -121,10 +124,10 @@ fmap_multi = function(ncircles, radius_inner = NULL, radius_outer = NULL, geo_po
     } else if(is.null(mean) && is.null(sum) && is.null(median) && count == T) {
       fmap_count =
         fcircles %>%
-        mutate(Count = lengths(st_intersects(., geo_points))) %>%
+        mutate(circle_count = lengths(st_intersects(., geo_points))) %>%
         mutate(id = id) %>%
         st_transform(crs) %>%
-        dplyr::select(Count, radius, zonal_area, id)
+        dplyr::select(circle_count, radius, zonal_area, id)
 
       fmaps = rbind(fmaps, fmap_count)
 
@@ -135,10 +138,10 @@ fmap_multi = function(ncircles, radius_inner = NULL, radius_outer = NULL, geo_po
         fcircles %>%
         st_join(geo_points) %>%
         group_by(zonal_area, radius) %>%
-        summarise(Total = sum(!! sym(sum), na.rm = T)) %>%
+        summarise(sum = sum(!! sym(sum), na.rm = T)) %>%
         mutate(id = id) %>%
         st_transform(crs) %>%
-        dplyr::select(Total, radius, zonal_area, id)
+        dplyr::select(sum, radius, zonal_area, id)
 
       fmaps = rbind(fmaps, fmap_sum)
 
@@ -149,10 +152,10 @@ fmap_multi = function(ncircles, radius_inner = NULL, radius_outer = NULL, geo_po
         fcircles %>%
         st_join(geo_points) %>%
         group_by(zonal_area, radius) %>%
-        summarise(Mean = mean(!! sym(mean), na.rm = T)) %>%
+        summarise(mean = mean(!! sym(mean), na.rm = T)) %>%
         mutate(id = id) %>%
         st_transform(crs) %>%
-        dplyr::select(Mean, zonal_area, radius, id)
+        dplyr::select(mean, zonal_area, radius, id)
 
       fmaps = rbind(fmaps, fmap_mean)
 
@@ -163,10 +166,10 @@ fmap_multi = function(ncircles, radius_inner = NULL, radius_outer = NULL, geo_po
         fcircles %>%
         st_join(geo_points) %>%
         group_by(zonal_area, radius) %>%
-        summarise(Median = median(!! sym(median), na.rm = T)) %>%
+        summarise(median = median(!! sym(median), na.rm = T)) %>%
         mutate(id = id) %>%
         st_transform(crs) %>%
-        dplyr::select(Median, zonal_area, radius, id)
+        dplyr::select(median, zonal_area, radius, id)
 
       fmaps = rbind(fmaps, fmap_median)
 
@@ -179,23 +182,37 @@ fmap_multi = function(ncircles, radius_inner = NULL, radius_outer = NULL, geo_po
 
   aggregate = colnames(fmaps)[1]
 
-  tm_shape(fmaps, name = "Fresnel Map") +
-    tm_fill(col = aggregate, palette = "plasma",
-            title = title, id = "", popup.vars = c("Zonal Area" = "zonal_area", "Radius" = "radius", aggregate)) +
-    tm_borders(col = "black", lwd = 0.8) +
-    tm_facets(by='id', ncol = 2, free.scales = F) +
-    tm_basemap(server = "OpenStreetMap") +
-    tm_view(view.legend.position = c("right", "top")) +
-    tm_layout(frame = F,
-              legend.text.fontfamily = "Helvetica",
-              legend.title.size = 0.8,
-              legend.text.size = 0.6,
-              legend.outside = F,
-              legend.title.fontface = "bold",
-              panel.label.fontfamily = "Helvetica",
-              panel.label.fontface = "bold",
-              panel.label.size = 1.1,
-              panel.label.bg.color = NA,
-              frame.lwd = 0) +
-    tmap_options(show.messages = F, show.warnings = F)
+  if(output == 'plot') {
+    tm_shape(fmaps, name = "Fresnel Map") +
+      tm_fill(col = aggregate, palette = "plasma",
+              title = title, id = "", popup.vars = c("Zonal Area" = "zonal_area", "Radius" = "radius", aggregate)) +
+      tm_borders(col = "black", lwd = 0.8) +
+      tm_facets(by='id', ncol = 2, free.scales = F) +
+      tm_basemap(server = "OpenStreetMap") +
+      tm_view(view.legend.position = c("right", "top")) +
+      tm_layout(frame = F,
+                legend.text.fontfamily = "Helvetica",
+                legend.title.size = 0.8,
+                legend.text.size = 0.6,
+                legend.outside = F,
+                legend.title.fontface = "bold",
+                panel.label.fontfamily = "Helvetica",
+                panel.label.fontface = "bold",
+                panel.label.size = 1.1,
+                panel.label.bg.color = NA,
+                frame.lwd = 0) +
+      tmap_options(show.messages = F, show.warnings = F)
+
+  } else if(output == 'data') {
+    fmaps
+
+  } else if(output == 'stats') {
+    fmaps %>%
+      as.data.frame() %>%
+      dplyr::select(4, 2, 3, 1) %>%
+      print()
+
+  } else {
+    stop('error in output parameter')
+  }
 }

@@ -33,5 +33,13 @@ An sf dataset of Fresnel circle polygons with a custom Azimuthal Equidistant (AE
 Function for creating Fresnel circles polygons for mapping.
 }
 \examples{
-fcircles(radius_inner = 125, ncircles = 8, lat = 51.51334, lon = -0.1366678)
+# Load the sf dataset of Soho pumps
+data(sohopumps)
+
+# Filter the Broad Street Pump
+broadstpump =
+  sohopumps \%>\%
+  filter(Soho.Pump == "Broad Street")
+
+fcircles(radius_inner = 125, ncircles = 8, geo_centre = broadstpump)
 }
