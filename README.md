@@ -28,7 +28,7 @@ fmap is an R package for creating [Fresnel Maps](https://www.liamthomasbolton.co
     tmap_mode("plot")
 
     # Visualise the Fresnel Map
-    fmap_plot(radius_inner = 125, ncircles = 8, lat = 51.51334, lon = -0.1366678, geo_points = choleradeaths, sum = "Cholera.Deaths")
+    fmap_plot(radius_inner = 125, ncircles = 8, geo_centre = broadstpump, geo_points = choleradeaths, sum = "Cholera.Deaths")
 
 ![](https://github.com/lbuk/fmap/blob/master/img/fmap_johnsnow_example.png)
 
