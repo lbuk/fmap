@@ -14,7 +14,8 @@ fmap_multi(
   sum = NULL,
   mean = NULL,
   median = NULL,
-  count = F
+  count = F,
+  output = "plot"
 )
 }
 \arguments{
@@ -37,17 +38,21 @@ fmap_multi(
 \item{median}{Variable from geo_points for calculating median}
 
 \item{count}{Count the number of points. Input TRUE to count points. Defaults to FALSE}
+
+\item{output}{Output of function. Input either 'plot', 'data' or 'stats'. Defaults to 'plot'}
 }
 \value{
 Multiple Fresnel Maps in a grid and visualised using tmap.
 }
 \description{
-Function for creating multiple Fresnel Maps, or thematic maps that visualise geospatial data to the level of equal-area concentric circles, across a range of locations.
+Function for creating or deriving data from multiple Fresnel Maps, or thematic maps that visualise geospatial data to the level of equal-area concentric circles (or annuli), across a range of locations.
 }
 \examples{
+# Load the sf dataset of cholera deaths
 data(choleradeaths)
+
+# Load the sf dataset of Soho pumps
 data(sohopumps)
-choleradeaths = choleradeaths \%>\% st_transform(27700)
-sohopumps = sohopumps \%>\% st_transform(27700)
+
 fmap_multi(ncircles = 6, radius_outer = 350, geo_points = choleradeaths, geo_centres = sohopumps, facet = "Soho.Pump", sum = "Cholera.Deaths")
 }
