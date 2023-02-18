@@ -48,6 +48,9 @@ An sf dataset of Fresnel Map polygons based on aggregations of points-based data
 Function for creating Fresnel Map polygons by aggregating data to the level of equal-area concentric circles (or annuli).
 }
 \examples{
+# Load the sf dataset of cholera deaths
+data(choleradeaths)
+
 # Load the sf dataset of Soho pumps
 data(sohopumps)
 

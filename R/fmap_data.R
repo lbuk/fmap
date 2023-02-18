@@ -15,6 +15,9 @@
 #' @param count Count the number of points from geo_points. Input TRUE to count points. Defaults to FALSE
 #' @return An sf dataset of Fresnel Map polygons based on aggregations of points-based data with a custom Azimuthal Equidistant (AEQD) CRS.
 #' @examples
+#' # Load the sf dataset of cholera deaths
+#' data(choleradeaths)
+#'
 #' # Load the sf dataset of Soho pumps
 #' data(sohopumps)
 #'

@@ -21,7 +21,7 @@
 #' # Load the sf dataset of Soho pumps
 #' data(sohopumps)
 #'
-#' fmap_multi(ncircles = 6, radius_outer = 350, geo_points = choleradeaths, geo_centres = sohopumps, facet = "Soho.Pump", sum = "Cholera.Deaths")
+#' fmap_multi(ncircles = 6, radius_outer = 200, geo_points = choleradeaths, geo_centres = sohopumps, facet = "Soho.Pump", sum = "Cholera.Deaths")
 #' @export
 
 fmap_multi = function(ncircles, radius_inner = NULL, radius_outer = NULL, geo_points, geo_centres, facet = NULL, sum = NULL, mean = NULL, median = NULL, count = F, output = 'plot') {
@@ -62,6 +62,17 @@ fmap_multi = function(ncircles, radius_inner = NULL, radius_outer = NULL, geo_po
     crs = st_crs(geo_points)
   }
 
+  if(is.null(facet)) {
+    geo_centres =
+      geo_centres %>%
+      mutate(id = row_number())
+
+  } else {
+    geo_centres =
+      geo_centres %>%
+      mutate(id = geo_centres[[facet]])
+  }
+
   if(grepl(x = class(geo_centres)[1], pattern = "sf", ignore.case = T) != T && grepl(x = class(geo_centres)[1], pattern = "sp", ignore.case = T) != T) {
     stop('input geo_centres as a geospatial dataset of points')
 
@@ -76,8 +87,7 @@ fmap_multi = function(ncircles, radius_inner = NULL, radius_outer = NULL, geo_po
       rename(lon = X, lat = Y) %>%
       filter(!is.null(lat)) %>%
       filter(!is.null(lon)) %>%
-      mutate(facet = geo_centres[[facet]]) %>%
-      mutate(id_number = row_number())
+      mutate(id = geo_centres$id)
   }
 
   fmaps = data.frame()
@@ -85,11 +95,7 @@ fmap_multi = function(ncircles, radius_inner = NULL, radius_outer = NULL, geo_po
     lat = geo_centres[i, "lat"]
     lon = geo_centres[i, "lon"]
 
-    if(is.null(facet)) {
-      id = geo_centres[i, "id_number"]
-    } else {
-      id = geo_centres[i, "facet"]
-    }
+    id = geo_centres[i, "id"]
 
     coords = data.frame(lat, lon)
 
