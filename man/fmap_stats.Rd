@@ -48,6 +48,9 @@ Summary statistics from the Fresnel Map based on aggregated data from the Fresne
 Function for calculating summary statistics from Fresnel Maps, or thematic maps that visualise geospatial data to the level of equal-area concentric circles (or annuli).
 }
 \examples{
+# Load the sf dataset of cholera deaths
+data(choleradeaths)
+
 # Load the sf dataset of Soho pumps
 data(sohopumps)
 

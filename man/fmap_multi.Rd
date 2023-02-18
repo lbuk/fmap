@@ -54,5 +54,5 @@ data(choleradeaths)
 # Load the sf dataset of Soho pumps
 data(sohopumps)
 
-fmap_multi(ncircles = 6, radius_outer = 350, geo_points = choleradeaths, geo_centres = sohopumps, facet = "Soho.Pump", sum = "Cholera.Deaths")
+fmap_multi(ncircles = 6, radius_outer = 200, geo_points = choleradeaths, geo_centres = sohopumps, facet = "Soho.Pump", sum = "Cholera.Deaths")
 }
