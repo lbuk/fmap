@@ -210,12 +210,16 @@ fmap_multi = function(ncircles, radius_inner = NULL, radius_outer = NULL, geo_po
       tmap_options(show.messages = F, show.warnings = F)
 
   } else if(output == 'data') {
+    fmaps =
+      fmaps %>%
+      dplyr::select(zonal_area, radius, 1, id)
+
     fmaps
 
   } else if(output == 'stats') {
     fmaps %>%
       as.data.frame() %>%
-      dplyr::select(4, 2, 3, 1) %>%
+      dplyr::select(zonal_area, radius, 1, id) %>%
       print()
 
   } else {
