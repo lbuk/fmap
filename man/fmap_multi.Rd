@@ -10,7 +10,7 @@ fmap_multi(
   radius_outer = NULL,
   geo_points,
   geo_centres,
-  facet = NULL,
+  id_var = NULL,
   sum = NULL,
   mean = NULL,
   median = NULL,
@@ -27,9 +27,9 @@ fmap_multi(
 
 \item{geo_points}{A geospatial dataset of points to aggregate}
 
-\item{geo_centres}{A geospatial dataset of points across a range of locations to centre the Fresnel Maps}
+\item{geo_centres}{A geospatial dataset containing the coordinates of the centres of each Fresnel Map}
 
-\item{facet}{Variable from geo_centres for faceting the maps}
+\item{id_var}{Variable from geo_centres containing the ID}
 
 \item{sum}{Variable from geo_points for calculating sum}
 
@@ -42,10 +42,10 @@ fmap_multi(
 \item{output}{Output of function. Input either 'plot', 'data' or 'stats'. Defaults to 'plot'}
 }
 \value{
-Multiple Fresnel Maps in a grid and visualised using tmap.
+A map, sf dataset or stats based on multiple Fresnel Maps.
 }
 \description{
-Function for creating or deriving data from multiple Fresnel Maps, or thematic maps that visualise geospatial data to the level of equal-area concentric circles (or annuli), across a range of locations.
+Function for plotting or deriving data or stats from multiple Fresnel Maps, or thematic maps that visualise geospatial data to the level of equal-area concentric circles (or annuli), across a range of locations.
 }
 \examples{
 # Load the sf dataset of cholera deaths
@@ -54,5 +54,5 @@ data(choleradeaths)
 # Load the sf dataset of Soho pumps
 data(sohopumps)
 
-fmap_multi(ncircles = 6, radius_outer = 200, geo_points = choleradeaths, geo_centres = sohopumps, facet = "Soho.Pump", sum = "Cholera.Deaths")
+fmap_multi(ncircles = 6, radius_outer = 200, geo_points = choleradeaths, geo_centres = sohopumps, id_var = "Soho.Pump", sum = "Cholera.Deaths")
 }

@@ -1,19 +1,19 @@
 #' Multiple Fresnel Maps
 #'
-#' Function for creating or deriving data from multiple Fresnel Maps, or thematic maps that visualise geospatial data to the level of equal-area concentric circles (or annuli), across a range of locations.
+#' Function for plotting or deriving data or stats from multiple Fresnel Maps, or thematic maps that visualise geospatial data to the level of equal-area concentric circles (or annuli), across a range of locations.
 #'
 #' @param ncircles Number of equal-area concentric circles
 #' @param radius_inner Radius of innermost circle in metres
 #' @param radius_outer Radius of outermost circle in metres
 #' @param geo_points A geospatial dataset of points to aggregate
-#' @param geo_centres A geospatial dataset of points across a range of locations to centre the Fresnel Maps
-#' @param facet Variable from geo_centres for faceting the maps
+#' @param geo_centres A geospatial dataset containing the coordinates of the centres of each Fresnel Map
+#' @param id_var Variable from geo_centres containing the ID
 #' @param sum Variable from geo_points for calculating sum
 #' @param mean Variable from geo_points for calculating mean
 #' @param median Variable from geo_points for calculating median
 #' @param count Count the number of points from geo_points. Input TRUE to count points. Defaults to FALSE
 #' @param output Output of function. Input either 'plot', 'data' or 'stats'. Defaults to 'plot'
-#' @return Multiple Fresnel Maps in a grid and visualised using tmap.
+#' @return A map, sf dataset or stats based on multiple Fresnel Maps.
 #' @examples
 #' # Load the sf dataset of cholera deaths
 #' data(choleradeaths)
@@ -21,10 +21,10 @@
 #' # Load the sf dataset of Soho pumps
 #' data(sohopumps)
 #'
-#' fmap_multi(ncircles = 6, radius_outer = 200, geo_points = choleradeaths, geo_centres = sohopumps, facet = "Soho.Pump", sum = "Cholera.Deaths")
+#' fmap_multi(ncircles = 6, radius_outer = 200, geo_points = choleradeaths, geo_centres = sohopumps, id_var = "Soho.Pump", sum = "Cholera.Deaths")
 #' @export
 
-fmap_multi = function(ncircles, radius_inner = NULL, radius_outer = NULL, geo_points, geo_centres, facet = NULL, sum = NULL, mean = NULL, median = NULL, count = F, output = 'plot') {
+fmap_multi = function(ncircles, radius_inner = NULL, radius_outer = NULL, geo_points, geo_centres, id_var = NULL, sum = NULL, mean = NULL, median = NULL, count = F, output = 'plot') {
 
   for(i in ncircles) {
     if(ncircles <= 1) {
@@ -62,7 +62,7 @@ fmap_multi = function(ncircles, radius_inner = NULL, radius_outer = NULL, geo_po
     crs = st_crs(geo_points)
   }
 
-  if(is.null(facet)) {
+  if(is.null(id_var)) {
     geo_centres =
       geo_centres %>%
       mutate(id = row_number())
@@ -70,7 +70,7 @@ fmap_multi = function(ncircles, radius_inner = NULL, radius_outer = NULL, geo_po
   } else {
     geo_centres =
       geo_centres %>%
-      mutate(id = geo_centres[[facet]])
+      mutate(id = geo_centres[[id_var]])
   }
 
   if(grepl(x = class(geo_centres)[1], pattern = "sf", ignore.case = T) != T && grepl(x = class(geo_centres)[1], pattern = "sp", ignore.case = T) != T) {
@@ -85,8 +85,8 @@ fmap_multi = function(ncircles, radius_inner = NULL, radius_outer = NULL, geo_po
       st_coordinates() %>%
       data.frame() %>%
       rename(lon = X, lat = Y) %>%
-      filter(!is.null(lat)) %>%
-      filter(!is.null(lon)) %>%
+      filter(!is.na(lat)) %>%
+      filter(!is.na(lon)) %>%
       mutate(id = geo_centres$id)
   }
 
@@ -210,17 +210,20 @@ fmap_multi = function(ncircles, radius_inner = NULL, radius_outer = NULL, geo_po
       tmap_options(show.messages = F, show.warnings = F)
 
   } else if(output == 'data') {
-    fmaps =
+    fmaps_multi_data =
       fmaps %>%
       dplyr::select(zonal_area, radius, 1, id)
 
-    fmaps
+    fmaps_multi_data
 
   } else if(output == 'stats') {
-    fmaps %>%
+    fmaps_multi_stats =
+      fmaps %>%
       as.data.frame() %>%
       dplyr::select(zonal_area, radius, 1, id) %>%
       print()
+
+    fmaps_multi_stats
 
   } else {
     stop('error in output parameter')
