@@ -55,9 +55,9 @@ data(choleradeaths)
 data(sohopumps)
 
 # Filter the Broad Street Pump
-broadstpump =
+broadstreetpump =
   sohopumps \%>\%
   filter(Soho.Pump == "Broad Street")
 
-fmap_data(radius_inner = 125, ncircles = 8, geo_centre = broadstpump, geo_points = choleradeaths, sum = "Cholera.Deaths")
+fmap_data(radius_inner = 125, ncircles = 8, geo_centre = broadstreetpump, geo_points = choleradeaths, sum = "Cholera.Deaths")
 }

@@ -37,9 +37,9 @@ Function for creating Fresnel circles polygons for mapping.
 data(sohopumps)
 
 # Filter the Broad Street Pump
-broadstpump =
+broadstreetpump =
   sohopumps \%>\%
   filter(Soho.Pump == "Broad Street")
 
-fcircles(radius_inner = 125, ncircles = 8, geo_centre = broadstpump)
+fcircles(radius_inner = 125, ncircles = 8, geo_centre = broadstreetpump)
 }
