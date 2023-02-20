@@ -27,14 +27,14 @@
 fmap_multi = function(ncircles, radius_inner = NULL, radius_outer = NULL, geo_points, geo_centres, id_var = NULL, sum = NULL, mean = NULL, median = NULL, count = F, output = 'plot') {
 
   for(i in ncircles) {
-    if(ncircles <= 1) {
-      stop('input concentric circles using the ncircles parameter')
-
-    } else if(is.null(radius_inner) && is.null(radius_outer)) {
+    if(is.null(radius_inner) && is.null(radius_outer)) {
       stop('radius_inner or radius_outer not inputted')
 
     } else if(is.null(radius_inner) != T && is.null(radius_outer) != T) {
       stop('radius_inner and radius_outer inputted')
+
+    } else if(ncircles%%1 != 0 | ncircles <= 1) {
+      stop('ncircles should not be <= 1 or a decimal number')
 
     } else if(is.null(radius_inner) != T && is.null(radius_outer)) {
       inner_circle_area = pi * (radius_inner ^ 2)
