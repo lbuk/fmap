@@ -14,11 +14,11 @@
 #' data(sohopumps)
 #'
 #' # Filter the Broad Street Pump
-#' broadstpump =
+#' broadstreetpump =
 #'   sohopumps %>%
 #'   filter(Soho.Pump == "Broad Street")
 #'
-#' fcircles(radius_inner = 125, ncircles = 8, geo_centre = broadstpump)
+#' fcircles(radius_inner = 125, ncircles = 8, geo_centre = broadstreetpump)
 #' @export
 
 fcircles = function(ncircles, radius_inner = NULL, radius_outer = NULL, lat = NULL, lon = NULL, geo_centre = NULL) {
