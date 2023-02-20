@@ -22,11 +22,11 @@
 #' data(sohopumps)
 #'
 #' # Filter the Broad Street Pump
-#' broadstpump =
+#' broadstreetpump =
 #'   sohopumps %>%
 #'   filter(Soho.Pump == "Broad Street")
 #'
-#' fmap_plot(radius_inner = 125, ncircles = 8, geo_centre = broadstpump, geo_points = choleradeaths, sum = "Cholera.Deaths")
+#' fmap_plot(radius_inner = 125, ncircles = 8, geo_centre = broadstreetpump, geo_points = choleradeaths, sum = "Cholera.Deaths")
 #' @export
 
 fmap_plot = function(ncircles, radius_inner = NULL, radius_outer = NULL, lat = NULL, lon = NULL, geo_centre = NULL, geo_points, sum = NULL, mean = NULL, median = NULL, count = F) {
@@ -119,92 +119,66 @@ fmap_plot = function(ncircles, radius_inner = NULL, radius_outer = NULL, lat = N
     stop('no aggregation inputted')
 
   } else if(is.null(mean) && is.null(sum) && is.null(median) && count == T) {
-    fmap_count =
+    fmap =
       fcircles %>%
-      mutate(circle_count = lengths(st_intersects(., geo_points)))
+      mutate(circle_count = lengths(st_intersects(., geo_points))) %>%
+      dplyr::select(circle_count, zonal_area, radius)
 
-    tm_shape(fmap_count, name = "Fresnel Map") +
-      tm_fill(col = "circle_count", palette = "viridis",
-              title = "Count", id = "", popup.vars = c("Zonal Area" = "zonal_area", "Radius" = "radius", "Count" = "circle_count")) +
-      tm_borders(col = "black", lwd = 0.8) +
-      tm_basemap(server = "OpenStreetMap") +
-      tm_view(view.legend.position = c("right", "top")) +
-      tm_layout(frame = F,
-                legend.outside = F,
-                legend.position = c("left", "top"),
-                legend.title.size = 0.72,
-                legend.text.size = 0.52,
-                legend.text.fontfamily = "Helvetica",
-                legend.title.fontface = "bold") +
-      tmap_options(show.messages = F, show.warnings = F)
+    title = "Count"
 
   } else if(is.null(sum) != T && is.null(mean) && is.null(median) && count == F) {
-    fmap_sum =
+    fmap =
       fcircles %>%
       st_join(geo_points) %>%
       group_by(zonal_area, radius) %>%
-      summarise(sum = sum(!! sym(sum), na.rm = T))
+      summarise(sum = sum(!! sym(sum), na.rm = T)) %>%
+      dplyr::select(sum, zonal_area, radius)
 
-    tm_shape(fmap_sum, name = "Fresnel Map") +
-      tm_fill(col = "sum", palette = "viridis",
-              title = paste0("Total ", '("', sum, '")'), id = "", popup.vars = c("Zonal Area" = "zonal_area", "Radius" = "radius", "Total" = "sum")) +
-      tm_borders(col = "black", lwd = 0.8) +
-      tm_basemap(server = "OpenStreetMap") +
-      tm_view(view.legend.position = c("right", "top")) +
-      tm_layout(frame = F,
-                legend.outside = F,
-                legend.position = c("left", "top"),
-                legend.title.size = 0.72,
-                legend.text.size = 0.52,
-                legend.text.fontfamily = "Helvetica",
-                legend.title.fontface = "bold") +
-      tmap_options(show.messages = F, show.warnings = F)
+    title = paste0("Total ", '("', sum, '")')
 
   } else if(is.null(mean) != T && is.null(sum) && is.null(median) && count == F) {
-    fmap_mean =
+    fmap =
       fcircles %>%
       st_join(geo_points) %>%
       group_by(zonal_area, radius) %>%
-      summarise(mean = mean(!! sym(mean), na.rm = T))
+      summarise(mean = mean(!! sym(mean), na.rm = T)) %>%
+      dplyr::select(mean, zonal_area, radius)
 
-    tm_shape(fmap_mean, name = "Fresnel Map") +
-      tm_fill(col = "mean", palette = "viridis",
-              title = paste0("Mean ", '("', mean, '")'), id = "", popup.vars = c("Zonal Area" = "zonal_area", "Radius" = "radius", "Mean" = "mean")) +
-      tm_borders(col = "black", lwd = 0.8) +
-      tm_basemap(server = "OpenStreetMap") +
-      tm_view(view.legend.position = c("right", "top")) +
-      tm_layout(frame = F,
-                legend.position = c("left", "top"),
-                legend.outside = F,
-                legend.title.size = 0.72,
-                legend.text.size = 0.52,
-                legend.text.fontfamily = "Helvetica",
-                legend.title.fontface = "bold") +
-      tmap_options(show.messages = F, show.warnings = F)
+    title = paste0("Mean ", '("', mean, '")')
 
   } else if(is.null(median) != T && is.null(sum) && is.null(mean) && count == F) {
-    fmap_median =
+    fmap =
       fcircles %>%
       st_join(geo_points) %>%
       group_by(zonal_area, radius) %>%
-      summarise(median = median(!! sym(median), na.rm = T))
+      summarise(median = median(!! sym(median), na.rm = T)) %>%
+      dplyr::select(median, zonal_area, radius)
 
-    tm_shape(fmap_median, name = "Fresnel Map") +
-      tm_fill(col = "median", palette = "viridis",
-              title = paste0("Median ", '("', median, '")'), id = "", popup.vars = c("Zonal Area" = "zonal_area", "Radius" = "radius", "Median" = "median")) +
-      tm_borders(col = "black", lwd = 0.8) +
-      tm_basemap(server = "OpenStreetMap") +
-      tm_view(view.legend.position = c("right", "top")) +
-      tm_layout(frame = F,
-                legend.position = c("left", "top"),
-                legend.outside = F,
-                legend.title.size = 0.72,
-                legend.text.size = 0.52,
-                legend.text.fontfamily = "Helvetica",
-                legend.title.fontface = "bold") +
-      tmap_options(show.messages = F, show.warnings = F)
+    title = paste0("Median ", '("', median, '")')
 
   } else {
     stop('error in aggregation parameter')
   }
+
+  aggregate = colnames(fmap)[1]
+  aggregate_title = tools::toTitleCase(aggregate)
+
+  tm_shape(fmap, name = "Fresnel Map") +
+    tm_fill(col = aggregate, palette = "viridis",
+            title = title, id = "", popup.vars = c("Zonal Area" = "zonal_area", "Radius" = "radius", aggregate_title)) +
+    tm_borders(col = "black", lwd = 0.8) +
+    tm_basemap(server = "OpenStreetMap") +
+    tm_view(view.legend.position = c("right", "top")) +
+    tm_layout(frame = F,
+              legend.text.fontfamily = "Helvetica",
+              legend.title.size = 0.8,
+              legend.text.size = 0.6,
+              legend.outside = F,
+              legend.title.fontface = "bold",
+              panel.label.fontfamily = "Helvetica",
+              panel.label.fontface = "bold",
+              panel.label.size = 1.1,
+              panel.label.bg.color = NA,
+              frame.lwd = 0) +
+    tmap_options(show.messages = F, show.warnings = F)
 }

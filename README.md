@@ -20,7 +20,7 @@ fmap is an R package for creating [Fresnel Maps](https://www.liamthomasbolton.co
     data(sohopumps)
 
     # Filter the Broad Street Pump from the dataset of Soho pumps
-    broadstpump = 
+    broadstreetpump = 
         sohopumps %>%
         filter(Soho.Pump == "Broad Street")
 
@@ -28,7 +28,7 @@ fmap is an R package for creating [Fresnel Maps](https://www.liamthomasbolton.co
     tmap_mode("plot")
 
     # Visualise the Fresnel Map
-    fmap_plot(radius_inner = 125, ncircles = 8, geo_centre = broadstpump, geo_points = choleradeaths, sum = "Cholera.Deaths")
+    fmap_plot(radius_inner = 125, ncircles = 8, geo_centre = broadstreetpump, geo_points = choleradeaths, sum = "Cholera.Deaths")
 
 ![](https://github.com/lbuk/fmap/blob/master/img/fmap_johnsnow_example.png)
 
