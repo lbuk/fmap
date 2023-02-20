@@ -221,8 +221,7 @@ fmap_multi = function(ncircles, radius_inner = NULL, radius_outer = NULL, geo_po
     fmaps_multi_stats =
       fmaps %>%
       as.data.frame() %>%
-      dplyr::select(zonal_area, radius, 1, id) %>%
-      print()
+      dplyr::select(zonal_area, radius, 1, id)
 
     fmaps_multi_stats
 
