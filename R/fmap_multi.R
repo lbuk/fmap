@@ -65,11 +65,13 @@ fmap_multi = function(ncircles, radius_inner = NULL, radius_outer = NULL, geo_po
   if(is.null(id_var)) {
     geo_centres =
       geo_centres %>%
+      st_as_sf() %>%
       mutate(id = row_number())
 
   } else {
     geo_centres =
       geo_centres %>%
+      st_as_sf() %>%
       mutate(id = geo_centres[[id_var]])
   }
 

@@ -1,6 +1,6 @@
 Package: fmap
 Title: Fresnel Maps with Equal-Area Concentric Circles
-Version: 1.1.8
+Version: 1.1.9
 Authors@R: 
     person("Liam", "Bolton", , "liamthomasbolton@gmail.com", role = c("aut", "cre"))
 Description: fmap is a package for producing Fresnel Maps, a new thematic mapping technique in which data is visualised to equal-area concentric circles (or annuli).
