@@ -122,9 +122,10 @@ fmap_stats = function(ncircles, radius_inner = NULL, radius_outer = NULL, lat = 
     fmap_count =
       fcircles %>%
       mutate(count = lengths(st_intersects(., geo_points))) %>%
-      as.data.frame() %>%
-      dplyr::select(zonal_area, radius, count) %>%
-      print()
+      data.frame() %>%
+      dplyr::select(zonal_area, radius, count)
+
+    fmap_count
 
   } else if(is.null(sum) != T && is.null(mean) && is.null(median) && count == F) {
     fmap_sum =
@@ -134,9 +135,9 @@ fmap_stats = function(ncircles, radius_inner = NULL, radius_outer = NULL, lat = 
       group_by(zonal_area) %>%
       summarise(sum = sum(!! sym(sum), na.rm = T)) %>%
       mutate(radius = df_fmap_radii$radius) %>%
-      dplyr::select(zonal_area, radius, sum) %>%
-      as.data.frame() %>%
-      print()
+      dplyr::select(zonal_area, radius, sum)
+
+    fmap_sum
 
   } else if(is.null(mean) != T && is.null(sum) && is.null(median) && count == F) {
     fmap_mean =
@@ -146,9 +147,9 @@ fmap_stats = function(ncircles, radius_inner = NULL, radius_outer = NULL, lat = 
       group_by(zonal_area) %>%
       summarise(mean = mean(!! sym(mean), na.rm = T)) %>%
       mutate(radius = df_fmap_radii$radius) %>%
-      dplyr::select(zonal_area, radius, mean) %>%
-      as.data.frame() %>%
-      print()
+      dplyr::select(zonal_area, radius, mean)
+
+    fmap_mean
 
   } else if(is.null(median) != T && is.null(sum) && is.null(mean) && count == F) {
     fmap_median =
@@ -158,9 +159,9 @@ fmap_stats = function(ncircles, radius_inner = NULL, radius_outer = NULL, lat = 
       group_by(zonal_area) %>%
       summarise(median = median(!! sym(median), na.rm = T)) %>%
       mutate(radius = df_fmap_radii$radius) %>%
-      dplyr::select(zonal_area, radius, median) %>%
-      as.data.frame() %>%
-      print()
+      dplyr::select(zonal_area, radius, median)
+
+    fmap_median
 
   } else {
     stop('error in aggregation parameter')
