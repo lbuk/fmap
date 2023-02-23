@@ -21,7 +21,7 @@
 #' # Load the sf dataset of Soho pumps
 #' data(sohopumps)
 #'
-#' fmap_multi(ncircles = 6, radius_outer = 200, geo_points = choleradeaths, geo_centres = sohopumps, id_var = "Soho.Pump", sum = "Cholera.Deaths")
+#' fmap_multi(ncircles = 2, radius_outer = 150, geo_points = choleradeaths, geo_centres = sohopumps, id_var = "Soho.Pump", sum = "Cholera.Deaths")
 #' @export
 
 fmap_multi = function(ncircles, radius_inner = NULL, radius_outer = NULL, geo_points, geo_centres, id_var = NULL, sum = NULL, mean = NULL, median = NULL, count = F, output = 'plot') {
