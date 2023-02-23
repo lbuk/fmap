@@ -31,4 +31,3 @@ fmap is an R package for creating [Fresnel Maps](https://www.liamthomasbolton.co
     fmap_plot(radius_inner = 125, ncircles = 8, geo_centre = broadstreetpump, geo_points = choleradeaths, sum = "Cholera.Deaths")
 
 ![](https://github.com/lbuk/fmap/blob/master/img/fmap_johnsnow_example.png)
-
