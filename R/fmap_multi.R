@@ -189,12 +189,11 @@ fmap_multi = function(ncircles, radius_inner = NULL, radius_outer = NULL, geo_po
   }
 
   aggregate = colnames(fmaps)[1]
-  aggregate_title = tools::toTitleCase(aggregate)
 
   if(output == 'plot') {
     tm_shape(fmaps, name = "Fresnel Map") +
       tm_fill(col = aggregate, palette = "plasma",
-              title = title, id = "", popup.vars = c("Zonal Area" = "zonal_area", "Radius" = "radius", aggregate_title)) +
+              title = title, id = "", popup.vars = c("Zonal Area" = "zonal_area", "Radius" = "radius", aggregate)) +
       tm_borders(col = "black", lwd = 0.8) +
       tm_facets(by='id', ncol = 2, free.scales = F) +
       tm_basemap(server = "OpenStreetMap") +

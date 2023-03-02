@@ -161,11 +161,10 @@ fmap_plot = function(ncircles, radius_inner = NULL, radius_outer = NULL, lat = N
   }
 
   aggregate = colnames(fmap)[1]
-  aggregate_title = tools::toTitleCase(aggregate)
 
   tm_shape(fmap, name = "Fresnel Map") +
     tm_fill(col = aggregate, palette = "viridis",
-            title = title, id = "", popup.vars = c("Zonal Area" = "zonal_area", "Radius" = "radius", aggregate_title)) +
+            title = title, id = "", popup.vars = c("Zonal Area" = "zonal_area", "Radius" = "radius", aggregate)) +
     tm_borders(col = "black", lwd = 0.8) +
     tm_basemap(server = "OpenStreetMap") +
     tm_view(view.legend.position = c("right", "top")) +
