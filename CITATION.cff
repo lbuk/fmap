@@ -1,0 +1,8 @@
+cff-version: 1.2.0
+title: fmap
+type: software
+authors:
+  - given-names: Liam Thomas
+    family-names: Bolton
+    orcid: https://orcid.org/0000-0003-0856-2449
+doi: 10.5281/zenodo.7539102
