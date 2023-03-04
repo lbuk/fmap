@@ -17,30 +17,33 @@
 
 fcircles_multi = function(ncircles, radius_inner = NULL, radius_outer = NULL, geo_centres, id_var = NULL) {
 
-  for(i in ncircles) {
-    if(is.null(radius_inner) && is.null(radius_outer)) {
-      stop('radius_inner or radius_outer not inputted')
+  df_fmap_radii =
+    lapply(ncircles, function(i) {
+      if(is.null(radius_inner) && is.null(radius_outer)) {
+        stop('radius_inner or radius_outer not inputted')
 
-    } else if(is.null(radius_inner) != T && is.null(radius_outer) != T) {
-      stop('radius_inner and radius_outer inputted')
+      } else if(is.null(radius_inner) != T && is.null(radius_outer) != T) {
+        stop('radius_inner and radius_outer inputted')
 
-    } else if(ncircles%%1 != 0 | ncircles <= 1) {
-      stop('ncircles should not be <= 1 or a decimal number')
+      } else if(ncircles%%1 != 0 | ncircles <= 1) {
+        stop('ncircles should not be <= 1 or a decimal number')
 
-    } else if(is.null(radius_inner) != T && is.null(radius_outer)) {
-      inner_circle_area = pi * (radius_inner ^ 2)
-      radius = sqrt((inner_circle_area * 1:ncircles) / pi)
+      } else if(is.null(radius_inner) != T && is.null(radius_outer)) {
+        inner_circle_area = pi * (radius_inner ^ 2)
+        radius = sqrt((inner_circle_area * 1:ncircles) / pi)
 
-    } else {
-      outer_circle_area = pi * (radius_outer ^ 2)
-      area_circles = outer_circle_area / ncircles
-      radius_inner = sqrt(area_circles / pi)
-      inner_circle_area = pi * (radius_inner ^ 2)
-      radius = sqrt((inner_circle_area * 1:ncircles) / pi)
-    }
+      } else {
+        outer_circle_area = pi * (radius_outer ^ 2)
+        area_circles = outer_circle_area / ncircles
+        radius_inner = sqrt(area_circles / pi)
+        inner_circle_area = pi * (radius_inner ^ 2)
+        radius = sqrt((inner_circle_area * 1:ncircles) / pi)
+      }
 
-    df_fmap_radii = data.frame(radius)
-  }
+      data.frame(radius)
+    })
+
+  df_fmap_radii = data.frame(df_fmap_radii)
 
   if(is.null(id_var)) {
     geo_centres =
@@ -73,39 +76,36 @@ fcircles_multi = function(ncircles, radius_inner = NULL, radius_outer = NULL, ge
       mutate(id = geo_centres$id)
   }
 
-  fcircles_multi = data.frame()
-  for(i in 1:nrow(geo_centres))  {
-    lat = geo_centres[i, "lat"]
-    lon = geo_centres[i, "lon"]
+  fcircles =
+    lapply(1:nrow(geo_centres), function(i) {
+      lat = geo_centres[i, "lat"]
+      lon = geo_centres[i, "lon"]
 
-    id = geo_centres[i, "id"]
+      id = geo_centres[i, "id"]
 
-    coords = data.frame(lat, lon)
+      coords = data.frame(lat, lon)
 
-    crs_aeqd = sprintf("+proj=aeqd +lat_0=%s +lon_0=%s +x_0=0 +y_0=0", coords$lat, coords$lon)
+      crs_aeqd = sprintf("+proj=aeqd +lat_0=%s +lon_0=%s +x_0=0 +y_0=0", coords$lat, coords$lon)
 
-    circles = list()
-    for(i in 1:nrow(df_fmap_radii))  {
-      circles[[i]] =
-        coords %>%
-        st_as_sf(coords = c("lon", "lat"), crs = 4326) %>%
-        st_transform(crs_aeqd) %>%
-        st_buffer(df_fmap_radii[i, "radius"], nQuadSegs = 500) %>%
-        mutate(circle = df_fmap_radii[i, "circle"])
-    }
+      circles =
+        lapply(1:nrow(df_fmap_radii), function(i) {
+          coords %>%
+            st_as_sf(coords = c("lon", "lat"), crs = 4326) %>%
+            st_transform(crs_aeqd) %>%
+            st_buffer(df_fmap_radii[i, "radius"], nQuadSegs = 500) %>%
+            mutate(circle = df_fmap_radii[i, "circle"])
+        })
 
-    fcircles =
-      do.call(rbind, circles) %>%
-      st_transform(crs) %>%
-      st_difference() %>%
-      mutate(zonal_area = 1:ncircles) %>%
-      mutate(radius = df_fmap_radii$radius) %>%
-      mutate(id = id) %>%
-      arrange(zonal_area) %>%
-      st_make_valid(T)
+      fcircles =
+        do.call(rbind, circles) %>%
+        st_transform(crs) %>%
+        st_difference() %>%
+        mutate(zonal_area = 1:ncircles) %>%
+        mutate(radius = df_fmap_radii$radius) %>%
+        mutate(id = id) %>%
+        arrange(zonal_area) %>%
+        st_make_valid(T)
+    })
 
-    fcircles_multi = rbind(fcircles_multi, fcircles)
-  }
-
-  fcircles_multi
+  fcircles_multi = do.call(rbind, fcircles)
 }
