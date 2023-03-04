@@ -90,8 +90,6 @@ fmap_multi = function(ncircles, radius_inner = NULL, radius_outer = NULL, geo_po
       st_coordinates() %>%
       data.frame() %>%
       rename(lon = X, lat = Y) %>%
-      filter(!is.na(lat)) %>%
-      filter(!is.na(lon)) %>%
       mutate(id = geo_centres$id)
   }
 
@@ -115,12 +113,17 @@ fmap_multi = function(ncircles, radius_inner = NULL, radius_outer = NULL, geo_po
             mutate(circle = df_fmap_radii[i, "circle"])
         })
 
+      outer_circles =
+        lapply(2:length(circles), function(i)  {
+          st_difference(circles[[i]], circles[[i-1]])
+        })
+      outer_circles = do.call(rbind, outer_circles)
+      inner_circle = circles[[1]]
+
       fcircles =
-        do.call(rbind, circles) %>%
-        st_difference() %>%
-        mutate(zonal_area = 1:ncircles) %>%
-        mutate(radius = df_fmap_radii$radius) %>%
-        mutate(id = id) %>%
+        inner_circle %>%
+        rbind(outer_circles) %>%
+        mutate(zonal_area = 1:ncircles, radius = df_fmap_radii$radius) %>%
         arrange(zonal_area) %>%
         st_make_valid(T)
 
@@ -134,10 +137,8 @@ fmap_multi = function(ncircles, radius_inner = NULL, radius_outer = NULL, geo_po
       } else if(is.null(mean) && is.null(sum) && is.null(median) && count == T) {
         fmaps =
           fcircles %>%
-          mutate(circle_count = lengths(st_intersects(., geo_points))) %>%
-          mutate(id = id) %>%
+          mutate(circle_count = lengths(st_intersects(., geo_points)), id = id, title = "Count") %>%
           st_transform(crs) %>%
-          mutate(title = "Count") %>%
           dplyr::select(circle_count, radius, zonal_area, id, title)
 
       } else if(is.null(sum) != T && is.null(mean) && is.null(median) && count == F) {
@@ -146,9 +147,8 @@ fmap_multi = function(ncircles, radius_inner = NULL, radius_outer = NULL, geo_po
           st_join(geo_points) %>%
           group_by(zonal_area, radius) %>%
           summarise(sum_calc = sum(!! sym(sum), na.rm = T)) %>%
-          mutate(id = id) %>%
           st_transform(crs) %>%
-          mutate(title = paste0("Total ", '("', sum, '")')) %>%
+          mutate(id = id, title = paste0("Total ", '("', sum, '")')) %>%
           rename(sum = sum_calc) %>%
           dplyr::select(sum, radius, zonal_area, id, title)
 
@@ -158,9 +158,8 @@ fmap_multi = function(ncircles, radius_inner = NULL, radius_outer = NULL, geo_po
           st_join(geo_points) %>%
           group_by(zonal_area, radius) %>%
           summarise(mean_calc = mean(!! sym(mean), na.rm = T)) %>%
-          mutate(id = id) %>%
           st_transform(crs) %>%
-          mutate(title = paste0("Mean ", '("', mean, '")')) %>%
+          mutate(id = id, title = paste0("Mean ", '("', mean, '")')) %>%
           rename(mean = mean_calc) %>%
           dplyr::select(mean, zonal_area, radius, id, title)
 
@@ -170,9 +169,8 @@ fmap_multi = function(ncircles, radius_inner = NULL, radius_outer = NULL, geo_po
           st_join(geo_points) %>%
           group_by(zonal_area, radius) %>%
           summarise(median_calc = median(!! sym(median), na.rm = T)) %>%
-          mutate(id = id) %>%
           st_transform(crs) %>%
-          mutate(title = paste0("Median ", '("', median, '")')) %>%
+          mutate(id = id, title = paste0("Median ", '("', median, '")')) %>%
           rename(median = median_calc) %>%
           dplyr::select(median, zonal_area, radius, id, title)
 
@@ -189,8 +187,7 @@ fmap_multi = function(ncircles, radius_inner = NULL, radius_outer = NULL, geo_po
 
   if(output == 'plot') {
     tm_shape(fmaps, name = "Fresnel Map") +
-      tm_fill(col = aggregate, palette = "plasma",
-              title = title, id = "", popup.vars = c("Zonal Area" = "zonal_area", "Radius" = "radius", aggregate)) +
+      tm_fill(col = aggregate, palette = "plasma", title = title, id = "", popup.vars = c("Zonal Area" = "zonal_area", "Radius" = "radius", aggregate)) +
       tm_borders(col = "black", lwd = 0.8) +
       tm_facets(by='id', ncol = 2, free.scales = F) +
       tm_basemap(server = "OpenStreetMap") +

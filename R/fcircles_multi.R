@@ -66,13 +66,10 @@ fcircles_multi = function(ncircles, radius_inner = NULL, radius_outer = NULL, ge
 
     geo_centres =
       geo_centres %>%
-      st_as_sf() %>%
       st_transform(4326) %>%
       st_coordinates() %>%
       data.frame() %>%
       rename(lon = X, lat = Y) %>%
-      filter(!is.na(lat)) %>%
-      filter(!is.na(lon)) %>%
       mutate(id = geo_centres$id)
   }
 
@@ -96,13 +93,18 @@ fcircles_multi = function(ncircles, radius_inner = NULL, radius_outer = NULL, ge
             mutate(circle = df_fmap_radii[i, "circle"])
         })
 
+      outer_circles =
+        lapply(2:length(circles), function(i)  {
+          st_difference(circles[[i]], circles[[i-1]])
+        })
+      outer_circles = do.call(rbind, outer_circles)
+      inner_circle = circles[[1]]
+
       fcircles =
         do.call(rbind, circles) %>%
         st_transform(crs) %>%
         st_difference() %>%
-        mutate(zonal_area = 1:ncircles) %>%
-        mutate(radius = df_fmap_radii$radius) %>%
-        mutate(id = id) %>%
+        mutate(zonal_area = 1:ncircles, radius = df_fmap_radii$radius, id = id) %>%
         arrange(zonal_area) %>%
         st_make_valid(T)
     })
