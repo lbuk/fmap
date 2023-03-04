@@ -98,13 +98,18 @@ fmap_plot = function(ncircles, radius_inner = NULL, radius_outer = NULL, lat = N
         mutate(circle = df_fmap_radii[i, "circle"])
     })
 
+  outer_circles =
+    lapply(2:length(circles), function(i)  {
+      st_difference(circles[[i]], circles[[i-1]])
+    })
+  outer_circles = do.call(rbind, outer_circles)
+  inner_circle = circles[[1]]
+
   fcircles =
-    do.call(rbind, circles) %>%
-    st_difference() %>%
-    mutate(zonal_area = 1:ncircles) %>%
-    mutate(radius = df_fmap_radii$radius) %>%
+    inner_circle %>%
+    rbind(outer_circles) %>%
+    mutate(zonal_area = 1:ncircles, radius = df_fmap_radii$radius) %>%
     arrange(zonal_area) %>%
-    st_transform(crs_aeqd) %>%
     st_make_valid(T)
 
   if(grepl(x = class(geo_points)[1], pattern = "sf", ignore.case = T) != T && grepl(x = class(geo_points)[1], pattern = "sp", ignore.case = T) != T) {
@@ -165,8 +170,7 @@ fmap_plot = function(ncircles, radius_inner = NULL, radius_outer = NULL, lat = N
   aggregate = colnames(fmap)[1]
 
   tm_shape(fmap, name = "Fresnel Map") +
-    tm_fill(col = aggregate, palette = "viridis",
-            title = title, id = "", popup.vars = c("Zonal Area" = "zonal_area", "Radius" = "radius", aggregate)) +
+    tm_fill(col = aggregate, palette = "viridis", title = title, id = "", popup.vars = c("Zonal Area" = "zonal_area", "Radius" = "radius", aggregate)) +
     tm_borders(col = "black", lwd = 0.8) +
     tm_basemap(server = "OpenStreetMap") +
     tm_view(view.legend.position = c("right", "top")) +
@@ -175,11 +179,6 @@ fmap_plot = function(ncircles, radius_inner = NULL, radius_outer = NULL, lat = N
               legend.title.size = 0.8,
               legend.text.size = 0.6,
               legend.outside = F,
-              legend.title.fontface = "bold",
-              panel.label.fontfamily = "Helvetica",
-              panel.label.fontface = "bold",
-              panel.label.size = 1.1,
-              panel.label.bg.color = NA,
-              frame.lwd = 0) +
+              legend.title.fontface = "bold") +
     tmap_options(show.messages = F, show.warnings = F)
 }

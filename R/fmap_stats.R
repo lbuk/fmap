@@ -99,13 +99,18 @@ fmap_stats = function(ncircles, radius_inner = NULL, radius_outer = NULL, lat = 
         mutate(circle = df_fmap_radii[i, "circle"])
     })
 
+  outer_circles =
+    lapply(2:length(circles), function(i)  {
+      st_difference(circles[[i]], circles[[i-1]])
+    })
+  outer_circles = do.call(rbind, outer_circles)
+  inner_circle = circles[[1]]
+
   fcircles =
-    do.call(rbind, circles) %>%
-    st_difference() %>%
-    mutate(zonal_area = 1:ncircles) %>%
-    mutate(radius = df_fmap_radii$radius) %>%
+    inner_circle %>%
+    rbind(outer_circles) %>%
+    mutate(zonal_area = 1:ncircles, radius = df_fmap_radii$radius) %>%
     arrange(zonal_area) %>%
-    st_transform(crs_aeqd) %>%
     st_make_valid(T)
 
   if(grepl(pattern = "sf", x = class(geo_points)[1], ignore.case = T) != T && grepl(pattern = "sp", x = class(geo_points)[1], ignore.case = T) != T) {
