@@ -108,4 +108,6 @@ fcircles_multi = function(ncircles, radius_inner = NULL, radius_outer = NULL, ge
     })
 
   fcircles_multi = do.call(rbind, fcircles)
+
+  fcircles_multi
 }
