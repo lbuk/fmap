@@ -26,30 +26,33 @@
 
 fmap_multi = function(ncircles, radius_inner = NULL, radius_outer = NULL, geo_points, geo_centres, id_var = NULL, sum = NULL, mean = NULL, median = NULL, count = F, output = 'plot') {
 
-  for(i in ncircles) {
-    if(is.null(radius_inner) && is.null(radius_outer)) {
-      stop('radius_inner or radius_outer not inputted')
+  df_fmap_radii =
+    lapply(ncircles, function(i) {
+      if(is.null(radius_inner) && is.null(radius_outer)) {
+        stop('radius_inner or radius_outer not inputted')
 
-    } else if(is.null(radius_inner) != T && is.null(radius_outer) != T) {
-      stop('radius_inner and radius_outer inputted')
+      } else if(is.null(radius_inner) != T && is.null(radius_outer) != T) {
+        stop('radius_inner and radius_outer inputted')
 
-    } else if(ncircles%%1 != 0 | ncircles <= 1) {
-      stop('ncircles should not be <= 1 or a decimal number')
+      } else if(ncircles%%1 != 0 | ncircles <= 1) {
+        stop('ncircles should not be <= 1 or a decimal number')
 
-    } else if(is.null(radius_inner) != T && is.null(radius_outer)) {
-      inner_circle_area = pi * (radius_inner ^ 2)
-      radius = sqrt((inner_circle_area * 1:ncircles) / pi)
+      } else if(is.null(radius_inner) != T && is.null(radius_outer)) {
+        inner_circle_area = pi * (radius_inner ^ 2)
+        radius = sqrt((inner_circle_area * 1:ncircles) / pi)
 
-    } else {
-      outer_circle_area = pi * (radius_outer ^ 2)
-      area_circles = outer_circle_area / ncircles
-      radius_inner = sqrt(area_circles / pi)
-      inner_circle_area = pi * (radius_inner ^ 2)
-      radius = sqrt((inner_circle_area * 1:ncircles) / pi)
-    }
+      } else {
+        outer_circle_area = pi * (radius_outer ^ 2)
+        area_circles = outer_circle_area / ncircles
+        radius_inner = sqrt(area_circles / pi)
+        inner_circle_area = pi * (radius_inner ^ 2)
+        radius = sqrt((inner_circle_area * 1:ncircles) / pi)
+      }
 
-    df_fmap_radii = data.frame(radius)
-  }
+      data.frame(radius)
+    })
+
+  df_fmap_radii = data.frame(df_fmap_radii)
 
   if(grepl(x = class(geo_points)[1], pattern = "sf", ignore.case = T) != T && grepl(x = class(geo_points)[1], pattern = "sp", ignore.case = T) != T) {
     stop('input geo_points as a geospatial dataset of points')
@@ -92,103 +95,97 @@ fmap_multi = function(ncircles, radius_inner = NULL, radius_outer = NULL, geo_po
       mutate(id = geo_centres$id)
   }
 
-  fmaps = data.frame()
-  for(i in 1:nrow(geo_centres))  {
-    lat = geo_centres[i, "lat"]
-    lon = geo_centres[i, "lon"]
+  fmaps =
+    lapply(1:nrow(geo_centres), function(i) {
+      lat = geo_centres[i, "lat"]
+      lon = geo_centres[i, "lon"]
 
-    id = geo_centres[i, "id"]
+      id = geo_centres[i, "id"]
 
-    coords = data.frame(lat, lon)
+      coords = data.frame(lat, lon)
 
-    crs_aeqd = sprintf("+proj=aeqd +lat_0=%s +lon_0=%s +x_0=0 +y_0=0", coords$lat, coords$lon)
+      crs_aeqd = sprintf("+proj=aeqd +lat_0=%s +lon_0=%s +x_0=0 +y_0=0", coords$lat, coords$lon)
 
-    circles = list()
-    for(i in 1:nrow(df_fmap_radii))  {
-      circles[[i]] =
-        coords %>%
-        st_as_sf(coords = c("lon", "lat"), crs = 4326) %>%
-        st_transform(crs_aeqd) %>%
-        st_buffer(df_fmap_radii[i, "radius"], nQuadSegs = 500) %>%
-        mutate(circle = df_fmap_radii[i, "circle"])
-    }
+      circles =
+        lapply(1:nrow(df_fmap_radii), function(i) {
+          coords %>%
+            st_as_sf(coords = c("lon", "lat"), crs = 4326) %>%
+            st_transform(crs_aeqd) %>%
+            st_buffer(df_fmap_radii[i, "radius"], nQuadSegs = 500) %>%
+            mutate(circle = df_fmap_radii[i, "circle"])
+        })
 
-    fcircles =
-      do.call(rbind, circles) %>%
-      st_difference() %>%
-      mutate(zonal_area = 1:ncircles) %>%
-      mutate(radius = df_fmap_radii$radius) %>%
-      mutate(id = id) %>%
-      arrange(zonal_area) %>%
-      st_make_valid(T)
-
-    geo_points =
-      geo_points %>%
-      st_transform(crs_aeqd)
-
-    if(is.null(sum) && is.null(mean) && is.null(median) && count != T) {
-      stop('no aggregation inputted')
-
-    } else if(is.null(mean) && is.null(sum) && is.null(median) && count == T) {
-      fmap_count =
-        fcircles %>%
-        mutate(circle_count = lengths(st_intersects(., geo_points))) %>%
+      fcircles =
+        do.call(rbind, circles) %>%
+        st_difference() %>%
+        mutate(zonal_area = 1:ncircles) %>%
+        mutate(radius = df_fmap_radii$radius) %>%
         mutate(id = id) %>%
-        st_transform(crs) %>%
-        dplyr::select(circle_count, radius, zonal_area, id)
+        arrange(zonal_area) %>%
+        st_make_valid(T)
 
-      fmaps = rbind(fmaps, fmap_count)
+      geo_points =
+        geo_points %>%
+        st_transform(crs_aeqd)
 
-      title = "Count"
+      if(is.null(sum) && is.null(mean) && is.null(median) && count != T) {
+        stop('no aggregation inputted')
 
-    } else if(is.null(sum) != T && is.null(mean) && is.null(median) && count == F) {
-      fmap_sum =
-        fcircles %>%
-        st_join(geo_points) %>%
-        group_by(zonal_area, radius) %>%
-        summarise(sum = sum(!! sym(sum), na.rm = T)) %>%
-        mutate(id = id) %>%
-        st_transform(crs) %>%
-        dplyr::select(sum, radius, zonal_area, id)
+      } else if(is.null(mean) && is.null(sum) && is.null(median) && count == T) {
+        fmaps =
+          fcircles %>%
+          mutate(circle_count = lengths(st_intersects(., geo_points))) %>%
+          mutate(id = id) %>%
+          st_transform(crs) %>%
+          mutate(title = "Count") %>%
+          dplyr::select(circle_count, radius, zonal_area, id, title)
 
-      fmaps = rbind(fmaps, fmap_sum)
+      } else if(is.null(sum) != T && is.null(mean) && is.null(median) && count == F) {
+        fmaps =
+          fcircles %>%
+          st_join(geo_points) %>%
+          group_by(zonal_area, radius) %>%
+          summarise(sum_calc = sum(!! sym(sum), na.rm = T)) %>%
+          mutate(id = id) %>%
+          st_transform(crs) %>%
+          mutate(title = paste0("Total ", '("', sum, '")')) %>%
+          rename(sum = sum_calc) %>%
+          dplyr::select(sum, radius, zonal_area, id, title)
 
-      title = paste0("Total ", '("', sum, '")')
+      } else if(is.null(mean) != T && is.null(sum) && is.null(median) && count == F) {
+        fmaps =
+          fcircles %>%
+          st_join(geo_points) %>%
+          group_by(zonal_area, radius) %>%
+          summarise(mean_calc = mean(!! sym(mean), na.rm = T)) %>%
+          mutate(id = id) %>%
+          st_transform(crs) %>%
+          mutate(title = paste0("Mean ", '("', mean, '")')) %>%
+          rename(mean = mean_calc) %>%
+          dplyr::select(mean, zonal_area, radius, id, title)
 
-    } else if(is.null(mean) != T && is.null(sum) && is.null(median) && count == F) {
-      fmap_mean =
-        fcircles %>%
-        st_join(geo_points) %>%
-        group_by(zonal_area, radius) %>%
-        summarise(mean = mean(!! sym(mean), na.rm = T)) %>%
-        mutate(id = id) %>%
-        st_transform(crs) %>%
-        dplyr::select(mean, zonal_area, radius, id)
+      } else if(is.null(median) != T && is.null(sum) && is.null(mean) && count == F) {
+        fmaps =
+          fcircles %>%
+          st_join(geo_points) %>%
+          group_by(zonal_area, radius) %>%
+          summarise(median_calc = median(!! sym(median), na.rm = T)) %>%
+          mutate(id = id) %>%
+          st_transform(crs) %>%
+          mutate(title = paste0("Median ", '("', median, '")')) %>%
+          rename(median = median_calc) %>%
+          dplyr::select(median, zonal_area, radius, id, title)
 
-      fmaps = rbind(fmaps, fmap_mean)
+      } else {
+        stop('error in aggregation parameter')
+      }
+    })
 
-      title = paste0("Mean ", '("', mean, '")')
-
-    } else if(is.null(median) != T && is.null(sum) && is.null(mean) && count == F) {
-      fmap_median =
-        fcircles %>%
-        st_join(geo_points) %>%
-        group_by(zonal_area, radius) %>%
-        summarise(median = median(!! sym(median), na.rm = T)) %>%
-        mutate(id = id) %>%
-        st_transform(crs) %>%
-        dplyr::select(median, zonal_area, radius, id)
-
-      fmaps = rbind(fmaps, fmap_median)
-
-      title = paste0("Median ", '("', median, '")')
-
-    } else {
-      stop('error in aggregation parameter')
-    }
-  }
+  fmaps = do.call(rbind, fmaps)
 
   aggregate = colnames(fmaps)[1]
+
+  title = fmaps$title[1]
 
   if(output == 'plot') {
     tm_shape(fmaps, name = "Fresnel Map") +
