@@ -101,7 +101,8 @@ fcircles_multi = function(ncircles, radius_inner = NULL, radius_outer = NULL, ge
       inner_circle = circles[[1]]
 
       fcircles =
-        do.call(rbind, circles) %>%
+        inner_circle %>%
+        rbind(outer_circles) %>%
         st_transform(crs) %>%
         st_difference() %>%
         mutate(zonal_area = 1:ncircles, radius = df_fmap_radii$radius, id = id) %>%
