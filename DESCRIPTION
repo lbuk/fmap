@@ -7,7 +7,6 @@ Description: fmap is a package for producing Fresnel Maps, a new thematic mappin
 Depends:
     R (>= 3.5.0),
     dplyr,
-    tidyr,
     sf,
     tmap
 License: GPL-3
