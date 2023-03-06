@@ -188,16 +188,17 @@ fmap_multi = function(ncircles, radius_inner = NULL, radius_outer = NULL, geo_po
       tm_basemap(server = "OpenStreetMap") +
       tm_view(view.legend.position = c("right", "top")) +
       tm_layout(frame = F,
-                legend.text.fontfamily = "Helvetica",
-                legend.title.size = 0.8,
-                legend.text.size = 0.6,
+                frame.lwd = 0,
                 legend.outside = F,
+                legend.text.fontfamily = "Helvetica",
+                legend.text.size = 0.62,
+                legend.title.size = 0.8,
                 legend.title.fontface = "bold",
+                legend.position = c("left", "top"),
                 panel.label.fontfamily = "Helvetica",
                 panel.label.fontface = "bold",
                 panel.label.size = 1.1,
-                panel.label.bg.color = NA,
-                frame.lwd = 0) +
+                panel.label.bg.color = NA) +
       tmap_options(show.messages = F, show.warnings = F)
 
   } else if(output == 'data') {

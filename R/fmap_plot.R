@@ -170,10 +170,11 @@ fmap_plot = function(ncircles, radius_inner = NULL, radius_outer = NULL, lat = N
     tm_basemap(server = "OpenStreetMap") +
     tm_view(view.legend.position = c("right", "top")) +
     tm_layout(frame = F,
-              legend.text.fontfamily = "Helvetica",
-              legend.title.size = 0.8,
-              legend.text.size = 0.6,
               legend.outside = F,
-              legend.title.fontface = "bold") +
+              legend.text.fontfamily = "Helvetica",
+              legend.text.size = 0.6,
+              legend.title.size = 0.8,
+              legend.title.fontface = "bold",
+              legend.position = c("left", "top")) +
     tmap_options(show.messages = F, show.warnings = F)
 }
