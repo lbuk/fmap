@@ -31,33 +31,28 @@
 
 fmap_stats = function(ncircles, radius_inner = NULL, radius_outer = NULL, lat = NULL, lon = NULL, geo_centre = NULL, geo_points, sum = NULL, mean = NULL, median = NULL, count = F) {
 
-  df_fmap_radii =
-    lapply(ncircles, function(i) {
-      if(is.null(radius_inner) && is.null(radius_outer)) {
-        stop('radius_inner or radius_outer not inputted')
+  if(is.null(radius_inner) && is.null(radius_outer)) {
+    stop('radius_inner or radius_outer not inputted')
 
-      } else if(is.null(radius_inner) != T && is.null(radius_outer) != T) {
-        stop('radius_inner and radius_outer inputted')
+  } else if(is.null(radius_inner) != T && is.null(radius_outer) != T) {
+    stop('radius_inner and radius_outer inputted')
 
-      } else if(ncircles%%1 != 0 | ncircles <= 1) {
-        stop('ncircles should not be <= 1 or a decimal number')
+  } else if(ncircles%%1 != 0 | ncircles <= 1) {
+    stop('ncircles should not be <= 1 or a decimal number')
 
-      } else if(is.null(radius_inner) != T && is.null(radius_outer)) {
-        inner_circle_area = pi * (radius_inner ^ 2)
-        radius = sqrt((inner_circle_area * 1:ncircles) / pi)
+  } else if(is.null(radius_inner) != T && is.null(radius_outer)) {
+    inner_circle_area = pi * (radius_inner ^ 2)
+    radius = sqrt((inner_circle_area * 1:ncircles) / pi)
 
-      } else {
-        outer_circle_area = pi * (radius_outer ^ 2)
-        area_circles = outer_circle_area / ncircles
-        radius_inner = sqrt(area_circles / pi)
-        inner_circle_area = pi * (radius_inner ^ 2)
-        radius = sqrt((inner_circle_area * 1:ncircles) / pi)
-      }
+  } else {
+    outer_circle_area = pi * (radius_outer ^ 2)
+    area_circles = outer_circle_area / ncircles
+    radius_inner = sqrt(area_circles / pi)
+    inner_circle_area = pi * (radius_inner ^ 2)
+    radius = sqrt((inner_circle_area * 1:ncircles) / pi)
+  }
 
-      data.frame(radius)
-    })
-
-  df_fmap_radii = data.frame(df_fmap_radii)
+  df_fmap_radii = data.frame(radius)
 
   if(is.null(lat) && is.null(lon) && is.null(geo_centre)) {
     stop('no centre coordinates inputted')
