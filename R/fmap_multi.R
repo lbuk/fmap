@@ -26,33 +26,30 @@
 
 fmap_multi = function(ncircles, radius_inner = NULL, radius_outer = NULL, geo_points, geo_centres, id_var = NULL, sum = NULL, mean = NULL, median = NULL, count = F, output = 'plot') {
 
-  df_fmap_radii =
-    lapply(ncircles, function(i) {
-      if(is.null(radius_inner) && is.null(radius_outer)) {
-        stop('radius_inner or radius_outer not inputted')
+  for(i in ncircles) {
+    if(is.null(radius_inner) && is.null(radius_outer)) {
+      stop('radius_inner or radius_outer not inputted')
 
-      } else if(is.null(radius_inner) != T && is.null(radius_outer) != T) {
-        stop('radius_inner and radius_outer inputted')
+    } else if(is.null(radius_inner) != T && is.null(radius_outer) != T) {
+      stop('radius_inner and radius_outer inputted')
 
-      } else if(ncircles%%1 != 0 | ncircles <= 1) {
-        stop('ncircles should not be <= 1 or a decimal number')
+    } else if(ncircles%%1 != 0 | ncircles <= 1) {
+      stop('ncircles should not be <= 1 or a decimal number')
 
-      } else if(is.null(radius_inner) != T && is.null(radius_outer)) {
-        inner_circle_area = pi * (radius_inner ^ 2)
-        radius = sqrt((inner_circle_area * 1:ncircles) / pi)
+    } else if(is.null(radius_inner) != T && is.null(radius_outer)) {
+      inner_circle_area = pi * (radius_inner ^ 2)
+      radius = sqrt((inner_circle_area * 1:ncircles) / pi)
 
-      } else {
-        outer_circle_area = pi * (radius_outer ^ 2)
-        area_circles = outer_circle_area / ncircles
-        radius_inner = sqrt(area_circles / pi)
-        inner_circle_area = pi * (radius_inner ^ 2)
-        radius = sqrt((inner_circle_area * 1:ncircles) / pi)
-      }
+    } else {
+      outer_circle_area = pi * (radius_outer ^ 2)
+      area_circles = outer_circle_area / ncircles
+      radius_inner = sqrt(area_circles / pi)
+      inner_circle_area = pi * (radius_inner ^ 2)
+      radius = sqrt((inner_circle_area * 1:ncircles) / pi)
+    }
 
-      data.frame(radius)
-    })
-
-  df_fmap_radii = data.frame(df_fmap_radii)
+    df_fmap_radii = data.frame(radius)
+  }
 
   if(grepl(x = class(geo_points)[1], pattern = "sf", ignore.case = T) != T && grepl(x = class(geo_points)[1], pattern = "sp", ignore.case = T) != T) {
     stop('input geo_points as a geospatial dataset of points')
