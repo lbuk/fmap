@@ -185,7 +185,7 @@ fmap_multi = function(ncircles, radius_inner = NULL, radius_outer = NULL, geo_po
       tm_fill(col = aggregate, palette = "plasma", title = title, id = "", popup.vars = c("Zonal Area" = "zonal_area", "Radius" = "radius", aggregate)) +
       tm_borders(col = "black", lwd = 0.8) +
       tm_facets(by='id', ncol = 2, free.scales = F) +
-      tm_basemap(server = "OpenStreetMap") +
+      tm_basemap(server = c("OpenStreetMap", "Esri.WorldImagery")) +
       tm_view(view.legend.position = c("right", "top")) +
       tm_layout(frame = F,
                 frame.lwd = 0,
