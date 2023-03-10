@@ -167,7 +167,7 @@ fmap_plot = function(ncircles, radius_inner = NULL, radius_outer = NULL, lat = N
   tm_shape(fmap, name = "Fresnel Map") +
     tm_fill(col = aggregate, palette = "viridis", title = title, id = "", popup.vars = c("Zonal Area" = "zonal_area", "Radius" = "radius", aggregate)) +
     tm_borders(col = "black", lwd = 0.8) +
-    tm_basemap(server = "OpenStreetMap") +
+    tm_basemap(server = c("OpenStreetMap", "Esri.WorldImagery")) +
     tm_view(view.legend.position = c("right", "top")) +
     tm_layout(frame = F,
               legend.outside = F,
