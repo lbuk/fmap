@@ -212,7 +212,8 @@ fmap_multi = function(ncircles, radius_inner = NULL, radius_outer = NULL, geo_po
     fmaps_multi_stats =
       fmaps %>%
       data.frame() %>%
-      dplyr::select(zonal_area, radius, 1, id)
+      dplyr::select(zonal_area, radius, 1, id) %>%
+      dplyr::as_tibble()
 
     fmaps_multi_stats
 
