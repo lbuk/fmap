@@ -15,13 +15,10 @@
 #' @param count Count the number of points from geo_points. Input TRUE to count points. Defaults to FALSE
 #' @return Summary statistics from the Fresnel Map based on aggregated data from the Fresnel circles.
 #' @examples
-#' # Load the sf dataset of cholera deaths
-#' data(choleradeaths)
+#' # Load the sf datasets of cholera deaths and Soho pumps
+#' data(choleradeaths, sohopumps)
 #'
-#' # Load the sf dataset of Soho pumps
-#' data(sohopumps)
-#'
-#' # Filter the Broad Street Pump
+#' # Filter the Broad Street Pump from the Soho pumps dataset
 #' broadstreetpump = sohopumps %>% filter(Soho.Pump == "Broad Street")
 #'
 #' fmap_stats(radius_inner = 125, ncircles = 8, geo_centre = broadstreetpump, geo_points = choleradeaths, sum = "Cholera.Deaths")

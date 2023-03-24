@@ -15,11 +15,8 @@
 #' @param output Output of function. Input either 'plot', 'data' or 'stats'. Defaults to 'plot'
 #' @return A map, sf dataset or stats based on multiple Fresnel Maps.
 #' @examples
-#' # Load the sf dataset of cholera deaths
-#' data(choleradeaths)
-#'
-#' # Load the sf dataset of Soho pumps
-#' data(sohopumps)
+#' # Load the sf datasets of cholera deaths and Soho pumps
+#' data(choleradeaths, sohopumps)
 #'
 #' fmap_multi(ncircles = 2, radius_outer = 150, geo_points = choleradeaths, geo_centres = sohopumps, id_var = "Soho.Pump", sum = "Cholera.Deaths")
 #' @export
