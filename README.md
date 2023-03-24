@@ -15,7 +15,7 @@ fmap is an R package for creating [Fresnel Maps](https://www.liamthomasbolton.co
 
     # Load the sf dataset of cholera deaths
     data(choleradeaths)
-    
+
     # Load the sf dataset of Soho pumps
     data(sohopumps)
 
