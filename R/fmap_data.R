@@ -67,7 +67,7 @@ fmap_data = function(ncircles, radius_inner = NULL, radius_outer = NULL, lat = N
       sf::st_transform(4326) %>%
       sf::st_coordinates() %>%
       data.frame() %>%
-      rename(lat = Y, lon = X)
+      dplyr::rename(lat = Y, lon = X)
 
     lat = geo_centre$lat
     lon = geo_centre$lon
@@ -86,7 +86,7 @@ fmap_data = function(ncircles, radius_inner = NULL, radius_outer = NULL, lat = N
     sf::st_as_sf(coords = c("lon", "lat"), crs = 4326) %>%
     sf::st_transform(crs_aeqd) %>%
     st_buffer(df_fmap_radii[i, "radius"], nQuadSegs = 2175) %>%
-    mutate(circle = df_fmap_radii[i, "circle"])
+    dplyr::mutate(circle = df_fmap_radii[i, "circle"])
   })
 
   inner_circle = circles[[1]]
@@ -99,8 +99,8 @@ fmap_data = function(ncircles, radius_inner = NULL, radius_outer = NULL, lat = N
 
   fcircles = inner_circle %>%
     rbind(outer_circles) %>%
-    mutate(zonal_area = 1:ncircles, radius = df_fmap_radii$radius) %>%
-    arrange(zonal_area) %>%
+    dplyr::mutate(zonal_area = 1:ncircles, radius = df_fmap_radii$radius) %>%
+    dplyr::arrange(zonal_area) %>%
     st_make_valid(T)
 
   if(grepl(pattern = "sf", x = class(geo_points)[1], ignore.case = T) != T && grepl(pattern = "sp", x = class(geo_points)[1], ignore.case = T) != T) {
@@ -117,7 +117,7 @@ fmap_data = function(ncircles, radius_inner = NULL, radius_outer = NULL, lat = N
 
   } else if(is.null(mean) && is.null(sum) && is.null(median) && count == T) {
     fmap_count = fcircles %>%
-      mutate(circle_count = lengths(st_intersects(., geo_points)))
+      dplyr::mutate(circle_count = lengths(st_intersects(., geo_points)))
 
     fmap_count
 

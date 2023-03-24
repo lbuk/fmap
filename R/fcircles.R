@@ -59,7 +59,7 @@ fcircles = function(ncircles, radius_inner = NULL, radius_outer = NULL, lat = NU
       sf::st_transform(4326) %>%
       sf::st_coordinates() %>%
       data.frame() %>%
-      rename(lat = Y, lon = X)
+      dplyr::rename(lat = Y, lon = X)
 
     lat = geo_centre$lat
     lon = geo_centre$lon
@@ -78,7 +78,7 @@ fcircles = function(ncircles, radius_inner = NULL, radius_outer = NULL, lat = NU
     sf::st_as_sf(coords = c("lon", "lat"), crs = 4326) %>%
     sf::st_transform(crs_aeqd) %>%
     st_buffer(df_fmap_radii[i, "radius"], nQuadSegs = 2175) %>%
-    mutate(circle = df_fmap_radii[i, "circle"])
+    dplyr::mutate(circle = df_fmap_radii[i, "circle"])
   })
 
   inner_circle = circles[[1]]
@@ -91,8 +91,8 @@ fcircles = function(ncircles, radius_inner = NULL, radius_outer = NULL, lat = NU
 
   fcircles = inner_circle %>%
     rbind(outer_circles) %>%
-    mutate(zonal_area = 1:ncircles, radius = df_fmap_radii$radius) %>%
-    arrange(zonal_area) %>%
+    dplyr::mutate(zonal_area = 1:ncircles, radius = df_fmap_radii$radius) %>%
+    dplyr::arrange(zonal_area) %>%
     st_make_valid(T)
 
   fcircles

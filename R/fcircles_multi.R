@@ -43,12 +43,12 @@ fcircles_multi = function(ncircles, radius_inner = NULL, radius_outer = NULL, ge
   if(is.null(id_var)) {
     geo_centres = geo_centres %>%
       sf::st_as_sf() %>%
-      mutate(id = row_number())
+      dplyr::mutate(id = row_number())
 
   } else {
     geo_centres = geo_centres %>%
       sf::st_as_sf() %>%
-      mutate(id = geo_centres[[id_var]])
+      dplyr::mutate(id = geo_centres[[id_var]])
   }
 
   if(grepl(x = class(geo_centres)[1], pattern = "sf", ignore.case = T) != T && grepl(x = class(geo_centres)[1], pattern = "sp", ignore.case = T) != T) {
@@ -61,8 +61,8 @@ fcircles_multi = function(ncircles, radius_inner = NULL, radius_outer = NULL, ge
       sf::st_transform(4326) %>%
       sf::st_coordinates() %>%
       data.frame() %>%
-      rename(lon = X, lat = Y) %>%
-      mutate(id = geo_centres$id)
+      dplyr::rename(lon = X, lat = Y) %>%
+      dplyr::mutate(id = geo_centres$id)
   }
 
   fcircles = lapply(1:nrow(geo_centres), function(i) {
@@ -80,7 +80,7 @@ fcircles_multi = function(ncircles, radius_inner = NULL, radius_outer = NULL, ge
       sf::st_as_sf(coords = c("lon", "lat"), crs = 4326) %>%
       sf::st_transform(crs_aeqd) %>%
       st_buffer(df_fmap_radii[i, "radius"], nQuadSegs = 2175) %>%
-      mutate(circle = df_fmap_radii[i, "circle"])
+      dplyr::mutate(circle = df_fmap_radii[i, "circle"])
     })
 
     inner_circle = circles[[1]]
@@ -95,8 +95,8 @@ fcircles_multi = function(ncircles, radius_inner = NULL, radius_outer = NULL, ge
       rbind(outer_circles) %>%
       sf::st_transform(crs) %>%
       st_difference() %>%
-      mutate(zonal_area = 1:ncircles, radius = df_fmap_radii$radius, id = id) %>%
-      arrange(zonal_area) %>%
+      dplyr::mutate(zonal_area = 1:ncircles, radius = df_fmap_radii$radius, id = id) %>%
+      dplyr::arrange(zonal_area) %>%
       st_make_valid(T)
   })
 
