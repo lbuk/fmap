@@ -48,11 +48,8 @@ A map, sf dataset or stats based on multiple Fresnel Maps.
 Function for plotting or deriving data or stats from multiple Fresnel Maps, or thematic maps that visualise geospatial data to the level of equal-area concentric circles (or annuli), across a range of locations.
 }
 \examples{
-# Load the sf dataset of cholera deaths
-data(choleradeaths)
-
-# Load the sf dataset of Soho pumps
-data(sohopumps)
+# Load the sf datasets of cholera deaths and Soho pumps
+data(choleradeaths, sohopumps)
 
 fmap_multi(ncircles = 2, radius_outer = 150, geo_points = choleradeaths, geo_centres = sohopumps, id_var = "Soho.Pump", sum = "Cholera.Deaths")
 }

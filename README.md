@@ -13,13 +13,10 @@ fmap is an R package for creating [Fresnel Maps](https://www.liamthomasbolton.co
 
     library(fmap)
 
-    # Load the sf dataset of cholera deaths
-    data(choleradeaths)
+    # Load the sf datasets of cholera deaths and Soho pumps
+    data(choleradeaths, sohopumps)
 
-    # Load the sf dataset of Soho pumps
-    data(sohopumps)
-
-    # Filter the Broad Street Pump from the dataset of Soho pumps
+    # Filter the Broad Street Pump from the Soho pumps dataset
     broadstreetpump = sohopumps %>% filter(Soho.Pump == "Broad Street")
 
     # Set to static mapping in tmap. For interactive mapping use tmap_mode("view")

@@ -48,13 +48,10 @@ Summary statistics from the Fresnel Map based on aggregated data from the Fresne
 Function for calculating summary statistics from Fresnel Maps, or thematic maps that visualise geospatial data to the level of equal-area concentric circles (or annuli).
 }
 \examples{
-# Load the sf dataset of cholera deaths
-data(choleradeaths)
+# Load the sf datasets of cholera deaths and Soho pumps
+data(choleradeaths, sohopumps)
 
-# Load the sf dataset of Soho pumps
-data(sohopumps)
-
-# Filter the Broad Street Pump
+# Filter the Broad Street Pump from the Soho pumps dataset
 broadstreetpump = sohopumps \%>\% filter(Soho.Pump == "Broad Street")
 
 fmap_stats(radius_inner = 125, ncircles = 8, geo_centre = broadstreetpump, geo_points = choleradeaths, sum = "Cholera.Deaths")

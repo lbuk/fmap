@@ -13,7 +13,7 @@
 #' # Load the sf dataset of Soho pumps
 #' data(sohopumps)
 #'
-#' # Filter the Broad Street Pump
+#' # Filter the Broad Street Pump from the Soho pumps dataset
 #' broadstreetpump = sohopumps %>% filter(Soho.Pump == "Broad Street")
 #'
 #' fcircles(radius_inner = 125, ncircles = 8, geo_centre = broadstreetpump)
