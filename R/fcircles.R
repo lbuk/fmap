@@ -14,9 +14,7 @@
 #' data(sohopumps)
 #'
 #' # Filter the Broad Street Pump
-#' broadstreetpump =
-#'   sohopumps %>%
-#'   filter(Soho.Pump == "Broad Street")
+#' broadstreetpump = sohopumps %>% filter(Soho.Pump == "Broad Street")
 #'
 #' fcircles(radius_inner = 125, ncircles = 8, geo_centre = broadstreetpump)
 #' @export
@@ -56,8 +54,7 @@ fcircles = function(ncircles, radius_inner = NULL, radius_outer = NULL, lat = NU
     stop('input geo_centre or lat and lon')
 
   } else if(is.null(lat) && is.null(lon) && is.null(geo_centre) != T) {
-    geo_centre =
-      geo_centre %>%
+    geo_centre = geo_centre %>%
       sf::st_as_sf() %>%
       sf::st_transform(4326) %>%
       sf::st_coordinates() %>%
@@ -76,24 +73,23 @@ fcircles = function(ncircles, radius_inner = NULL, radius_outer = NULL, lat = NU
 
   crs_aeqd = sprintf("+proj=aeqd +lat_0=%s +lon_0=%s +x_0=0 +y_0=0", coords$lat, coords$lon)
 
-  circles =
-    lapply(1:nrow(df_fmap_radii), function(i) {
-      coords %>%
-        sf::st_as_sf(coords = c("lon", "lat"), crs = 4326) %>%
-        sf::st_transform(crs_aeqd) %>%
-        st_buffer(df_fmap_radii[i, "radius"], nQuadSegs = 2175) %>%
-        mutate(circle = df_fmap_radii[i, "circle"])
-    })
+  circles = lapply(1:nrow(df_fmap_radii), function(i) {
+    coords %>%
+    sf::st_as_sf(coords = c("lon", "lat"), crs = 4326) %>%
+    sf::st_transform(crs_aeqd) %>%
+    st_buffer(df_fmap_radii[i, "radius"], nQuadSegs = 2175) %>%
+    mutate(circle = df_fmap_radii[i, "circle"])
+  })
 
-  outer_circles =
-    lapply(2:length(circles), function(i)  {
-      st_difference(circles[[i]], circles[[i-1]])
-    })
-  outer_circles = do.call(rbind, outer_circles)
   inner_circle = circles[[1]]
 
-  fcircles =
-    inner_circle %>%
+  outer_circles = lapply(2:length(circles), function(i)  {
+    st_difference(circles[[i]], circles[[i-1]])
+  })
+
+  outer_circles = do.call(rbind, outer_circles)
+
+  fcircles = inner_circle %>%
     rbind(outer_circles) %>%
     mutate(zonal_area = 1:ncircles, radius = df_fmap_radii$radius) %>%
     arrange(zonal_area) %>%

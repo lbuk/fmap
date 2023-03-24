@@ -20,9 +20,7 @@ fmap is an R package for creating [Fresnel Maps](https://www.liamthomasbolton.co
     data(sohopumps)
 
     # Filter the Broad Street Pump from the dataset of Soho pumps
-    broadstreetpump = 
-        sohopumps %>%
-        filter(Soho.Pump == "Broad Street")
+    broadstreetpump = sohopumps %>% filter(Soho.Pump == "Broad Street")
 
     # Set to static mapping in tmap. For interactive mapping use tmap_mode("view")
     tmap_mode("plot")
