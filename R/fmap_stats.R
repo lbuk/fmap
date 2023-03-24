@@ -22,9 +22,7 @@
 #' data(sohopumps)
 #'
 #' # Filter the Broad Street Pump
-#' broadstreetpump =
-#'   sohopumps %>%
-#'   filter(Soho.Pump == "Broad Street")
+#' broadstreetpump = sohopumps %>% filter(Soho.Pump == "Broad Street")
 #'
 #' fmap_stats(radius_inner = 125, ncircles = 8, geo_centre = broadstreetpump, geo_points = choleradeaths, sum = "Cholera.Deaths")
 #' @export
@@ -64,8 +62,7 @@ fmap_stats = function(ncircles, radius_inner = NULL, radius_outer = NULL, lat = 
     stop('input geo_centre or lat and lon')
 
   } else if(is.null(lat) && is.null(lon) && is.null(geo_centre) != T) {
-    geo_centre =
-      geo_centre %>%
+    geo_centre = geo_centre %>%
       sf::st_as_sf() %>%
       sf::st_transform(4326) %>%
       sf::st_coordinates() %>%
@@ -84,24 +81,23 @@ fmap_stats = function(ncircles, radius_inner = NULL, radius_outer = NULL, lat = 
 
   crs_aeqd = sprintf("+proj=aeqd +lat_0=%s +lon_0=%s +x_0=0 +y_0=0", coords$lat, coords$lon)
 
-  circles =
-    lapply(1:nrow(df_fmap_radii), function(i) {
-      coords %>%
-        sf::st_as_sf(coords = c("lon", "lat"), crs = 4326) %>%
-        sf::st_transform(crs_aeqd) %>%
-        st_buffer(df_fmap_radii[i, "radius"], nQuadSegs = 2175) %>%
-        mutate(circle = df_fmap_radii[i, "circle"])
-    })
+  circles = lapply(1:nrow(df_fmap_radii), function(i) {
+    coords %>%
+    sf::st_as_sf(coords = c("lon", "lat"), crs = 4326) %>%
+    sf::st_transform(crs_aeqd) %>%
+    st_buffer(df_fmap_radii[i, "radius"], nQuadSegs = 2175) %>%
+    mutate(circle = df_fmap_radii[i, "circle"])
+  })
 
-  outer_circles =
-    lapply(2:length(circles), function(i)  {
-      st_difference(circles[[i]], circles[[i-1]])
-    })
-  outer_circles = do.call(rbind, outer_circles)
   inner_circle = circles[[1]]
 
-  fcircles =
-    inner_circle %>%
+  outer_circles = lapply(2:length(circles), function(i)  {
+    st_difference(circles[[i]], circles[[i-1]])
+  })
+
+  outer_circles = do.call(rbind, outer_circles)
+
+  fcircles = inner_circle %>%
     rbind(outer_circles) %>%
     mutate(zonal_area = 1:ncircles, radius = df_fmap_radii$radius) %>%
     arrange(zonal_area) %>%
@@ -111,8 +107,7 @@ fmap_stats = function(ncircles, radius_inner = NULL, radius_outer = NULL, lat = 
     stop('input geo_points as a geospatial dataset of points')
 
   } else {
-    geo_points =
-      geo_points %>%
+    geo_points = geo_points %>%
       sf::st_as_sf() %>%
       sf::st_transform(crs_aeqd)
   }
@@ -121,8 +116,7 @@ fmap_stats = function(ncircles, radius_inner = NULL, radius_outer = NULL, lat = 
     stop('no aggregation inputted')
 
   } else if(is.null(mean) && is.null(sum) && is.null(median) && count == T) {
-    fmap_count =
-      fcircles %>%
+    fmap_count = fcircles %>%
       mutate(count = lengths(st_intersects(., geo_points))) %>%
       data.frame() %>%
       dplyr::select(zonal_area, radius, count)
@@ -130,8 +124,7 @@ fmap_stats = function(ncircles, radius_inner = NULL, radius_outer = NULL, lat = 
     fmap_count
 
   } else if(is.null(sum) != T && is.null(mean) && is.null(median) && count == F) {
-    fmap_sum =
-      fcircles %>%
+    fmap_sum = fcircles %>%
       st_join(geo_points) %>%
       data.frame() %>%
       group_by(zonal_area) %>%
@@ -142,8 +135,7 @@ fmap_stats = function(ncircles, radius_inner = NULL, radius_outer = NULL, lat = 
     fmap_sum
 
   } else if(is.null(mean) != T && is.null(sum) && is.null(median) && count == F) {
-    fmap_mean =
-      fcircles %>%
+    fmap_mean = fcircles %>%
       st_join(geo_points) %>%
       data.frame() %>%
       group_by(zonal_area) %>%
@@ -154,8 +146,7 @@ fmap_stats = function(ncircles, radius_inner = NULL, radius_outer = NULL, lat = 
     fmap_mean
 
   } else if(is.null(median) != T && is.null(sum) && is.null(mean) && count == F) {
-    fmap_median =
-      fcircles %>%
+    fmap_median = fcircles %>%
       st_join(geo_points) %>%
       data.frame() %>%
       group_by(zonal_area) %>%
