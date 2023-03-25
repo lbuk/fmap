@@ -79,7 +79,7 @@ fcircles_multi = function(ncircles, radius_inner = NULL, radius_outer = NULL, ge
       coords %>%
         st_as_sf(coords = c("lon", "lat"), crs = 4326) %>%
         st_transform(crs_aeqd) %>%
-        st_buffer(df_fmap_radii[i, "radius"], nQuadSegs = 2175) %>%
+        st_buffer(df_fmap_radii[i, "radius"], nQuadSegs = 1375) %>%
         mutate(circle = df_fmap_radii[i, "circle"])
     })
 
