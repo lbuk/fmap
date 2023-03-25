@@ -33,15 +33,15 @@ fmap_multi = function(ncircles, radius_inner = NULL, radius_outer = NULL, geo_po
     stop('ncircles should not be <= 1 or a decimal number')
 
   } else if(is.null(radius_inner) != T && is.null(radius_outer)) {
-    inner_circle_area = pi * (radius_inner ^ 2)
-    radius = sqrt((inner_circle_area * 1:ncircles) / pi)
+    inner_fcircle_area = pi * (radius_inner ^ 2)
+    radius = sqrt((inner_fcircle_area * 1:ncircles) / pi)
 
   } else {
-    outer_circle_area = pi * (radius_outer ^ 2)
-    area_circles = outer_circle_area / ncircles
-    radius_inner = sqrt(area_circles / pi)
-    inner_circle_area = pi * (radius_inner ^ 2)
-    radius = sqrt((inner_circle_area * 1:ncircles) / pi)
+    outer_fcircle_area = pi * (radius_outer ^ 2)
+    area_fcircles = outer_fcircle_area / ncircles
+    radius_inner = sqrt(area_fcircles / pi)
+    inner_fcircle_area = pi * (radius_inner ^ 2)
+    radius = sqrt((inner_fcircle_area * 1:ncircles) / pi)
   }
 
   df_fmap_radii = data.frame(radius)
@@ -98,16 +98,16 @@ fmap_multi = function(ncircles, radius_inner = NULL, radius_outer = NULL, geo_po
         mutate(circle = df_fmap_radii[i, "circle"])
     })
 
-    inner_circle = circles[[1]]
+    inner_fcircle = circles[[1]]
 
-    outer_circles = lapply(2:length(circles), function(i)  {
+    outer_fcircles = lapply(2:length(circles), function(i)  {
       st_difference(circles[[i]], circles[[i-1]])
     })
 
-    outer_circles = do.call(rbind, outer_circles)
+    outer_fcircles = do.call(rbind, outer_fcircles)
 
-    fcircles = inner_circle %>%
-      rbind(outer_circles) %>%
+    fcircles = inner_fcircle %>%
+      rbind(outer_fcircles) %>%
       mutate(zonal_area = 1:ncircles, radius = df_fmap_radii$radius) %>%
       arrange(zonal_area) %>%
       st_make_valid(T)
