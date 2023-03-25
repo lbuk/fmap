@@ -60,11 +60,11 @@ fmap_data = function(ncircles, radius_inner = NULL, radius_outer = NULL, lat = N
 
   } else if(is.null(lat) && is.null(lon) && is.null(geo_centre) != T) {
     geo_centre = geo_centre %>%
-      sf::st_as_sf() %>%
-      sf::st_transform(4326) %>%
-      sf::st_coordinates() %>%
+      st_as_sf() %>%
+      st_transform(4326) %>%
+      st_coordinates() %>%
       data.frame() %>%
-      dplyr::rename(lat = Y, lon = X)
+      rename(lat = Y, lon = X)
 
     lat = geo_centre$lat
     lon = geo_centre$lon
@@ -80,10 +80,10 @@ fmap_data = function(ncircles, radius_inner = NULL, radius_outer = NULL, lat = N
 
   circles = lapply(1:nrow(df_fmap_radii), function(i) {
     coords %>%
-    sf::st_as_sf(coords = c("lon", "lat"), crs = 4326) %>%
-    sf::st_transform(crs_aeqd) %>%
-    st_buffer(df_fmap_radii[i, "radius"], nQuadSegs = 2175) %>%
-    dplyr::mutate(circle = df_fmap_radii[i, "circle"])
+      st_as_sf(coords = c("lon", "lat"), crs = 4326) %>%
+      st_transform(crs_aeqd) %>%
+      st_buffer(df_fmap_radii[i, "radius"], nQuadSegs = 2175) %>%
+      mutate(circle = df_fmap_radii[i, "circle"])
   })
 
   inner_circle = circles[[1]]
@@ -96,8 +96,8 @@ fmap_data = function(ncircles, radius_inner = NULL, radius_outer = NULL, lat = N
 
   fcircles = inner_circle %>%
     rbind(outer_circles) %>%
-    dplyr::mutate(zonal_area = 1:ncircles, radius = df_fmap_radii$radius) %>%
-    dplyr::arrange(zonal_area) %>%
+    mutate(zonal_area = 1:ncircles, radius = df_fmap_radii$radius) %>%
+    arrange(zonal_area) %>%
     st_make_valid(T)
 
   if(grepl(pattern = "sf", x = class(geo_points)[1], ignore.case = T) != T && grepl(pattern = "sp", x = class(geo_points)[1], ignore.case = T) != T) {
@@ -105,16 +105,15 @@ fmap_data = function(ncircles, radius_inner = NULL, radius_outer = NULL, lat = N
 
   } else {
     geo_points = geo_points %>%
-      sf::st_as_sf() %>%
-      sf::st_transform(crs_aeqd)
+      st_as_sf() %>%
+      st_transform(crs_aeqd)
   }
 
   if(is.null(sum) && is.null(mean) && is.null(median) && count != T) {
     stop('no aggregation inputted')
 
   } else if(is.null(mean) && is.null(sum) && is.null(median) && count == T) {
-    fmap_count = fcircles %>%
-      dplyr::mutate(circle_count = lengths(st_intersects(., geo_points)))
+    fmap_count = fcircles %>% mutate(circle_count = lengths(st_intersects(., geo_points)))
 
     fmap_count
 
@@ -122,7 +121,7 @@ fmap_data = function(ncircles, radius_inner = NULL, radius_outer = NULL, lat = N
     fmap_sum = fcircles %>%
       st_join(geo_points) %>%
       group_by(zonal_area, radius) %>%
-      dplyr::summarise(sum = sum(!! sym(sum), na.rm = T))
+      summarise(sum = sum(!! sym(sum), na.rm = T))
 
     fmap_sum
 
@@ -130,7 +129,7 @@ fmap_data = function(ncircles, radius_inner = NULL, radius_outer = NULL, lat = N
     fmap_mean = fcircles %>%
       st_join(geo_points) %>%
       group_by(zonal_area, radius) %>%
-      dplyr::summarise(mean = mean(!! sym(mean), na.rm = T))
+      summarise(mean = mean(!! sym(mean), na.rm = T))
 
     fmap_mean
 
@@ -138,7 +137,7 @@ fmap_data = function(ncircles, radius_inner = NULL, radius_outer = NULL, lat = N
     fmap_median = fcircles %>%
       st_join(geo_points) %>%
       group_by(zonal_area, radius) %>%
-      dplyr::summarise(median = median(!! sym(median), na.rm = T))
+      summarise(median = median(!! sym(median), na.rm = T))
 
     fmap_median
 
