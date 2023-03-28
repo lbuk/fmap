@@ -19,17 +19,17 @@ fmap_multi(
 )
 }
 \arguments{
-\item{ncircles}{Number of equal-area concentric circles}
+\item{ncircles}{Number of concentric circles of equal area}
 
 \item{radius_inner}{Radius of innermost circle in metres}
 
 \item{radius_outer}{Radius of outermost circle in metres}
 
-\item{geo_points}{A geospatial dataset of points to aggregate}
+\item{geo_points}{A spatial dataset of points to aggregate}
 
-\item{geo_centres}{A geospatial dataset containing the coordinates of the centres of each Fresnel Map}
+\item{geo_centres}{A spatial dataset containing the coordinates of the centres of each Fresnel Map}
 
-\item{id_var}{Variable from geo_centres containing the ID}
+\item{id_var}{Variable from geo_centres containing the location ID}
 
 \item{sum}{Variable from geo_points for calculating sum}
 
@@ -42,14 +42,21 @@ fmap_multi(
 \item{output}{Output of function. Input either 'plot', 'data' or 'stats'. Defaults to 'plot'}
 }
 \value{
-A map, sf dataset or stats based on multiple Fresnel Maps.
+A map, sf dataset or summary stats based on multiple Fresnel Maps.
 }
 \description{
-Function for plotting or deriving data or stats from multiple Fresnel Maps, or thematic maps that visualise geospatial data to the level of equal-area concentric circles (or annuli), across a range of locations.
+Function for plotting or deriving data or stats from multiple Fresnel Maps, or thematic maps that visualise geospatial data to the level of equal-area concentric circles (or annuli), faceted by location.
 }
 \examples{
 # Load the sf datasets of cholera deaths and Soho pumps
 data(choleradeaths, sohopumps)
 
+# Multiple Fresnel Maps
 fmap_multi(ncircles = 2, radius_outer = 150, geo_points = choleradeaths, geo_centres = sohopumps, id_var = "Soho.Pump", sum = "Cholera.Deaths")
+
+# Summary stats from the Fresnel Maps
+fmap_multi(ncircles = 2, radius_outer = 150, geo_points = choleradeaths, geo_centres = sohopumps, id_var = "Soho.Pump", sum = "Cholera.Deaths", output = "stats")
+
+# Polygonal data from the Fresnel Maps
+fmap_multi(ncircles = 2, radius_outer = 150, geo_points = choleradeaths, geo_centres = sohopumps, id_var = "Soho.Pump", sum = "Cholera.Deaths", output = "data")
 }

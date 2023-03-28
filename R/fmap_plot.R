@@ -2,13 +2,13 @@
 #'
 #' Function for plotting Fresnel Maps, or thematic maps that visualise geospatial data to the level of equal-area concentric circles (or annuli).
 #'
-#' @param ncircles Number of equal-area concentric circles
+#' @param ncircles Number of concentric circles of equal area
 #' @param radius_inner Radius of innermost circle in metres
 #' @param radius_outer Radius of outermost circle in metres
 #' @param lat Latitude of the centre of the Fresnel Map
 #' @param lon Longitude of the centre of the Fresnel Map
-#' @param geo_centre A geospatial dataset containing the coordinates of the centre of the Fresnel Map
-#' @param geo_points A geospatial dataset of points to aggregate
+#' @param geo_centre A spatial dataset containing the coordinates of the centre of the Fresnel Map
+#' @param geo_points A spatial dataset of points to aggregate
 #' @param sum Variable from geo_points for calculating sum
 #' @param mean Variable from geo_points for calculating mean
 #' @param median Variable from geo_points for calculating median

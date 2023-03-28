@@ -1,24 +1,31 @@
 #' Multiple Fresnel Maps
 #'
-#' Function for plotting or deriving data or stats from multiple Fresnel Maps, or thematic maps that visualise geospatial data to the level of equal-area concentric circles (or annuli), across a range of locations.
+#' Function for plotting or deriving data or stats from multiple Fresnel Maps, or thematic maps that visualise geospatial data to the level of equal-area concentric circles (or annuli), faceted by location.
 #'
-#' @param ncircles Number of equal-area concentric circles
+#' @param ncircles Number of concentric circles of equal area
 #' @param radius_inner Radius of innermost circle in metres
 #' @param radius_outer Radius of outermost circle in metres
-#' @param geo_points A geospatial dataset of points to aggregate
-#' @param geo_centres A geospatial dataset containing the coordinates of the centres of each Fresnel Map
-#' @param id_var Variable from geo_centres containing the ID
+#' @param geo_points A spatial dataset of points to aggregate
+#' @param geo_centres A spatial dataset containing the coordinates of the centres of each Fresnel Map
+#' @param id_var Variable from geo_centres containing the location ID
 #' @param sum Variable from geo_points for calculating sum
 #' @param mean Variable from geo_points for calculating mean
 #' @param median Variable from geo_points for calculating median
 #' @param count Count the number of points from geo_points. Input TRUE to count points. Defaults to FALSE
 #' @param output Output of function. Input either 'plot', 'data' or 'stats'. Defaults to 'plot'
-#' @return A map, sf dataset or stats based on multiple Fresnel Maps.
+#' @return A map, sf dataset or summary stats based on multiple Fresnel Maps.
 #' @examples
 #' # Load the sf datasets of cholera deaths and Soho pumps
 #' data(choleradeaths, sohopumps)
 #'
+#' # Multiple Fresnel Maps
 #' fmap_multi(ncircles = 2, radius_outer = 150, geo_points = choleradeaths, geo_centres = sohopumps, id_var = "Soho.Pump", sum = "Cholera.Deaths")
+#'
+#' # Summary stats from the Fresnel Maps
+#' fmap_multi(ncircles = 2, radius_outer = 150, geo_points = choleradeaths, geo_centres = sohopumps, id_var = "Soho.Pump", sum = "Cholera.Deaths", output = "stats")
+#'
+#' # Polygonal data from the Fresnel Maps
+#' fmap_multi(ncircles = 2, radius_outer = 150, geo_points = choleradeaths, geo_centres = sohopumps, id_var = "Soho.Pump", sum = "Cholera.Deaths", output = "data")
 #' @export
 
 fmap_multi = function(ncircles, radius_inner = NULL, radius_outer = NULL, geo_points, geo_centres, id_var = NULL, sum = NULL, mean = NULL, median = NULL, count = F, output = 'plot') {

@@ -14,7 +14,7 @@ fcircles(
 )
 }
 \arguments{
-\item{ncircles}{Number of equal-area concentric circles}
+\item{ncircles}{Number of concentric circles of equal area}
 
 \item{radius_inner}{Radius of innermost circle in metres}
 
