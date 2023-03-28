@@ -13,7 +13,7 @@ fcircles_multi(
 )
 }
 \arguments{
-\item{ncircles}{Number of equal-area concentric circles}
+\item{ncircles}{Number of concentric circles of equal area}
 
 \item{radius_inner}{Radius of innermost circle in metres}
 
@@ -21,13 +21,13 @@ fcircles_multi(
 
 \item{geo_centres}{A spatial dataset containing the coordinates of the centres of the Fresnel circles}
 
-\item{id_var}{Variable from geo_centres containing the ID}
+\item{id_var}{Variable from geo_centres containing the location ID}
 }
 \value{
 An sf dataset of polygons based on multiple sets of Fresnel circles across different locations.
 }
 \description{
-Function for creating multiple sets of Fresnel circles polygons across different locations for mapping.
+Function for creating multiple sets of Fresnel circles polygons for mapping, faceted by location.
 }
 \examples{
 # Load the sf dataset of Soho pumps

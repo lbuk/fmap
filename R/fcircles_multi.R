@@ -1,12 +1,12 @@
 #' Multiple Fresnel Circles
 #'
-#' Function for creating multiple sets of Fresnel circles polygons across different locations for mapping.
+#' Function for creating multiple sets of Fresnel circles polygons for mapping, faceted by location.
 #'
-#' @param ncircles Number of equal-area concentric circles
+#' @param ncircles Number of concentric circles of equal area
 #' @param radius_inner Radius of innermost circle in metres
 #' @param radius_outer Radius of outermost circle in metres
 #' @param geo_centres A spatial dataset containing the coordinates of the centres of the Fresnel circles
-#' @param id_var Variable from geo_centres containing the ID
+#' @param id_var Variable from geo_centres containing the location ID
 #' @return An sf dataset of polygons based on multiple sets of Fresnel circles across different locations.
 #' @examples
 #' # Load the sf dataset of Soho pumps

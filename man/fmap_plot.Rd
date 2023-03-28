@@ -19,7 +19,7 @@ fmap_plot(
 )
 }
 \arguments{
-\item{ncircles}{Number of equal-area concentric circles}
+\item{ncircles}{Number of concentric circles of equal area}
 
 \item{radius_inner}{Radius of innermost circle in metres}
 
@@ -29,9 +29,9 @@ fmap_plot(
 
 \item{lon}{Longitude of the centre of the Fresnel Map}
 
-\item{geo_centre}{A geospatial dataset containing the coordinates of the centre of the Fresnel Map}
+\item{geo_centre}{A spatial dataset containing the coordinates of the centre of the Fresnel Map}
 
-\item{geo_points}{A geospatial dataset of points to aggregate}
+\item{geo_points}{A spatial dataset of points to aggregate}
 
 \item{sum}{Variable from geo_points for calculating sum}
 

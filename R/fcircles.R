@@ -2,7 +2,7 @@
 #'
 #' Function for creating Fresnel circles polygons for mapping.
 #'
-#' @param ncircles Number of equal-area concentric circles
+#' @param ncircles Number of concentric circles of equal area
 #' @param radius_inner Radius of innermost circle in metres
 #' @param radius_outer Radius of outermost circle in metres
 #' @param lat Latitude of the centre of the Fresnel circles
