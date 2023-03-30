@@ -2,7 +2,7 @@
 
 ### Overview
 
-fmap is an R package for creating [Fresnel Maps](https://www.liamthomasbolton.com/portfolio/FresnelMap/), a new equal-area thematic mapping technique in which spatial data is visualised to concentric circles (or annuli) of equal area.
+fmap is an R package for creating [Fresnel Maps](https://www.liamthomasbolton.com/portfolio/FresnelMap/), a new thematic mapping technique in which spatial data is visualised to concentric circles (or annuli) of equal area.
 
 ### Installation
 
