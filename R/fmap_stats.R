@@ -116,7 +116,7 @@ fmap_stats = function(ncircles, radius_inner = NULL, radius_outer = NULL, lat = 
     fmap_count = fcircles %>%
       mutate(count = lengths(st_intersects(., geo_points))) %>%
       data.frame() %>%
-      select(zonal_area, radius, count)
+      dplyr::select(zonal_area, radius, count)
 
     fmap_count
 
@@ -127,7 +127,7 @@ fmap_stats = function(ncircles, radius_inner = NULL, radius_outer = NULL, lat = 
       group_by(zonal_area) %>%
       summarise(sum = sum(!! sym(sum), na.rm = T)) %>%
       mutate(radius = df_fmap_radii$radius) %>%
-      select(zonal_area, radius, sum)
+      dplyr::select(zonal_area, radius, sum)
 
     fmap_sum
 
@@ -138,7 +138,7 @@ fmap_stats = function(ncircles, radius_inner = NULL, radius_outer = NULL, lat = 
       group_by(zonal_area) %>%
       summarise(mean = mean(!! sym(mean), na.rm = T)) %>%
       mutate(radius = df_fmap_radii$radius) %>%
-      select(zonal_area, radius, mean)
+      dplyr::select(zonal_area, radius, mean)
 
     fmap_mean
 
@@ -149,7 +149,7 @@ fmap_stats = function(ncircles, radius_inner = NULL, radius_outer = NULL, lat = 
       group_by(zonal_area) %>%
       summarise(median = median(!! sym(median), na.rm = T)) %>%
       mutate(radius = df_fmap_radii$radius) %>%
-      select(zonal_area, radius, median)
+      dplyr::select(zonal_area, radius, median)
 
     fmap_median
 

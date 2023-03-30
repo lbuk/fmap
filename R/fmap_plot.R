@@ -115,7 +115,7 @@ fmap_plot = function(ncircles, radius_inner = NULL, radius_outer = NULL, lat = N
   } else if(is.null(mean) && is.null(sum) && is.null(median) && count == T) {
     fmap = fcircles %>%
       mutate(circle_count = lengths(st_intersects(., geo_points))) %>%
-      select(circle_count, zonal_area, radius)
+      dplyr::select(circle_count, zonal_area, radius)
 
     title = "Count"
 
@@ -124,7 +124,7 @@ fmap_plot = function(ncircles, radius_inner = NULL, radius_outer = NULL, lat = N
       st_join(geo_points) %>%
       group_by(zonal_area, radius) %>%
       summarise(sum = sum(!! sym(sum), na.rm = T)) %>%
-      select(sum, zonal_area, radius)
+      dplyr::select(sum, zonal_area, radius)
 
     title = paste0("Total ", '("', sum, '")')
 
@@ -133,7 +133,7 @@ fmap_plot = function(ncircles, radius_inner = NULL, radius_outer = NULL, lat = N
       st_join(geo_points) %>%
       group_by(zonal_area, radius) %>%
       summarise(mean = mean(!! sym(mean), na.rm = T)) %>%
-      select(mean, zonal_area, radius)
+      dplyr::select(mean, zonal_area, radius)
 
     title = paste0("Mean ", '("', mean, '")')
 
@@ -142,7 +142,7 @@ fmap_plot = function(ncircles, radius_inner = NULL, radius_outer = NULL, lat = N
       st_join(geo_points) %>%
       group_by(zonal_area, radius) %>%
       summarise(median = median(!! sym(median), na.rm = T)) %>%
-      select(median, zonal_area, radius)
+      dplyr::select(median, zonal_area, radius)
 
     title = paste0("Median ", '("', median, '")')
 
