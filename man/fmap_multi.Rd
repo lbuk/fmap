@@ -54,9 +54,9 @@ data(choleradeaths, sohopumps)
 # Multiple Fresnel Maps
 fmap_multi(ncircles = 2, radius_outer = 150, geo_points = choleradeaths, geo_centres = sohopumps, id_var = "Soho.Pump", sum = "Cholera.Deaths")
 
-# Summary stats from the Fresnel Maps
+# Summary stats from the multiple Fresnel Maps
 fmap_multi(ncircles = 2, radius_outer = 150, geo_points = choleradeaths, geo_centres = sohopumps, id_var = "Soho.Pump", sum = "Cholera.Deaths", output = "stats")
 
-# Polygonal data from the Fresnel Maps
+# Polygonal data from the multiple Fresnel Maps
 fmap_multi(ncircles = 2, radius_outer = 150, geo_points = choleradeaths, geo_centres = sohopumps, id_var = "Soho.Pump", sum = "Cholera.Deaths", output = "data")
 }
