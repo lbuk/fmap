@@ -36,7 +36,7 @@ Function for plotting or deriving data from multiple Fresnel circles.
 # Load the sf dataset of Soho pumps
 data(sohopumps)
 
-# Polygonal data from the Fresnel circles
+# Polygonal data from the multiple Fresnel circles
 fcircles_multi(ncircles = 2, radius_outer = 105, geo_centres = sohopumps, id_var = "Soho.Pump", output = "data")
 
 # Multiple Fresnel circles
