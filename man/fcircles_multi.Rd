@@ -9,7 +9,8 @@ fcircles_multi(
   radius_inner = NULL,
   radius_outer = NULL,
   geo_centres,
-  id_var = NULL
+  id_var = NULL,
+  output = "data"
 )
 }
 \arguments{
@@ -22,16 +23,22 @@ fcircles_multi(
 \item{geo_centres}{A spatial dataset containing the coordinates of the centres of the Fresnel circles}
 
 \item{id_var}{Variable from geo_centres containing the location ID}
+
+\item{output}{Output of function. Input either 'plot' or 'data'. Defaults to 'data'}
 }
 \value{
-An sf dataset of polygons based on multiple sets of Fresnel circles across different locations.
+An sf dataset of polygons or a simple map of the Fresnel circles.
 }
 \description{
-Function for creating multiple sets of Fresnel circles polygons for mapping, faceted by location.
+Function for plotting or deriving data from multiple Fresnel circles.
 }
 \examples{
 # Load the sf dataset of Soho pumps
 data(sohopumps)
 
-fcircles_multi(ncircles = 2, radius_outer = 150, geo_centres = sohopumps, id_var = "Soho.Pump")
+# Polygonal data from the Fresnel circles
+fcircles_multi(ncircles = 2, radius_outer = 105, geo_centres = sohopumps, id_var = "Soho.Pump", output = "data")
+
+# Multiple Fresnel circles
+fcircles_multi(ncircles = 2, radius_outer = 105, geo_centres = sohopumps, id_var = "Soho.Pump", output = "plot")
 }

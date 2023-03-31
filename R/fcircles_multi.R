@@ -1,21 +1,26 @@
 #' Multiple Fresnel Circles
 #'
-#' Function for creating multiple sets of Fresnel circles polygons for mapping, faceted by location.
+#' Function for plotting or deriving data from multiple Fresnel circles.
 #'
 #' @param ncircles Number of concentric circles of equal area
 #' @param radius_inner Radius of innermost circle in metres
 #' @param radius_outer Radius of outermost circle in metres
 #' @param geo_centres A spatial dataset containing the coordinates of the centres of the Fresnel circles
 #' @param id_var Variable from geo_centres containing the location ID
-#' @return An sf dataset of polygons based on multiple sets of Fresnel circles across different locations.
+#' @param output Output of function. Input either 'plot' or 'data'. Defaults to 'data'
+#' @return An sf dataset of polygons or a simple map of the Fresnel circles.
 #' @examples
 #' # Load the sf dataset of Soho pumps
 #' data(sohopumps)
 #'
-#' fcircles_multi(ncircles = 2, radius_outer = 150, geo_centres = sohopumps, id_var = "Soho.Pump")
+#' # Polygonal data from the Fresnel circles
+#' fcircles_multi(ncircles = 2, radius_outer = 105, geo_centres = sohopumps, id_var = "Soho.Pump", output = "data")
+#'
+#' # Multiple Fresnel circles
+#' fcircles_multi(ncircles = 2, radius_outer = 105, geo_centres = sohopumps, id_var = "Soho.Pump", output = "plot")
 #' @export
 
-fcircles_multi = function(ncircles, radius_inner = NULL, radius_outer = NULL, geo_centres, id_var = NULL) {
+fcircles_multi = function(ncircles, radius_inner = NULL, radius_outer = NULL, geo_centres, id_var = NULL, output = 'data') {
 
   if(is.null(radius_inner) && is.null(radius_outer)) {
     stop('radius_inner or radius_outer not inputted')
@@ -101,5 +106,25 @@ fcircles_multi = function(ncircles, radius_inner = NULL, radius_outer = NULL, ge
 
   fcircles_multi = do.call(rbind, fcircles)
 
-  fcircles_multi
+  if(output == 'plot') {
+    tm_shape(fcircles_multi, name = "Fresnel Circles") +
+      tm_fill(col = "white", alpha = 0.5, id = "", popup.vars = c("ID" = "id", "Zonal Area" = "zonal_area", "Radius" = "radius")) +
+      tm_borders(col = "black", lwd = 1.225) +
+      tm_text("id", remove.overlap = TRUE, size = 0.6) +
+      tm_basemap(server = c("OpenStreetMap", "Esri.WorldImagery")) +
+      tm_layout(main.title = "Fresnel Circles",
+                main.title.size = 0.9,
+                main.title.fontface = "bold",
+                frame = F,
+                frame.lwd = 0) +
+      tmap_options(show.messages = F, show.warnings = F)
+
+  } else if(output == 'data') {
+    fcircles_multi_data = fcircles_multi %>% dplyr::select(zonal_area, radius, id)
+
+    fcircles_multi_data
+
+  } else {
+    stop('error in output parameter')
+  }
 }
