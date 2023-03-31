@@ -54,5 +54,6 @@ data(choleradeaths, sohopumps)
 # Filter the Broad Street Pump from the Soho pumps dataset
 broadstreetpump = sohopumps \%>\% filter(Soho.Pump == "Broad Street")
 
+# Polygonal data from the Fresnel Map
 fmap_data(radius_inner = 125, ncircles = 8, geo_centre = broadstreetpump, geo_points = choleradeaths, sum = "Cholera.Deaths")
 }
