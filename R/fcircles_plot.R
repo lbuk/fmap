@@ -44,7 +44,7 @@ fcircles_plot = function(ncircles, radius_inner = NULL, radius_outer = NULL, lat
     radius = sqrt((inner_fcircle_area * 1:ncircles) / pi)
   }
 
-  df_fmap_radii = data.frame(radius)
+  df_fcircles_radii = data.frame(radius)
 
   if(is.null(lat) && is.null(lon) && is.null(geo_centre)) {
     stop('no centre coordinates inputted')
@@ -75,12 +75,12 @@ fcircles_plot = function(ncircles, radius_inner = NULL, radius_outer = NULL, lat
 
   crs_aeqd = sprintf("+proj=aeqd +lat_0=%s +lon_0=%s +x_0=0 +y_0=0", coords$lat, coords$lon)
 
-  circles = lapply(1:nrow(df_fmap_radii), function(i) {
+  circles = lapply(1:nrow(df_fcircles_radii), function(i) {
     coords %>%
       st_as_sf(coords = c("lon", "lat"), crs = 4326) %>%
       st_transform(crs_aeqd) %>%
-      st_buffer(df_fmap_radii[i, "radius"], nQuadSegs = 1375) %>%
-      mutate(circle = df_fmap_radii[i, "circle"])
+      st_buffer(df_fcircles_radii[i, "radius"], nQuadSegs = 1375) %>%
+      mutate(circle = df_fcircles_radii[i, "circle"])
   })
 
   inner_fcircle = circles[[1]]
@@ -93,7 +93,7 @@ fcircles_plot = function(ncircles, radius_inner = NULL, radius_outer = NULL, lat
 
   fcircles = inner_fcircle %>%
     rbind(outer_fcircles) %>%
-    mutate(zonal_area = 1:ncircles, radius = df_fmap_radii$radius) %>%
+    mutate(zonal_area = 1:ncircles, radius = df_fcircles_radii$radius) %>%
     arrange(zonal_area) %>%
     mutate(title = "Fresnel Circle") %>%
     st_make_valid(T)

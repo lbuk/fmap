@@ -43,7 +43,7 @@ fcircles_multi = function(ncircles, radius_inner = NULL, radius_outer = NULL, ge
     radius = sqrt((inner_fcircle_area * 1:ncircles) / pi)
   }
 
-  df_fmap_radii = data.frame(radius)
+  df_fcircles_radii = data.frame(radius)
 
   if(is.null(id_var)) {
     geo_centres = geo_centres %>%
@@ -80,12 +80,12 @@ fcircles_multi = function(ncircles, radius_inner = NULL, radius_outer = NULL, ge
 
     crs_aeqd = sprintf("+proj=aeqd +lat_0=%s +lon_0=%s +x_0=0 +y_0=0", coords$lat, coords$lon)
 
-    circles = lapply(1:nrow(df_fmap_radii), function(i) {
+    circles = lapply(1:nrow(df_fcircles_radii), function(i) {
       coords %>%
         st_as_sf(coords = c("lon", "lat"), crs = 4326) %>%
         st_transform(crs_aeqd) %>%
-        st_buffer(df_fmap_radii[i, "radius"], nQuadSegs = 1375) %>%
-        mutate(circle = df_fmap_radii[i, "circle"])
+        st_buffer(df_fcircles_radii[i, "radius"], nQuadSegs = 1375) %>%
+        mutate(circle = df_fcircles_radii[i, "circle"])
     })
 
     inner_fcircle = circles[[1]]
@@ -99,7 +99,7 @@ fcircles_multi = function(ncircles, radius_inner = NULL, radius_outer = NULL, ge
     fcircles = inner_fcircle %>%
       rbind(outer_fcircles) %>%
       st_transform(crs) %>%
-      mutate(zonal_area = 1:ncircles, radius = df_fmap_radii$radius, id = id) %>%
+      mutate(zonal_area = 1:ncircles, radius = df_fcircles_radii$radius, id = id) %>%
       arrange(zonal_area) %>%
       st_make_valid(T)
   })
