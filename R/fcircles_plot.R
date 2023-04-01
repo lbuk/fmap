@@ -93,7 +93,7 @@ fcircles_plot = function(ncircles, radius_inner = NULL, radius_outer = NULL, lat
 
   fcircles = inner_fcircle %>%
     rbind(outer_fcircles) %>%
-    mutate(zonal_area = 1:ncircles, radius = df_fmap_radii$radius, radius_plot = round(radius, 1)) %>%
+    mutate(zonal_area = 1:ncircles, radius = df_fmap_radii$radius) %>%
     arrange(zonal_area) %>%
     mutate(title = "Fresnel Circle") %>%
     st_make_valid(T)
