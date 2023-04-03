@@ -19,13 +19,13 @@
 #' data(choleradeaths, sohopumps)
 #'
 #' # Multiple Fresnel Maps
-#' fmap_multi(ncircles = 2, radius_outer = 150, geo_points = choleradeaths, geo_centres = sohopumps, id_var = "Soho.Pump", sum = "Cholera.Deaths")
+#' fmap_multi(radius_outer = 150, ncircles = 2, geo_points = choleradeaths, geo_centres = sohopumps, id_var = "Soho.Pump", sum = "Cholera.Deaths")
 #'
 #' # Summary stats from the multiple Fresnel Maps
-#' fmap_multi(ncircles = 2, radius_outer = 150, geo_points = choleradeaths, geo_centres = sohopumps, id_var = "Soho.Pump", sum = "Cholera.Deaths", output = "stats")
+#' fmap_multi(radius_outer = 150, ncircles = 2, geo_points = choleradeaths, geo_centres = sohopumps, id_var = "Soho.Pump", sum = "Cholera.Deaths", output = "stats")
 #'
 #' # Polygonal data from the multiple Fresnel Maps
-#' fmap_multi(ncircles = 2, radius_outer = 150, geo_points = choleradeaths, geo_centres = sohopumps, id_var = "Soho.Pump", sum = "Cholera.Deaths", output = "data")
+#' fmap_multi(radius_outer = 150, ncircles = 2, geo_points = choleradeaths, geo_centres = sohopumps, id_var = "Soho.Pump", sum = "Cholera.Deaths", output = "data")
 #' @export
 
 fmap_multi = function(ncircles, radius_inner = NULL, radius_outer = NULL, geo_points, geo_centres, id_var = NULL, sum = NULL, mean = NULL, median = NULL, count = F, output = 'plot') {
