@@ -111,12 +111,12 @@ fcircles_multi = function(ncircles, radius_inner = NULL, radius_outer = NULL, ge
       tm_fill(col = "white", alpha = 0.5, id = "", popup.vars = c("ID" = "id", "Zonal Area" = "zonal_area", "Radius" = "radius")) +
       tm_borders(col = "black", lwd = 1.225) +
       tm_text("id", remove.overlap = TRUE, size = 0.6) +
+      tm_add_legend('line', lwd = 1.225, col = "black", border.col = "white", title = "Fresnel Circles") +
       tm_basemap(server = c("OpenStreetMap", "Esri.WorldImagery")) +
-      tm_layout(main.title = "Fresnel Circles",
-                main.title.size = 0.9,
-                main.title.fontface = "bold",
-                frame = F,
-                frame.lwd = 0) +
+      tm_layout(frame = F,
+                frame.lwd = 0,
+                legend.title.size = 0.85,
+                legend.title.fontface = "bold") +
       tmap_options(show.messages = F, show.warnings = F)
 
   } else if(output == 'data') {
