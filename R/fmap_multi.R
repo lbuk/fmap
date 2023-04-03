@@ -165,15 +165,23 @@ fmap_multi = function(ncircles, radius_inner = NULL, radius_outer = NULL, geo_po
     }
   })
 
-  fmaps = do.call(rbind, fmaps)
+  fmaps = do.call(rbind, fmaps) %>% mutate(!!paste(id_var) := id)
+
+  fmaps_map = fmaps %>% rename("Radius (Metres)" = radius, "Zonal Area" = zonal_area)
+
+  fmaps_i_var = fmaps_map %>%
+    st_drop_geometry() %>%
+    dplyr::select(-title, -id) %>%
+    dplyr::select(3, 2, 1, 4) %>%
+    colnames()
 
   aggregate = colnames(fmaps)[1]
 
   title = fmaps$title[1]
 
   if(output == 'plot') {
-    tm_shape(fmaps, name = "Fresnel Map") +
-      tm_fill(col = aggregate, palette = "plasma", title = title, id = "", popup.vars = c("Zonal Area" = "zonal_area", "Radius" = "radius", aggregate)) +
+    tm_shape(fmaps_map, name = "Fresnel Map") +
+      tm_fill(col = aggregate, palette = "plasma", title = title, id = "", popup.vars = fmaps_i_var) +
       tm_borders(col = "black", lwd = 0.8) +
       tm_facets(by='id', ncol = 2, free.scales = F) +
       tm_basemap(server = c("OpenStreetMap", "Esri.WorldImagery")) +
@@ -193,14 +201,14 @@ fmap_multi = function(ncircles, radius_inner = NULL, radius_outer = NULL, geo_po
       tmap_options(show.messages = F, show.warnings = F)
 
   } else if(output == 'data') {
-    fmaps_multi_data = fmaps %>% dplyr::select(zonal_area, radius, 1, id)
+    fmaps_multi_data = fmaps %>% dplyr::select(zonal_area, radius, 1, 7, id)
 
     fmaps_multi_data
 
   } else if(output == 'stats') {
     fmaps_multi_stats = fmaps %>%
       data.frame() %>%
-      dplyr::select(zonal_area, radius, 1, id) %>%
+      dplyr::select(zonal_area, radius, 1, 7, id) %>%
       as_tibble()
 
     fmaps_multi_stats
