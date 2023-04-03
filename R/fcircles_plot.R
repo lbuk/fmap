@@ -93,10 +93,16 @@ fcircles_plot = function(ncircles, radius_inner = NULL, radius_outer = NULL, lat
 
   fcircles = inner_fcircle %>%
     rbind(outer_fcircles) %>%
-    mutate(zonal_area = 1:ncircles, radius = df_fcircles_radii$radius) %>%
+    mutate(zonal_area = 1:ncircles) %>%
     arrange(zonal_area) %>%
-    mutate(title = "Fresnel Circle") %>%
+    mutate("Radius (Metres)" = df_fcircles_radii$radius, title = "Fresnel Circle") %>%
+    rename("Zonal Area" = zonal_area) %>%
     st_make_valid(T)
+
+  fcircles_i_var = fcircles %>%
+    st_drop_geometry() %>%
+    dplyr::select(1, 2) %>%
+    colnames()
 
   st_agr(fcircles) = "constant"
 
@@ -118,7 +124,7 @@ fcircles_plot = function(ncircles, radius_inner = NULL, radius_outer = NULL, lat
       st_transform(crs_aeqd) %>%
       mutate(geo_points = "")
 
-    geo_points_centroid_i_var = geo_points %>%
+    geo_points_i_var = geo_points %>%
       st_drop_geometry() %>%
       dplyr::select(-geo_points) %>%
       colnames()
@@ -126,12 +132,12 @@ fcircles_plot = function(ncircles, radius_inner = NULL, radius_outer = NULL, lat
 
   tm_shape(fcircles, name = "Fresnel Circles") +
     tm_add_legend('line', lwd = 1.225, col = "black", border.col = "white", title = "Fresnel Circles") +
-    tm_fill(col = "white", alpha = 0.5, id = "", popup.vars = c("Zonal Area" = "zonal_area", "Radius" = "radius")) +
+    tm_fill(col = "white", alpha = 0.5, id = "", popup.vars = fcircles_i_var) +
     tm_borders(col = "black", lwd = 1.225) +
     tm_shape(fcircles_centroid, name = "Centre of Circles") +
     tm_dots(shape = 22, col = fcircles_centroid_i_var, size = 0.15, pal = c("#1422BD"), alpha = 1, id = "", legend.show = TRUE, popup.vars = F) +
     tm_shape(geo_points, name = "geo_points") +
-    tm_dots(col = "geo_points", size = 0.15, pal = c("#3DE2F1"), alpha = 0.75, id = "", legend.show = TRUE, popup.vars = geo_points_centroid_i_var) +
+    tm_dots(col = "geo_points", size = 0.15, pal = c("#3DE2F1"), alpha = 0.75, id = "", legend.show = TRUE, popup.vars = geo_points_i_var) +
     tm_view(view.legend.position = c("left", "top")) +
     tm_basemap(server = c("OpenStreetMap", "Esri.WorldImagery")) +
     tm_layout(frame = F,
