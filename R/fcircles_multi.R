@@ -17,7 +17,7 @@
 #' fcircles_multi(ncircles = 2, radius_outer = 105, geo_centres = sohopumps, id_var = "Soho.Pump", output = "data")
 #'
 #' # Multiple Fresnel circles
-#' fcircles_multi(ncircles = 2, radius_outer = 105, geo_centres = sohopumps, id_var = "Soho.Pump", output = "plot")
+#' fcircles_multi(radius_outer = 105, ncircles = 2, geo_centres = sohopumps, id_var = "Soho.Pump", output = "plot")
 #' @export
 
 fcircles_multi = function(ncircles, radius_inner = NULL, radius_outer = NULL, geo_centres, id_var = NULL, output = 'data') {

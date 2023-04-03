@@ -40,5 +40,5 @@ data(sohopumps)
 fcircles_multi(ncircles = 2, radius_outer = 105, geo_centres = sohopumps, id_var = "Soho.Pump", output = "data")
 
 # Multiple Fresnel circles
-fcircles_multi(ncircles = 2, radius_outer = 105, geo_centres = sohopumps, id_var = "Soho.Pump", output = "plot")
+fcircles_multi(radius_outer = 105, ncircles = 2, geo_centres = sohopumps, id_var = "Soho.Pump", output = "plot")
 }
