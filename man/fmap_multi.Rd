@@ -52,7 +52,7 @@ Function for plotting or deriving data or stats from multiple Fresnel Maps, or t
 data(choleradeaths, sohopumps)
 
 # Multiple Fresnel Maps
-fmap_multi(radius_outer = 150, ncircles = 2, geo_points = choleradeaths, geo_centres = sohopumps, id_var = "Soho.Pump", sum = "Cholera.Deaths")
+fmap_multi(radius_outer = 150, ncircles = 2, geo_points = choleradeaths, geo_centres = sohopumps, id_var = "Soho.Pump", sum = "Cholera.Deaths", output = "plot")
 
 # Summary stats from the multiple Fresnel Maps
 fmap_multi(radius_outer = 150, ncircles = 2, geo_points = choleradeaths, geo_centres = sohopumps, id_var = "Soho.Pump", sum = "Cholera.Deaths", output = "stats")
