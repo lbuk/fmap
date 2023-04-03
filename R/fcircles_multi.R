@@ -104,11 +104,18 @@ fcircles_multi = function(ncircles, radius_inner = NULL, radius_outer = NULL, ge
       st_make_valid(T)
   })
 
-  fcircles_multi = do.call(rbind, fcircles)
+  fcircles_multi = do.call(rbind, fcircles) %>% mutate(!!paste(id_var) := id)
+
+  fcircles_multi_map = fcircles_multi %>% rename("Radius (Metres)" = radius, "Zonal Area" = zonal_area)
+
+  fcircles_multi_i_var = fcircles_multi_map %>%
+    st_drop_geometry() %>%
+    dplyr::select(4, 1, 2) %>%
+    colnames()
 
   if(output == 'plot') {
-    tm_shape(fcircles_multi, name = "Fresnel Circles") +
-      tm_fill(col = "white", alpha = 0.5, id = "", popup.vars = c("ID" = "id", "Zonal Area" = "zonal_area", "Radius" = "radius")) +
+    tm_shape(fcircles_multi_map, name = "Fresnel Circles") +
+      tm_fill(col = "white", alpha = 0.5, id = "", popup.vars = fcircles_multi_i_var) +
       tm_borders(col = "black", lwd = 1.225) +
       tm_text("id", remove.overlap = TRUE, size = 0.6) +
       tm_add_legend('line', lwd = 1.225, col = "black", border.col = "white", title = "Fresnel Circles") +
@@ -120,7 +127,7 @@ fcircles_multi = function(ncircles, radius_inner = NULL, radius_outer = NULL, ge
       tmap_options(show.messages = F, show.warnings = F)
 
   } else if(output == 'data') {
-    fcircles_multi_data = fcircles_multi %>% dplyr::select(zonal_area, radius, id)
+    fcircles_multi_data = fcircles_multi %>% dplyr::select(zonal_area, radius, 5, id)
 
     fcircles_multi_data
 
