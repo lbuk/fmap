@@ -36,8 +36,14 @@ fmap_multi = function(ncircles, radius_inner = NULL, radius_outer = NULL, geo_po
   } else if(is.null(radius_inner) != T && is.null(radius_outer) != T) {
     stop('radius_inner and radius_outer inputted')
 
-  } else if(ncircles%%1 != 0 | ncircles <= 1) {
+  } else if(ncircles <= 1 && ncircles%%1 != 0) {
     stop('ncircles should not be <= 1 or a decimal number')
+
+  } else if(ncircles <= 1) {
+    stop('ncircles should not be <= 1')
+
+  } else if(ncircles%%1 != 0) {
+    stop('ncircles should not be a decimal number')
 
   } else if(is.null(radius_inner) != T && is.null(radius_outer)) {
     inner_fcircle_area = pi * (radius_inner ^ 2)
