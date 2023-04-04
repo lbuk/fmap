@@ -93,10 +93,8 @@ fcircles_plot = function(ncircles, radius_inner = NULL, radius_outer = NULL, lat
 
   fcircles = inner_fcircle %>%
     rbind(outer_fcircles) %>%
-    mutate(zonal_area = 1:ncircles) %>%
-    arrange(zonal_area) %>%
-    mutate("Radius (Metres)" = df_fcircles_radii$radius, title = "Fresnel Circle") %>%
-    rename("Zonal Area" = zonal_area) %>%
+    mutate("Zonal Area" = 1:ncircles, "Radius (Metres)" = df_fcircles_radii$radius, title = "Fresnel Circle") %>%
+    arrange("Zonal Area") %>%
     st_make_valid(T)
 
   fcircles_i_var = fcircles %>%
@@ -110,10 +108,7 @@ fcircles_plot = function(ncircles, radius_inner = NULL, radius_outer = NULL, lat
     st_centroid() %>%
     mutate('Centre of Circles' = "")
 
-  fcircles_centroid_i_var = fcircles_centroid %>%
-    st_drop_geometry() %>%
-    dplyr::select('Centre of Circles') %>%
-    colnames()
+  fcircles_centroid_i_var = 'Centre of Circles'
 
   if(grepl(x = class(geo_points)[1], pattern = "sf", ignore.case = T) != T && grepl(x = class(geo_points)[1], pattern = "sp", ignore.case = T) != T) {
     stop('input geo_points as a geospatial dataset of points')
