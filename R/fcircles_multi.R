@@ -11,13 +11,13 @@
 #' @return An sf dataset of polygons or a simple map of the Fresnel circles.
 #' @examples
 #' # Load the sf dataset of Soho pumps
-#' data(sohopumps)
+#' data(soho_pumps)
 #'
 #' # Polygonal data from the multiple Fresnel circles
-#' fcircles_multi(radius_outer = 105, ncircles = 2, geo_centres = sohopumps, id_var = "Soho.Pump", output = "data")
+#' fcircles_multi(radius_outer = 105, ncircles = 2, geo_centres = soho_pumps, id_var = "soho.pump", output = "data")
 #'
 #' # Multiple Fresnel circles
-#' fcircles_multi(radius_outer = 105, ncircles = 2, geo_centres = sohopumps, id_var = "Soho.Pump", output = "plot")
+#' fcircles_multi(radius_outer = 105, ncircles = 2, geo_centres = soho_pumps, id_var = "soho.pump", output = "plot")
 #' @export
 
 fcircles_multi = function(ncircles, radius_inner = NULL, radius_outer = NULL, geo_centres, id_var = NULL, output = 'data') {
@@ -110,18 +110,18 @@ fcircles_multi = function(ncircles, radius_inner = NULL, radius_outer = NULL, ge
       st_make_valid(T)
   })
 
-  fcircles_multi = do.call(rbind, fcircles) %>% mutate(!!paste(id_var) := id)
+  fcircles_multi = do.call(rbind, fcircles) %>%
+    mutate(!!paste(id_var) := id) %>%
+    mutate("Radius (Metres)" = radius, "Zonal Area" = zonal_area)
 
-  fcircles_multi_map = fcircles_multi %>% rename("Radius (Metres)" = radius, "Zonal Area" = zonal_area)
-
-  fcircles_multi_i_var = fcircles_multi_map %>%
+  vars = fcircles_multi %>%
     st_drop_geometry() %>%
-    dplyr::select(4, 1, 2) %>%
+    dplyr::select(4, 6, 5) %>%
     colnames()
 
   if(output == 'plot') {
-    tm_shape(fcircles_multi_map, name = "Fresnel Circles") +
-      tm_fill(col = "white", alpha = 0.5, id = "", popup.vars = fcircles_multi_i_var) +
+    tm_shape(fcircles_multi, name = "Fresnel Circles") +
+      tm_fill(col = "white", alpha = 0.5, id = "", popup.vars = vars) +
       tm_borders(col = "black", lwd = 1.225) +
       tm_text("id", remove.overlap = TRUE, size = 0.6) +
       tm_add_legend('line', lwd = 1.225, col = "black", border.col = "white", title = "Fresnel Circles") +
@@ -133,9 +133,10 @@ fcircles_multi = function(ncircles, radius_inner = NULL, radius_outer = NULL, ge
       tmap_options(show.messages = F, show.warnings = F)
 
   } else if(output == 'data') {
-    fcircles_multi_data = fcircles_multi %>% dplyr::select(zonal_area, radius, 5, id)
+    data = fcircles_multi %>%
+      dplyr::select(zonal_area, radius, 5, id)
 
-    fcircles_multi_data
+    data
 
   } else {
     stop('error in output parameter')

@@ -16,16 +16,16 @@
 #' @return A map, sf dataset or summary stats based on multiple Fresnel Maps.
 #' @examples
 #' # Load the sf datasets of cholera deaths and Soho pumps
-#' data(choleradeaths, sohopumps)
+#' data(cholera_deaths, soho_pumps)
 #'
 #' # Multiple Fresnel Maps
-#' fmap_multi(radius_outer = 150, ncircles = 2, geo_points = choleradeaths, geo_centres = sohopumps, id_var = "Soho.Pump", sum = "Cholera.Deaths", output = "plot")
+#' fmap_multi(radius_outer = 150, ncircles = 2, geo_points = cholera_deaths, geo_centres = soho_pumps, id_var = "soho.pump", sum = "cholera.deaths", output = "plot")
 #'
 #' # Summary stats from the multiple Fresnel Maps
-#' fmap_multi(radius_outer = 150, ncircles = 2, geo_points = choleradeaths, geo_centres = sohopumps, id_var = "Soho.Pump", sum = "Cholera.Deaths", output = "stats")
+#' fmap_multi(radius_outer = 150, ncircles = 2, geo_points = cholera_deaths, geo_centres = soho_pumps, id_var = "soho.pump", sum = "cholera.deaths", output = "stats")
 #'
 #' # Polygonal data from the multiple Fresnel Maps
-#' fmap_multi(radius_outer = 150, ncircles = 2, geo_points = choleradeaths, geo_centres = sohopumps, id_var = "Soho.Pump", sum = "Cholera.Deaths", output = "data")
+#' fmap_multi(radius_outer = 150, ncircles = 2, geo_points = cholera_deaths, geo_centres = soho_pumps, id_var = "soho.pump", sum = "cholera.deaths", output = "data")
 #' @export
 
 fmap_multi = function(ncircles, radius_inner = NULL, radius_outer = NULL, geo_points, geo_centres, id_var = NULL, sum = NULL, mean = NULL, median = NULL, count = F, output = 'plot') {
@@ -171,23 +171,22 @@ fmap_multi = function(ncircles, radius_inner = NULL, radius_outer = NULL, geo_po
     }
   })
 
-  fmaps = do.call(rbind, fmaps) %>% mutate(!!paste(id_var) := id)
+  fmaps = do.call(rbind, fmaps) %>%
+    mutate(!!paste(id_var) := id) %>%
+    mutate("Radius (Metres)" = radius, "Zonal Area" = zonal_area)
 
-  fmaps_map = fmaps %>% rename("Radius (Metres)" = radius, "Zonal Area" = zonal_area)
+  aggregate = colnames(fmaps)[1]
+  title = fmaps$title[1]
 
-  fmaps_i_var = fmaps_map %>%
+  vars = fmaps %>%
     st_drop_geometry() %>%
     dplyr::select(-title, -id) %>%
     dplyr::select(3, 2, 1, 4) %>%
     colnames()
 
-  aggregate = colnames(fmaps)[1]
-
-  title = fmaps$title[1]
-
   if(output == 'plot') {
-    tm_shape(fmaps_map, name = "Fresnel Map") +
-      tm_fill(col = aggregate, palette = "plasma", title = title, id = "", popup.vars = fmaps_i_var) +
+    tm_shape(fmaps, name = "Fresnel Map") +
+      tm_fill(col = aggregate, palette = "plasma", title = title, id = "", popup.vars = vars) +
       tm_borders(col = "black", lwd = 0.8) +
       tm_facets(by='id', ncol = 2, free.scales = F) +
       tm_basemap(server = c("OpenStreetMap", "Esri.WorldImagery")) +
@@ -207,17 +206,18 @@ fmap_multi = function(ncircles, radius_inner = NULL, radius_outer = NULL, geo_po
       tmap_options(show.messages = F, show.warnings = F)
 
   } else if(output == 'data') {
-    fmaps_multi_data = fmaps %>% dplyr::select(zonal_area, radius, 1, 7, id)
+    data = fmaps %>%
+      dplyr::select(zonal_area, radius, 1, 7, id)
 
-    fmaps_multi_data
+    data
 
   } else if(output == 'stats') {
-    fmaps_multi_stats = fmaps %>%
+    stats = fmaps %>%
       data.frame() %>%
       dplyr::select(zonal_area, radius, 1, 7, id) %>%
       as_tibble()
 
-    fmaps_multi_stats
+    stats
 
   } else {
     stop('error in output parameter')

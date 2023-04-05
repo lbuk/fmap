@@ -14,15 +14,15 @@ fmap is an R package for creating [Fresnel Maps](https://www.liamthomasbolton.co
     library(fmap)
 
     # Load the sf datasets of cholera deaths and Soho pumps
-    data(choleradeaths, sohopumps)
+    data(cholera_deaths, soho_pumps)
 
     # Filter the Broad Street Pump from the Soho pumps dataset
-    broadstreetpump = sohopumps %>% filter(Soho.Pump == "Broad Street")
+    bstreet_pump = soho_pumps %>% filter(soho.pump == "Broad Street")
 
     # Set to static mapping in tmap. For interactive mapping use tmap_mode("view")
     tmap_mode("plot")
 
     # Visualise the Fresnel Map
-    fmap_plot(radius_inner = 125, ncircles = 8, geo_centre = broadstreetpump, geo_points = choleradeaths, sum = "Cholera.Deaths")
+    fmap_plot(radius_inner = 125, ncircles = 8, geo_centre = bstreet_pump, geo_points = cholera_deaths, sum = "cholera.deaths")
 
-![](https://github.com/lbuk/fmap/blob/master/img/fmap_johnsnow_example.png)
+![](https://github.com/lbuk/fmap/blob/master/img/fmap_plot_example.png)

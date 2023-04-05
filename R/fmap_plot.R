@@ -16,13 +16,13 @@
 #' @return A Fresnel Map based on aggregations of points-based data and visualised using tmap.
 #' @examples
 #' # Load the sf datasets of cholera deaths and Soho pumps
-#' data(choleradeaths, sohopumps)
+#' data(cholera_deaths, soho_pumps)
 #'
 #' # Filter the Broad Street Pump from the Soho pumps dataset
-#' broadstreetpump = sohopumps %>% filter(Soho.Pump == "Broad Street")
+#' bstreet_pump = soho_pumps %>% filter(soho.pump == "Broad Street")
 #'
 #' # The Fresnel Map
-#' fmap_plot(radius_inner = 125, ncircles = 8, geo_centre = broadstreetpump, geo_points = choleradeaths, sum = "Cholera.Deaths")
+#' fmap_plot(radius_inner = 125, ncircles = 8, geo_centre = bstreet_pump, geo_points = cholera_deaths, sum = "cholera.deaths")
 #' @export
 
 fmap_plot = function(ncircles, radius_inner = NULL, radius_outer = NULL, lat = NULL, lon = NULL, geo_centre = NULL, geo_points, sum = NULL, mean = NULL, median = NULL, count = F) {
@@ -157,17 +157,18 @@ fmap_plot = function(ncircles, radius_inner = NULL, radius_outer = NULL, lat = N
     stop('error in aggregation parameter')
   }
 
-  fmap = fmap %>% rename("Radius (Metres)" = radius, "Zonal Area" = zonal_area)
+  fmap = fmap %>%
+    rename("Radius (Metres)" = radius, "Zonal Area" = zonal_area)
 
-  fmap_map_i_var = fmap %>%
+  aggregate = colnames(fmap)[1]
+
+  vars = fmap %>%
     st_drop_geometry() %>%
     dplyr::select(2, 3, 1) %>%
     colnames()
 
-  aggregate = colnames(fmap)[1]
-
   tm_shape(fmap, name = "Fresnel Map") +
-    tm_fill(col = aggregate, palette = "viridis", title = title, id = "", popup.vars = fmap_map_i_var) +
+    tm_fill(col = aggregate, palette = "viridis", title = title, id = "", popup.vars = vars) +
     tm_borders(col = "black", lwd = 0.8) +
     tm_basemap(server = c("OpenStreetMap", "Esri.WorldImagery")) +
     tm_view(view.legend.position = c("right", "top")) +

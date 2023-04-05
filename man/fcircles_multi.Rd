@@ -34,11 +34,11 @@ Function for plotting or deriving data from multiple Fresnel circles.
 }
 \examples{
 # Load the sf dataset of Soho pumps
-data(sohopumps)
+data(soho_pumps)
 
 # Polygonal data from the multiple Fresnel circles
-fcircles_multi(radius_outer = 105, ncircles = 2, geo_centres = sohopumps, id_var = "Soho.Pump", output = "data")
+fcircles_multi(radius_outer = 105, ncircles = 2, geo_centres = soho_pumps, id_var = "soho.pump", output = "data")
 
 # Multiple Fresnel circles
-fcircles_multi(radius_outer = 105, ncircles = 2, geo_centres = sohopumps, id_var = "Soho.Pump", output = "plot")
+fcircles_multi(radius_outer = 105, ncircles = 2, geo_centres = soho_pumps, id_var = "soho.pump", output = "plot")
 }

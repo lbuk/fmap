@@ -11,13 +11,13 @@
 #' @return An sf dataset of Fresnel circle polygons with a custom Azimuthal Equidistant (AEQD) CRS.
 #' @examples
 #' # Load the sf dataset of Soho pumps
-#' data(sohopumps)
+#' data(soho_pumps)
 #'
 #' # Filter the Broad Street Pump from the Soho pumps dataset
-#' broadstreetpump = sohopumps %>% filter(Soho.Pump == "Broad Street")
+#' bstreet_pump = soho_pumps %>% filter(soho.pump == "Broad Street")
 #'
 #' # Fresnel circles
-#' fcircles(radius_inner = 125, ncircles = 8, geo_centre = broadstreetpump)
+#' fcircles(radius_inner = 125, ncircles = 8, geo_centre = bstreet_pump)
 #' @export
 
 fcircles = function(ncircles, radius_inner = NULL, radius_outer = NULL, lat = NULL, lon = NULL, geo_centre = NULL) {

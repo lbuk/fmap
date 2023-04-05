@@ -12,13 +12,13 @@
 #' @return A map of points overlaying Fresnel circles and visualised using tmap.
 #' @examples
 #' # Load the sf datasets of cholera deaths and Soho pumps
-#' data(choleradeaths, sohopumps)
+#' data(cholera_deaths, soho_pumps)
 #'
 #' # Filter the Broad Street Pump from the Soho pumps dataset
-#' broadstreetpump = sohopumps %>% filter(Soho.Pump == "Broad Street")
+#' bstreet_pump = soho_pumps %>% filter(soho.pump == "Broad Street")
 #'
 #' # Fresnel circles map
-#' fcircles_plot(radius_inner = 125, ncircles = 8, geo_centre = broadstreetpump, geo_points = choleradeaths)
+#' fcircles_plot(radius_inner = 125, ncircles = 8, geo_centre = bstreet_pump, geo_points = cholera_deaths)
 #' @export
 
 fcircles_plot = function(ncircles, radius_inner = NULL, radius_outer = NULL, lat = NULL, lon = NULL, geo_centre = NULL, geo_points) {
@@ -103,18 +103,18 @@ fcircles_plot = function(ncircles, radius_inner = NULL, radius_outer = NULL, lat
     arrange("Zonal Area") %>%
     st_make_valid(T)
 
-  fcircles_i_var = fcircles %>%
+  fcircles_vars = fcircles %>%
     st_drop_geometry() %>%
     dplyr::select(1, 2) %>%
     colnames()
 
   st_agr(fcircles) = "constant"
 
-  fcircles_centroid = fcircles %>%
+  centroid = fcircles %>%
     st_centroid() %>%
     mutate('Centre of Circles' = "")
 
-  fcircles_centroid_i_var = 'Centre of Circles'
+  centroid_col = 'Centre of Circles'
 
   if(grepl(x = class(geo_points)[1], pattern = "sf", ignore.case = T) != T && grepl(x = class(geo_points)[1], pattern = "sp", ignore.case = T) != T) {
     stop('input geo_points as a geospatial dataset of points')
@@ -125,7 +125,7 @@ fcircles_plot = function(ncircles, radius_inner = NULL, radius_outer = NULL, lat
       st_transform(crs_aeqd) %>%
       mutate(geo_points = "")
 
-    geo_points_i_var = geo_points %>%
+    geo_points_vars = geo_points %>%
       st_drop_geometry() %>%
       dplyr::select(-geo_points) %>%
       colnames()
@@ -133,12 +133,12 @@ fcircles_plot = function(ncircles, radius_inner = NULL, radius_outer = NULL, lat
 
   tm_shape(fcircles, name = "Fresnel Circles") +
     tm_add_legend('line', lwd = 1.225, col = "black", border.col = "white", title = "Fresnel Circles") +
-    tm_fill(col = "white", alpha = 0.5, id = "", popup.vars = fcircles_i_var) +
+    tm_fill(col = "white", alpha = 0.5, id = "", popup.vars = fcircles_vars) +
     tm_borders(col = "black", lwd = 1.225) +
-    tm_shape(fcircles_centroid, name = "Centre of Circles") +
-    tm_dots(shape = 22, col = fcircles_centroid_i_var, size = 0.15, pal = c("#1422BD"), alpha = 1, id = "", legend.show = TRUE, popup.vars = F) +
+    tm_shape(centroid, name = "Centre of Circles") +
+    tm_dots(shape = 22, col = centroid_col, size = 0.15, pal = c("#1422BD"), alpha = 1, id = "", legend.show = TRUE, popup.vars = F) +
     tm_shape(geo_points, name = "geo_points") +
-    tm_dots(col = "geo_points", size = 0.15, pal = c("#3DE2F1"), alpha = 0.75, id = "", legend.show = TRUE, popup.vars = geo_points_i_var) +
+    tm_dots(col = "geo_points", size = 0.15, pal = c("#3DE2F1"), alpha = 0.75, id = "", legend.show = TRUE, popup.vars = geo_points_vars) +
     tm_view(view.legend.position = c("left", "top")) +
     tm_basemap(server = c("OpenStreetMap", "Esri.WorldImagery")) +
     tm_layout(frame = F,

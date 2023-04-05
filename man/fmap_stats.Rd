@@ -49,11 +49,11 @@ Function for calculating summary statistics from Fresnel Maps, or thematic maps 
 }
 \examples{
 # Load the sf datasets of cholera deaths and Soho pumps
-data(choleradeaths, sohopumps)
+data(cholera_deaths, soho_pumps)
 
 # Filter the Broad Street Pump from the Soho pumps dataset
-broadstreetpump = sohopumps \%>\% filter(Soho.Pump == "Broad Street")
+bstreet_pump = soho_pumps \%>\% filter(soho.pump == "Broad Street")
 
 # Summary stats from the Fresnel Map
-fmap_stats(radius_inner = 125, ncircles = 8, geo_centre = broadstreetpump, geo_points = choleradeaths, sum = "Cholera.Deaths")
+fmap_stats(radius_inner = 125, ncircles = 8, geo_centre = bstreet_pump, geo_points = cholera_deaths, sum = "cholera.deaths")
 }

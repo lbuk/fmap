@@ -16,13 +16,13 @@
 #' @return An sf dataset of Fresnel Map polygons based on aggregations of points-based data with a custom Azimuthal Equidistant (AEQD) CRS.
 #' @examples
 #' # Load the sf datasets of cholera deaths and Soho pumps
-#' data(choleradeaths, sohopumps)
+#' data(cholera_deaths, soho_pumps)
 #'
 #' # Filter the Broad Street Pump from the Soho pumps dataset
-#' broadstreetpump = sohopumps %>% filter(Soho.Pump == "Broad Street")
+#' bstreet_pump = soho_pumps %>% filter(soho.pump == "Broad Street")
 #'
 #' # Polygonal data from the Fresnel Map
-#' fmap_data(radius_inner = 125, ncircles = 8, geo_centre = broadstreetpump, geo_points = choleradeaths, sum = "Cholera.Deaths")
+#' fmap_data(radius_inner = 125, ncircles = 8, geo_centre = bstreet_pump, geo_points = cholera_deaths, sum = "cholera.deaths")
 #' @export
 
 fmap_data = function(ncircles, radius_inner = NULL, radius_outer = NULL, lat = NULL, lon = NULL, geo_centre = NULL, geo_points, sum = NULL, mean = NULL, median = NULL, count = F) {
@@ -120,7 +120,8 @@ fmap_data = function(ncircles, radius_inner = NULL, radius_outer = NULL, lat = N
     stop('no aggregation inputted')
 
   } else if(is.null(mean) && is.null(sum) && is.null(median) && count == T) {
-    fmap_count = fcircles %>% mutate(circle_count = lengths(st_intersects(., geo_points)))
+    fmap_count = fcircles %>%
+      mutate(circle_count = lengths(st_intersects(., geo_points)))
 
     fmap_count
 

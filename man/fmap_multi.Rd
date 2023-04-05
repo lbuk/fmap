@@ -49,14 +49,14 @@ Function for plotting or deriving data or stats from multiple Fresnel Maps, or t
 }
 \examples{
 # Load the sf datasets of cholera deaths and Soho pumps
-data(choleradeaths, sohopumps)
+data(cholera_deaths, soho_pumps)
 
 # Multiple Fresnel Maps
-fmap_multi(radius_outer = 150, ncircles = 2, geo_points = choleradeaths, geo_centres = sohopumps, id_var = "Soho.Pump", sum = "Cholera.Deaths", output = "plot")
+fmap_multi(radius_outer = 150, ncircles = 2, geo_points = cholera_deaths, geo_centres = soho_pumps, id_var = "soho.pump", sum = "cholera.deaths", output = "plot")
 
 # Summary stats from the multiple Fresnel Maps
-fmap_multi(radius_outer = 150, ncircles = 2, geo_points = choleradeaths, geo_centres = sohopumps, id_var = "Soho.Pump", sum = "Cholera.Deaths", output = "stats")
+fmap_multi(radius_outer = 150, ncircles = 2, geo_points = cholera_deaths, geo_centres = soho_pumps, id_var = "soho.pump", sum = "cholera.deaths", output = "stats")
 
 # Polygonal data from the multiple Fresnel Maps
-fmap_multi(radius_outer = 150, ncircles = 2, geo_points = choleradeaths, geo_centres = sohopumps, id_var = "Soho.Pump", sum = "Cholera.Deaths", output = "data")
+fmap_multi(radius_outer = 150, ncircles = 2, geo_points = cholera_deaths, geo_centres = soho_pumps, id_var = "soho.pump", sum = "cholera.deaths", output = "data")
 }
