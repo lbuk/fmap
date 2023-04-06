@@ -4,6 +4,8 @@
 
 fmap is an R package for creating [Fresnel Maps](https://www.liamthomasbolton.com/portfolio/FresnelMap/), a new thematic mapping technique in which spatial data is visualised to concentric circles (or annuli) of equal area.
 
+Inspired by Fresnel lenses used in lighthouses and the Codex Atlanticus 221v-b, the geometric technique of creating concentric circles of equal area has been utilised in architecture and civil engineering. The Fresnel Map applies this geometric technique in a spatial context.
+
 ### Installation
 
     library(devtools)
