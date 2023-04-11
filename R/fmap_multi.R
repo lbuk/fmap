@@ -1,6 +1,6 @@
 #' Multiple Fresnel Maps
 #'
-#' Function for plotting or deriving data or stats from multiple Fresnel Maps, or thematic maps that visualise geospatial data to the level of equal-area concentric circles (or annuli), faceted by location.
+#' Function for plotting or deriving data or stats from multiple Fresnel Maps, or thematic maps that visualise geospatial data to the level of equal-area concentric circles (or annuli), centred on different locations.
 #'
 #' @param ncircles Number of concentric circles of equal area
 #' @param radius_inner Radius of innermost circle in metres

@@ -1,6 +1,6 @@
 #' Multiple Fresnel Circles
 #'
-#' Function for plotting or deriving data from multiple Fresnel circles.
+#' Function for plotting or deriving data from multiple Fresnel circles centred on different locations.
 #'
 #' @param ncircles Number of concentric circles of equal area
 #' @param radius_inner Radius of innermost circle in metres
@@ -8,7 +8,7 @@
 #' @param geo_centres A spatial dataset containing the coordinates of the centres of the Fresnel circles
 #' @param id_var Variable from geo_centres containing the location ID
 #' @param output Output of function. Input either 'plot' or 'data'. Defaults to 'data'
-#' @return An sf dataset of polygons or a simple map of the Fresnel circles.
+#' @return An sf dataset of polygons or a simple map of the multiple Fresnel circles.
 #' @examples
 #' # Load the sf dataset of Soho pumps
 #' data(soho_pumps)

@@ -27,10 +27,10 @@ fcircles_multi(
 \item{output}{Output of function. Input either 'plot' or 'data'. Defaults to 'data'}
 }
 \value{
-An sf dataset of polygons or a simple map of the Fresnel circles.
+An sf dataset of polygons or a simple map of the multiple Fresnel circles.
 }
 \description{
-Function for plotting or deriving data from multiple Fresnel circles.
+Function for plotting or deriving data from multiple Fresnel circles centred on different locations.
 }
 \examples{
 # Load the sf dataset of Soho pumps

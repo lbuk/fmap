@@ -45,7 +45,7 @@ fmap_multi(
 A map, sf dataset or summary stats based on multiple Fresnel Maps.
 }
 \description{
-Function for plotting or deriving data or stats from multiple Fresnel Maps, or thematic maps that visualise geospatial data to the level of equal-area concentric circles (or annuli), faceted by location.
+Function for plotting or deriving data or stats from multiple Fresnel Maps, or thematic maps that visualise geospatial data to the level of equal-area concentric circles (or annuli), centred on different locations.
 }
 \examples{
 # Load the sf datasets of cholera deaths and Soho pumps
