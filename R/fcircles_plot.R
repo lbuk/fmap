@@ -99,46 +99,28 @@ fcircles_plot = function(ncircles, radius_inner = NULL, radius_outer = NULL, lat
 
   fcircles = inner_fcircle %>%
     rbind(outer_fcircles) %>%
-    mutate("Zonal Area" = 1:ncircles, "Radius (Metres)" = df_fcircles_radii$radius, title = "Fresnel Circle") %>%
-    arrange("Zonal Area") %>%
+    mutate(zonal_area = 1:ncircles, radius = df_fcircles_radii$radius, title = "Fresnel Circle") %>%
+    arrange(zonal_area) %>%
     st_make_valid(T)
-
-  fcircles_vars = fcircles %>%
-    st_drop_geometry() %>%
-    dplyr::select(1, 2) %>%
-    colnames()
-
-  st_agr(fcircles) = "constant"
-
-  centroid = fcircles %>%
-    st_centroid() %>%
-    mutate('Centre of Circles' = "")
-
-  centroid_col = 'Centre of Circles'
 
   if(grepl(x = class(geo_points)[1], pattern = "sf", ignore.case = T) != T && grepl(x = class(geo_points)[1], pattern = "sp", ignore.case = T) != T) {
     stop('input geo_points as a geospatial dataset of points')
 
   } else {
+    dataset = deparse(substitute(geo_points))
+
     geo_points = geo_points %>%
       st_as_sf() %>%
       st_transform(crs_aeqd) %>%
-      mutate(geo_points = "")
-
-    geo_points_vars = geo_points %>%
-      st_drop_geometry() %>%
-      dplyr::select(-geo_points) %>%
-      colnames()
+      mutate(dataset = dataset)
   }
 
   tm_shape(fcircles, name = "Fresnel Circles") +
     tm_add_legend('line', lwd = 1.225, col = "black", border.col = "white", title = "Fresnel Circles") +
-    tm_fill(col = "white", alpha = 0.5, id = "", popup.vars = fcircles_vars) +
+    tm_fill(col = "white", alpha = 0.5, id = "", popup.vars = c("Zonal Area" = "zonal_area", "Radius (Metres)" = "radius")) +
     tm_borders(col = "black", lwd = 1.225) +
-    tm_shape(centroid, name = "Centre of Circles") +
-    tm_dots(shape = 22, col = centroid_col, size = 0.15, pal = c("#1422BD"), alpha = 1, id = "", legend.show = TRUE, popup.vars = F) +
     tm_shape(geo_points, name = "geo_points") +
-    tm_dots(col = "geo_points", size = 0.15, pal = c("#3DE2F1"), alpha = 0.75, id = "", legend.show = TRUE, popup.vars = geo_points_vars) +
+    tm_dots(col = "dataset", title = "geo_points", size = 0.15, palette = c("#3DE2F1"), alpha = 0.75, id = "", legend.show = TRUE, popup.vars = colnames(st_drop_geometry(geo_points[1:ncol(geo_points)-1]))) +
     tm_view(view.legend.position = c("left", "top")) +
     tm_basemap(server = c("OpenStreetMap", "Esri.WorldImagery")) +
     tm_layout(frame = F,
