@@ -105,23 +105,18 @@ fcircles_multi = function(ncircles, radius_inner = NULL, radius_outer = NULL, ge
     fcircles = inner_fcircle %>%
       rbind(outer_fcircles) %>%
       st_transform(crs) %>%
-      mutate(zonal_area = 1:ncircles, radius = df_fcircles_radii$radius, id = id) %>%
+      mutate(zonal_area = 1:ncircles, radius = df_fcircles_radii$radius) %>%
       arrange(zonal_area) %>%
       st_make_valid(T)
+
+    if(is.null(id_var) != T) {fcircles = fcircles %>% mutate(!!paste(id_var) := id, id = id)} else {fcircles = fcircles %>% mutate(id = id)}
   })
 
-  fcircles_multi = do.call(rbind, fcircles) %>%
-    mutate(!!paste(id_var) := id) %>%
-    mutate("Radius (Metres)" = radius, "Zonal Area" = zonal_area)
-
-  vars = fcircles_multi %>%
-    st_drop_geometry() %>%
-    dplyr::select(4, 6, 5) %>%
-    colnames()
+  fcircles_multi = do.call(rbind, fcircles)
 
   if(output == 'plot') {
     tm_shape(fcircles_multi, name = "Fresnel Circles") +
-      tm_fill(col = "white", alpha = 0.5, id = "", popup.vars = vars) +
+      tm_fill(col = "white", alpha = 0.5, id = "", popup.vars = c("Zonal Area" = "zonal_area", "Radius (Metres)" = "radius", colnames(fcircles_multi)[3])) +
       tm_borders(col = "black", lwd = 1.225) +
       tm_text("id", remove.overlap = TRUE, size = 0.6) +
       tm_add_legend('line', lwd = 1.225, col = "black", border.col = "white", title = "Fresnel Circles") +
@@ -129,12 +124,14 @@ fcircles_multi = function(ncircles, radius_inner = NULL, radius_outer = NULL, ge
       tm_layout(frame = F,
                 frame.lwd = 0,
                 legend.title.size = 0.85,
-                legend.title.fontface = "bold") +
+                legend.title.fontface = "bold",
+                legend.outside = T,
+                legend.outside.position = "left",
+                legend.outside.size = 0.2) +
       tmap_options(show.messages = F, show.warnings = F)
 
   } else if(output == 'data') {
-    data = fcircles_multi %>%
-      dplyr::select(zonal_area, radius, 5, id)
+    data = fcircles_multi
 
     data
 
