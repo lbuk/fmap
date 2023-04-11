@@ -23,19 +23,19 @@
 fcircles_multi = function(ncircles, radius_inner = NULL, radius_outer = NULL, geo_centres, id_var = NULL, output = 'data') {
 
   if(is.null(radius_inner) && is.null(radius_outer)) {
-    stop('radius_inner or radius_outer not inputted')
+    stop('radius_inner or radius_outer not inputted', call. = F)
 
   } else if(is.null(radius_inner) != T && is.null(radius_outer) != T) {
-    stop('radius_inner and radius_outer inputted')
+    stop('radius_inner and radius_outer inputted', call. = F)
 
   } else if(ncircles <= 1 && ncircles%%1 != 0) {
-    stop('ncircles should not be <= 1 or a decimal number')
+    stop('ncircles should not be <= 1 or a decimal number', call. = F)
 
   } else if(ncircles <= 1) {
-    stop('ncircles should not be <= 1')
+    stop('ncircles should not be <= 1', call. = F)
 
   } else if(ncircles%%1 != 0) {
-    stop('ncircles should not be a decimal number')
+    stop('ncircles should not be a decimal number', call. = F)
 
   } else if(is.null(radius_inner) != T && is.null(radius_outer)) {
     inner_fcircle_area = pi * (radius_inner ^ 2)
@@ -63,7 +63,7 @@ fcircles_multi = function(ncircles, radius_inner = NULL, radius_outer = NULL, ge
   }
 
   if(grepl(x = class(geo_centres)[1], pattern = "sf", ignore.case = T) != T && grepl(x = class(geo_centres)[1], pattern = "sp", ignore.case = T) != T) {
-    stop('input geo_centres as a geospatial dataset of points')
+    stop('input geo_centres as a geospatial dataset of points', call. = F)
 
   } else {
     crs = st_crs(geo_centres)
@@ -136,6 +136,6 @@ fcircles_multi = function(ncircles, radius_inner = NULL, radius_outer = NULL, ge
     data
 
   } else {
-    stop('error in output parameter')
+    stop('error in output parameter', call. = F)
   }
 }

@@ -31,19 +31,19 @@
 fmap_multi = function(ncircles, radius_inner = NULL, radius_outer = NULL, geo_points, geo_centres, id_var = NULL, sum = NULL, mean = NULL, median = NULL, count = F, output = 'plot') {
 
   if(is.null(radius_inner) && is.null(radius_outer)) {
-    stop('radius_inner or radius_outer not inputted')
+    stop('radius_inner or radius_outer not inputted', call. = F)
 
   } else if(is.null(radius_inner) != T && is.null(radius_outer) != T) {
-    stop('radius_inner and radius_outer inputted')
+    stop('radius_inner and radius_outer inputted', call. = F)
 
   } else if(ncircles <= 1 && ncircles%%1 != 0) {
-    stop('ncircles should not be <= 1 or a decimal number')
+    stop('ncircles should not be <= 1 or a decimal number', call. = F)
 
   } else if(ncircles <= 1) {
-    stop('ncircles should not be <= 1')
+    stop('ncircles should not be <= 1', call. = F)
 
   } else if(ncircles%%1 != 0) {
-    stop('ncircles should not be a decimal number')
+    stop('ncircles should not be a decimal number', call. = F)
 
   } else if(is.null(radius_inner) != T && is.null(radius_outer)) {
     inner_fcircle_area = pi * (radius_inner ^ 2)
@@ -60,7 +60,7 @@ fmap_multi = function(ncircles, radius_inner = NULL, radius_outer = NULL, geo_po
   df_fmap_radii = data.frame(radius)
 
   if(grepl(x = class(geo_points)[1], pattern = "sf", ignore.case = T) != T && grepl(x = class(geo_points)[1], pattern = "sp", ignore.case = T) != T) {
-    stop('input geo_points as a geospatial dataset of points')
+    stop('input geo_points as a geospatial dataset of points', call. = F)
 
   } else {
     geo_points = geo_points %>% st_as_sf()
@@ -80,7 +80,7 @@ fmap_multi = function(ncircles, radius_inner = NULL, radius_outer = NULL, geo_po
   }
 
   if(grepl(x = class(geo_centres)[1], pattern = "sf", ignore.case = T) != T && grepl(x = class(geo_centres)[1], pattern = "sp", ignore.case = T) != T) {
-    stop('input geo_centres as a geospatial dataset of points')
+    stop('input geo_centres as a geospatial dataset of points', call. = F)
 
   } else {
     geo_centres = geo_centres %>%
@@ -129,7 +129,7 @@ fmap_multi = function(ncircles, radius_inner = NULL, radius_outer = NULL, geo_po
       st_transform(crs_aeqd)
 
     if(is.null(sum) && is.null(mean) && is.null(median) && count != T) {
-      stop('no aggregation inputted')
+      stop('no aggregation inputted', call. = F)
 
     } else if(is.null(mean) && is.null(sum) && is.null(median) && count == T) {
       fmaps = fcircles %>%
@@ -164,7 +164,7 @@ fmap_multi = function(ncircles, radius_inner = NULL, radius_outer = NULL, geo_po
         rename(median = median_calc)
 
     } else {
-      stop('error in aggregation parameter')
+      stop('error in aggregation parameter', call. = F)
     }
   })
 
@@ -208,6 +208,6 @@ fmap_multi = function(ncircles, radius_inner = NULL, radius_outer = NULL, geo_po
     stats
 
   } else {
-    stop('error in output parameter')
+    stop('error in output parameter', call. = F)
   }
 }

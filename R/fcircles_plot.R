@@ -24,19 +24,19 @@
 fcircles_plot = function(ncircles, radius_inner = NULL, radius_outer = NULL, lat = NULL, lon = NULL, geo_centre = NULL, geo_points) {
 
   if(is.null(radius_inner) && is.null(radius_outer)) {
-    stop('radius_inner or radius_outer not inputted')
+    stop('radius_inner or radius_outer not inputted', call. = F)
 
   } else if(is.null(radius_inner) != T && is.null(radius_outer) != T) {
-    stop('radius_inner and radius_outer inputted')
+    stop('radius_inner and radius_outer inputted', call. = F)
 
   } else if(ncircles <= 1 && ncircles%%1 != 0) {
-    stop('ncircles should not be <= 1 or a decimal number')
+    stop('ncircles should not be <= 1 or a decimal number', call. = F)
 
   } else if(ncircles <= 1) {
-    stop('ncircles should not be <= 1')
+    stop('ncircles should not be <= 1', call. = F)
 
   } else if(ncircles%%1 != 0) {
-    stop('ncircles should not be a decimal number')
+    stop('ncircles should not be a decimal number', call. = F)
 
   } else if(is.null(radius_inner) != T && is.null(radius_outer)) {
     inner_fcircle_area = pi * (radius_inner ^ 2)
@@ -53,13 +53,13 @@ fcircles_plot = function(ncircles, radius_inner = NULL, radius_outer = NULL, lat
   df_fcircles_radii = data.frame(radius)
 
   if(is.null(lat) && is.null(lon) && is.null(geo_centre)) {
-    stop('no centre coordinates inputted')
+    stop('no centre coordinates inputted', call. = F)
 
   } else if(is.null(lat) && is.null(lon) && grepl(x = class(geo_centre)[1], pattern = "sf", ignore.case = T) != T && grepl(x = class(geo_centre)[1], pattern = "sp", ignore.case = T) != T) {
-    stop('input geo_centre as a point-based geospatial dataset')
+    stop('input geo_centre as a point-based geospatial dataset', call. = F)
 
   } else if(is.null(lat) != T && is.null(lon) != T && is.null(geo_centre) != T || is.null(lat) && is.null(lon) != T && is.null(geo_centre) != T || is.null(lat) != T && is.null(lon) && is.null(geo_centre) != T) {
-    stop('input geo_centre or lat and lon')
+    stop('input geo_centre or lat and lon', call. = F)
 
   } else if(is.null(lat) && is.null(lon) && is.null(geo_centre) != T) {
     geo_centre = geo_centre %>%
@@ -104,7 +104,7 @@ fcircles_plot = function(ncircles, radius_inner = NULL, radius_outer = NULL, lat
     st_make_valid(T)
 
   if(grepl(x = class(geo_points)[1], pattern = "sf", ignore.case = T) != T && grepl(x = class(geo_points)[1], pattern = "sp", ignore.case = T) != T) {
-    stop('input geo_points as a geospatial dataset of points')
+    stop('input geo_points as a geospatial dataset of points', call. = F)
 
   } else {
     dataset = deparse(substitute(geo_points))
