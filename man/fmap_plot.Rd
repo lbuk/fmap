@@ -45,7 +45,7 @@ fmap_plot(
 A Fresnel Map based on aggregations of points-based data and visualised using tmap.
 }
 \description{
-Function for plotting Fresnel Maps, or thematic maps that visualise geospatial data to the level of equal-area concentric circles (or annuli).
+Function for plotting Fresnel Maps, or thematic maps that visualise spatial data to the level of equal-area concentric circles (or annuli).
 }
 \examples{
 # Load the sf datasets of cholera deaths and Soho pumps

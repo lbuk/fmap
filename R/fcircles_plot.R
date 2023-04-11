@@ -56,7 +56,7 @@ fcircles_plot = function(ncircles, radius_inner = NULL, radius_outer = NULL, lat
     stop('no centre coordinates inputted', call. = F)
 
   } else if(is.null(lat) && is.null(lon) && grepl(x = class(geo_centre)[1], pattern = "sf", ignore.case = T) != T && grepl(x = class(geo_centre)[1], pattern = "sp", ignore.case = T) != T) {
-    stop('input geo_centre as a point-based geospatial dataset', call. = F)
+    stop('input geo_centre as a point-based spatial dataset', call. = F)
 
   } else if(is.null(lat) != T && is.null(lon) != T && is.null(geo_centre) != T || is.null(lat) && is.null(lon) != T && is.null(geo_centre) != T || is.null(lat) != T && is.null(lon) && is.null(geo_centre) != T) {
     stop('input geo_centre or lat and lon', call. = F)
@@ -104,7 +104,7 @@ fcircles_plot = function(ncircles, radius_inner = NULL, radius_outer = NULL, lat
     st_make_valid(T)
 
   if(grepl(x = class(geo_points)[1], pattern = "sf", ignore.case = T) != T && grepl(x = class(geo_points)[1], pattern = "sp", ignore.case = T) != T) {
-    stop('input geo_points as a geospatial dataset of points', call. = F)
+    stop('input geo_points as a points-based spatial dataset', call. = F)
 
   } else {
     dataset = deparse(substitute(geo_points))

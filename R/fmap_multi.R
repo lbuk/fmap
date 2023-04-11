@@ -1,6 +1,6 @@
 #' Multiple Fresnel Maps
 #'
-#' Function for plotting or deriving data or stats from multiple Fresnel Maps, or thematic maps that visualise geospatial data to the level of equal-area concentric circles (or annuli), centred on different locations.
+#' Function for plotting or deriving data or stats from multiple Fresnel Maps, or thematic maps that visualise spatial data to the level of equal-area concentric circles (or annuli), centred on different locations.
 #'
 #' @param ncircles Number of concentric circles of equal area
 #' @param radius_inner Radius of innermost circle in metres
@@ -60,7 +60,7 @@ fmap_multi = function(ncircles, radius_inner = NULL, radius_outer = NULL, geo_po
   df_fmap_radii = data.frame(radius)
 
   if(grepl(x = class(geo_points)[1], pattern = "sf", ignore.case = T) != T && grepl(x = class(geo_points)[1], pattern = "sp", ignore.case = T) != T) {
-    stop('input geo_points as a geospatial dataset of points', call. = F)
+    stop('input geo_points as a points-based spatial dataset', call. = F)
 
   } else {
     geo_points = geo_points %>% st_as_sf()
@@ -80,7 +80,7 @@ fmap_multi = function(ncircles, radius_inner = NULL, radius_outer = NULL, geo_po
   }
 
   if(grepl(x = class(geo_centres)[1], pattern = "sf", ignore.case = T) != T && grepl(x = class(geo_centres)[1], pattern = "sp", ignore.case = T) != T) {
-    stop('input geo_centres as a geospatial dataset of points', call. = F)
+    stop('input geo_centres as a points-based spatial dataset', call. = F)
 
   } else {
     geo_centres = geo_centres %>%

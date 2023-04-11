@@ -8,7 +8,7 @@
 #' @param geo_centres A spatial dataset containing the coordinates of the centres of the Fresnel circles
 #' @param id_var Variable from geo_centres containing the location ID
 #' @param output Output of function. Input either 'plot' or 'data'. Defaults to 'data'
-#' @return An sf dataset of polygons or a simple map of the multiple Fresnel circles.
+#' @return An sf dataset of polygons or a simple map of the multiple Fresnel circles centred on different locations.
 #' @examples
 #' # Load the sf dataset of Soho pumps
 #' data(soho_pumps)
@@ -63,7 +63,7 @@ fcircles_multi = function(ncircles, radius_inner = NULL, radius_outer = NULL, ge
   }
 
   if(grepl(x = class(geo_centres)[1], pattern = "sf", ignore.case = T) != T && grepl(x = class(geo_centres)[1], pattern = "sp", ignore.case = T) != T) {
-    stop('input geo_centres as a geospatial dataset of points', call. = F)
+    stop('input geo_centres as a points-based spatial dataset', call. = F)
 
   } else {
     crs = st_crs(geo_centres)

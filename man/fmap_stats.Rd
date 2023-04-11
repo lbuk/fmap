@@ -45,7 +45,7 @@ fmap_stats(
 Summary statistics from the Fresnel Map based on aggregated data from the Fresnel circles.
 }
 \description{
-Function for calculating summary statistics from Fresnel Maps, or thematic maps that visualise geospatial data to the level of equal-area concentric circles (or annuli).
+Function for calculating summary statistics from Fresnel Maps, or thematic maps that visualise spatial data to the level of equal-area concentric circles (or annuli).
 }
 \examples{
 # Load the sf datasets of cholera deaths and Soho pumps
