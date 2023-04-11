@@ -125,16 +125,16 @@ fmap_multi = function(ncircles, radius_inner = NULL, radius_outer = NULL, geo_po
       arrange(zonal_area) %>%
       st_make_valid(T)
 
-    geo_points = geo_points %>% st_transform(crs_aeqd)
+    geo_points = geo_points %>%
+      st_transform(crs_aeqd)
 
     if(is.null(sum) && is.null(mean) && is.null(median) && count != T) {
       stop('no aggregation inputted')
 
     } else if(is.null(mean) && is.null(sum) && is.null(median) && count == T) {
       fmaps = fcircles %>%
-        mutate(circle_count = lengths(st_intersects(., geo_points)), id = id, title = "Count") %>%
-        st_transform(crs) %>%
-        dplyr::select(circle_count, radius, zonal_area, id, title)
+        mutate(circle_count = lengths(st_intersects(., geo_points)), title = "Count", id = id) %>%
+        st_transform(crs)
 
     } else if(is.null(sum) != T && is.null(mean) && is.null(median) && count == F) {
       fmaps = fcircles %>%
@@ -142,9 +142,8 @@ fmap_multi = function(ncircles, radius_inner = NULL, radius_outer = NULL, geo_po
         group_by(zonal_area, radius) %>%
         summarise(sum_calc = sum(!! sym(sum), na.rm = T)) %>%
         st_transform(crs) %>%
-        mutate(id = id, title = paste0("Total ", '("', sum, '")')) %>%
-        rename(sum = sum_calc) %>%
-        dplyr::select(sum, radius, zonal_area, id, title)
+        mutate(title = paste0("Total ", '("', sum, '")'), id = id) %>%
+        rename(sum = sum_calc)
 
     } else if(is.null(mean) != T && is.null(sum) && is.null(median) && count == F) {
       fmaps = fcircles %>%
@@ -152,9 +151,8 @@ fmap_multi = function(ncircles, radius_inner = NULL, radius_outer = NULL, geo_po
         group_by(zonal_area, radius) %>%
         summarise(mean_calc = mean(!! sym(mean), na.rm = T)) %>%
         st_transform(crs) %>%
-        mutate(id = id, title = paste0("Mean ", '("', mean, '")')) %>%
-        rename(mean = mean_calc) %>%
-        dplyr::select(mean, zonal_area, radius, id, title)
+        mutate(title = paste0("Mean ", '("', mean, '")'), id = id) %>%
+        rename(mean = mean_calc)
 
     } else if(is.null(median) != T && is.null(sum) && is.null(mean) && count == F) {
       fmaps = fcircles %>%
@@ -162,31 +160,21 @@ fmap_multi = function(ncircles, radius_inner = NULL, radius_outer = NULL, geo_po
         group_by(zonal_area, radius) %>%
         summarise(median_calc = median(!! sym(median), na.rm = T)) %>%
         st_transform(crs) %>%
-        mutate(id = id, title = paste0("Median ", '("', median, '")')) %>%
-        rename(median = median_calc) %>%
-        dplyr::select(median, zonal_area, radius, id, title)
+        mutate(title = paste0("Median ", '("', median, '")'), id = id) %>%
+        rename(median = median_calc)
 
     } else {
       stop('error in aggregation parameter')
     }
   })
 
-  fmaps = do.call(rbind, fmaps) %>%
-    mutate(!!paste(id_var) := id) %>%
-    mutate("Radius (Metres)" = radius, "Zonal Area" = zonal_area)
+  fmaps = do.call(rbind, fmaps)
 
-  aggregate = colnames(fmaps)[1]
-  title = fmaps$title[1]
-
-  vars = fmaps %>%
-    st_drop_geometry() %>%
-    dplyr::select(-title, -id) %>%
-    dplyr::select(3, 2, 1, 4) %>%
-    colnames()
+  if(is.null(id_var) != T) {fmaps = fmaps %>% mutate(!!paste(id_var) := id)} else {fmaps = fmaps}
 
   if(output == 'plot') {
     tm_shape(fmaps, name = "Fresnel Map") +
-      tm_fill(col = aggregate, palette = "plasma", title = title, id = "", popup.vars = vars) +
+      tm_fill(col = colnames(fmaps)[3], palette = "plasma", title = fmaps$title[1], id = "", popup.vars = c("Zonal Area" = "zonal_area", "Radius (Metres)" = "radius", colnames(fmaps)[3], colnames(fmaps)[ncol(fmaps)])) +
       tm_borders(col = "black", lwd = 0.8) +
       tm_facets(by='id', ncol = 2, free.scales = F) +
       tm_basemap(server = c("OpenStreetMap", "Esri.WorldImagery")) +
@@ -207,14 +195,14 @@ fmap_multi = function(ncircles, radius_inner = NULL, radius_outer = NULL, geo_po
 
   } else if(output == 'data') {
     data = fmaps %>%
-      dplyr::select(zonal_area, radius, 1, 7, id)
+      dplyr::select(1:3, last_col(), id, -title)
 
     data
 
   } else if(output == 'stats') {
     stats = fmaps %>%
       data.frame() %>%
-      dplyr::select(zonal_area, radius, 1, 7, id) %>%
+      dplyr::select(1:3, last_col(), id, c(-title, -geometry)) %>%
       as_tibble()
 
     stats
