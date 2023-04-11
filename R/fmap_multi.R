@@ -195,14 +195,14 @@ fmap_multi = function(ncircles, radius_inner = NULL, radius_outer = NULL, geo_po
 
   } else if(output == 'data') {
     data = fmaps %>%
-      dplyr::select(1:3, last_col(), id, -title)
+      dplyr::select(zonal_area, radius, 3, last_col(), id)
 
     data
 
   } else if(output == 'stats') {
     stats = fmaps %>%
       data.frame() %>%
-      dplyr::select(1:3, last_col(), id, c(-title, -geometry)) %>%
+      dplyr::select(zonal_area, radius, 3, last_col(), id) %>%
       as_tibble()
 
     stats
