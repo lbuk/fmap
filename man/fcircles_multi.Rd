@@ -36,9 +36,9 @@ Function for plotting or deriving data from multiple Fresnel circles centred on 
 # Load the sf dataset of Soho pumps
 data(soho_pumps)
 
-# Polygonal data from the multiple Fresnel circles
+# Polygonal data from the multiple Fresnel circles centred on different locations
 fcircles_multi(radius_outer = 105, ncircles = 2, geo_centres = soho_pumps, id_var = "soho.pump", output = "data")
 
-# Multiple Fresnel circles
+# Map of multiple Fresnel circles centred on different locations
 fcircles_multi(radius_outer = 105, ncircles = 2, geo_centres = soho_pumps, id_var = "soho.pump", output = "plot")
 }

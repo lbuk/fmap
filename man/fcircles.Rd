@@ -39,6 +39,6 @@ data(soho_pumps)
 # Filter the Broad Street Pump from the Soho pumps dataset
 bstreet_pump = soho_pumps \%>\% filter(soho.pump == "Broad Street")
 
-# Fresnel circles
+# Polygonal data from the Fresnel circles
 fcircles(radius_inner = 125, ncircles = 8, geo_centre = bstreet_pump)
 }

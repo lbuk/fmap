@@ -8,8 +8,8 @@
 #' @param lat Latitude of the centre of the Fresnel circles
 #' @param lon Longitude of the centre of the Fresnel circles
 #' @param geo_centre A spatial dataset containing the coordinates of the centre of the Fresnel circles
-#' @param geo_points A spatial dataset of points to map over the Fresnel circles
-#' @return A map of points overlaying Fresnel circles and visualised using tmap.
+#' @param geo_points A spatial dataset of points
+#' @return A map of Fresnel circles with overlaying points and visualised using tmap.
 #' @examples
 #' # Load the sf datasets of cholera deaths and Soho pumps
 #' data(cholera_deaths, soho_pumps)
@@ -17,7 +17,7 @@
 #' # Filter the Broad Street Pump from the Soho pumps dataset
 #' bstreet_pump = soho_pumps %>% filter(soho.pump == "Broad Street")
 #'
-#' # Fresnel circles map
+#' # Map of the Fresnel circles
 #' fcircles_plot(radius_inner = 125, ncircles = 8, geo_centre = bstreet_pump, geo_points = cholera_deaths)
 #' @export
 

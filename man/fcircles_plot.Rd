@@ -27,10 +27,10 @@ fcircles_plot(
 
 \item{geo_centre}{A spatial dataset containing the coordinates of the centre of the Fresnel circles}
 
-\item{geo_points}{A spatial dataset of points to map over the Fresnel circles}
+\item{geo_points}{A spatial dataset of points}
 }
 \value{
-A map of points overlaying Fresnel circles and visualised using tmap.
+A map of Fresnel circles with overlaying points and visualised using tmap.
 }
 \description{
 Function for plotting Fresnel circles with overlaying points. This map provides a basis for producing the Fresnel Map, which aggregates the points within the equal-area Fresnel circles
@@ -42,6 +42,6 @@ data(cholera_deaths, soho_pumps)
 # Filter the Broad Street Pump from the Soho pumps dataset
 bstreet_pump = soho_pumps \%>\% filter(soho.pump == "Broad Street")
 
-# Fresnel circles map
+# Map of the Fresnel circles
 fcircles_plot(radius_inner = 125, ncircles = 8, geo_centre = bstreet_pump, geo_points = cholera_deaths)
 }
