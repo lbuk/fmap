@@ -65,6 +65,9 @@ fcircles_multi = function(ncircles, radius_inner = NULL, radius_outer = NULL, ge
   if(grepl(x = class(geo_centres)[1], pattern = "sf", ignore.case = T) != T && grepl(x = class(geo_centres)[1], pattern = "sp", ignore.case = T) != T) {
     stop('input geo_centres as a points-based spatial dataset', call. = F)
 
+  } else if(nrow(geo_centres) == 1) {
+    stop('geo_centres does not contain multiple points', call. = F)
+
   } else {
     crs = st_crs(geo_centres)
 
