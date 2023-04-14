@@ -70,7 +70,7 @@ fcircles_plot = function(ncircles, radius_inner = NULL, radius_outer = NULL, lat
       st_transform(4326) %>%
       st_coordinates() %>%
       data.frame() %>%
-      rename(lat = Y, lon = X)
+      dplyr::rename(lat = Y, lon = X)
 
     lat = geo_centre$lat
     lon = geo_centre$lon

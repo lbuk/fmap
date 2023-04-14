@@ -75,7 +75,7 @@ fcircles_multi = function(ncircles, radius_inner = NULL, radius_outer = NULL, ge
       st_transform(4326) %>%
       st_coordinates() %>%
       data.frame() %>%
-      rename(lon = X, lat = Y) %>%
+      dplyr::rename(lon = X, lat = Y) %>%
       mutate(id = geo_centres$id)
   }
 

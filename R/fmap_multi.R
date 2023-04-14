@@ -92,7 +92,7 @@ fmap_multi = function(ncircles, radius_inner = NULL, radius_outer = NULL, geo_po
       st_transform(4326) %>%
       st_coordinates() %>%
       data.frame() %>%
-      rename(lon = X, lat = Y) %>%
+      dplyr::rename(lon = X, lat = Y) %>%
       mutate(id = geo_centres$id)
   }
 
@@ -143,28 +143,28 @@ fmap_multi = function(ncircles, radius_inner = NULL, radius_outer = NULL, geo_po
       fmaps = fcircles %>%
         st_join(geo_points) %>%
         group_by(zonal_area, radius) %>%
-        summarise(sum_calc = sum(!! sym(sum), na.rm = T)) %>%
+        dplyr::summarise(sum_calc = sum(!! sym(sum), na.rm = T)) %>%
         st_transform(crs) %>%
         mutate(title = paste0("Total ", '("', sum, '")'), id = id) %>%
-        rename(sum = sum_calc)
+        dplyr::rename(sum = sum_calc)
 
     } else if(is.null(mean) != T && is.null(sum) && is.null(median) && count == F) {
       fmaps = fcircles %>%
         st_join(geo_points) %>%
         group_by(zonal_area, radius) %>%
-        summarise(mean_calc = mean(!! sym(mean), na.rm = T)) %>%
+        dplyr::summarise(mean_calc = mean(!! sym(mean), na.rm = T)) %>%
         st_transform(crs) %>%
         mutate(title = paste0("Mean ", '("', mean, '")'), id = id) %>%
-        rename(mean = mean_calc)
+        dplyr::rename(mean = mean_calc)
 
     } else if(is.null(median) != T && is.null(sum) && is.null(mean) && count == F) {
       fmaps = fcircles %>%
         st_join(geo_points) %>%
         group_by(zonal_area, radius) %>%
-        summarise(median_calc = median(!! sym(median), na.rm = T)) %>%
+        dplyr::summarise(median_calc = median(!! sym(median), na.rm = T)) %>%
         st_transform(crs) %>%
         mutate(title = paste0("Median ", '("', median, '")'), id = id) %>%
-        rename(median = median_calc)
+        dplyr::rename(median = median_calc)
 
     } else {
       stop('error in aggregation parameter', call. = F)
