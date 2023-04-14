@@ -169,11 +169,17 @@ fmap_multi = function(ncircles, radius_inner = NULL, radius_outer = NULL, geo_po
     } else {
       stop('error in aggregation parameter', call. = F)
     }
+
+    if(is.null(id_var) != T) {
+      fmaps = fmaps %>%
+        dplyr::mutate(!!paste(id_var) := id)
+
+    } else {
+      fmaps = fmaps
+    }
   })
 
   fmaps = do.call(rbind, fmaps)
-
-  if(is.null(id_var) != T) {fmaps = fmaps %>% mutate(!!paste(id_var) := id)} else {fmaps = fmaps}
 
   if(output == 'plot') {
     tm_shape(fmaps, name = "Fresnel Map") +

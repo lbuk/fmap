@@ -112,7 +112,14 @@ fcircles_multi = function(ncircles, radius_inner = NULL, radius_outer = NULL, ge
       arrange(zonal_area) %>%
       st_make_valid(T)
 
-    if(is.null(id_var) != T) {fcircles = fcircles %>% mutate(!!paste(id_var) := id, id = id)} else {fcircles = fcircles %>% mutate(id = id)}
+    if(is.null(id_var) != T) {
+      fcircles = fcircles %>%
+        dplyr::mutate(!!paste(id_var) := id, id = id)
+
+    } else {
+      fcircles = fcircles %>%
+        mutate(id = id)
+    }
   })
 
   fcircles_multi = do.call(rbind, fcircles)
