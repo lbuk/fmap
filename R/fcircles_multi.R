@@ -54,7 +54,7 @@ fcircles_multi = function(ncircles, radius_inner = NULL, radius_outer = NULL, ge
   if(is.null(id_var)) {
     geo_centres = geo_centres %>%
       st_as_sf() %>%
-      mutate(id = row_number())
+      dplyr::mutate(id = row_number())
 
   } else {
     geo_centres = geo_centres %>%
