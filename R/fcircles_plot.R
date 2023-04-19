@@ -39,18 +39,16 @@ fcircles_plot = function(ncircles, radius_inner = NULL, radius_outer = NULL, lat
     stop('ncircles should not be a decimal number', call. = F)
 
   } else if(is.null(radius_inner) != T && is.null(radius_outer)) {
-    inner_fcircle_area = pi * (radius_inner ^ 2)
-    radius = sqrt((inner_fcircle_area * 1:ncircles) / pi)
+    area_fcircles = pi * (radius_inner ^ 2)
+    radius = sqrt((area_fcircles * 1:ncircles) / pi)
 
   } else {
-    outer_fcircle_area = pi * (radius_outer ^ 2)
-    area_fcircles = outer_fcircle_area / ncircles
-    radius_inner = sqrt(area_fcircles / pi)
-    inner_fcircle_area = pi * (radius_inner ^ 2)
-    radius = sqrt((inner_fcircle_area * 1:ncircles) / pi)
+    area_outer = pi * (radius_outer ^ 2)
+    area_fcircles = area_outer / ncircles
+    radius = sqrt((area_fcircles * 1:ncircles) / pi)
   }
 
-  df_fcircles_radii = data.frame(radius)
+  fcircle_radii = data.frame(radius)
 
   if(is.null(lat) && is.null(lon) && is.null(geo_centre)) {
     stop('no centre coordinates inputted', call. = F)
@@ -84,12 +82,12 @@ fcircles_plot = function(ncircles, radius_inner = NULL, radius_outer = NULL, lat
 
   crs_aeqd = sprintf("+proj=aeqd +lat_0=%s +lon_0=%s +x_0=0 +y_0=0", coords$lat, coords$lon)
 
-  circles = lapply(1:nrow(df_fcircles_radii), function(i) {
+  circles = lapply(1:nrow(fcircle_radii), function(i) {
     coords %>%
       st_as_sf(coords = c("lon", "lat"), crs = 4326) %>%
       st_transform(crs_aeqd) %>%
-      st_buffer(df_fcircles_radii[i, "radius"], nQuadSegs = 1375) %>%
-      mutate(circle = df_fcircles_radii[i, "circle"])
+      st_buffer(fcircle_radii[i, "radius"], nQuadSegs = 1375) %>%
+      mutate(circle = fcircle_radii[i, "circle"])
   })
 
   inner_fcircle = circles[[1]]
@@ -100,9 +98,9 @@ fcircles_plot = function(ncircles, radius_inner = NULL, radius_outer = NULL, lat
 
   outer_fcircles = do.call(rbind, outer_fcircles)
 
-  fcircles = inner_fcircle %>%
+  df_fcircles = inner_fcircle %>%
     rbind(outer_fcircles) %>%
-    mutate(zonal_area = 1:ncircles, radius = df_fcircles_radii$radius, title = "Fresnel Circle") %>%
+    mutate(zonal_area = 1:ncircles, radius = fcircle_radii$radius) %>%
     arrange(zonal_area) %>%
     st_make_valid(T)
 
@@ -118,12 +116,12 @@ fcircles_plot = function(ncircles, radius_inner = NULL, radius_outer = NULL, lat
       mutate(dataset = dataset)
   }
 
-  tm_shape(fcircles, name = "Fresnel Circles") +
+  tm_shape(df_fcircles, name = "Fresnel Circles") +
     tm_add_legend('line', lwd = 1.225, col = "black", border.col = "white", title = "Fresnel Circles") +
     tm_fill(col = "white", alpha = 0.5, id = "", popup.vars = c("Zonal Area" = "zonal_area", "Radius (Metres)" = "radius")) +
     tm_borders(col = "black", lwd = 1.225) +
     tm_shape(geo_points, name = "geo_points") +
-    tm_dots(col = "dataset", title = "geo_points", size = 0.15, palette = c("#3DE2F1"), alpha = 0.75, id = "", legend.show = TRUE, popup.vars = colnames(st_drop_geometry(geo_points[1:ncol(geo_points)-1]))) +
+    tm_dots(col = "dataset", title = "geo_points", size = 0.15, palette = c("#3DE2F1"), alpha = 0.75, id = "", legend.show = T, popup.vars = colnames(st_drop_geometry(geo_points[1:ncol(geo_points)-1]))) +
     tm_view(view.legend.position = c("left", "top")) +
     tm_basemap(server = c("OpenStreetMap", "Esri.WorldImagery")) +
     tm_layout(frame = F,

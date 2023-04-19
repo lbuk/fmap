@@ -43,18 +43,16 @@ fmap_stats = function(ncircles, radius_inner = NULL, radius_outer = NULL, lat = 
     stop('ncircles should not be a decimal number', call. = F)
 
   } else if(is.null(radius_inner) != T && is.null(radius_outer)) {
-    inner_fcircle_area = pi * (radius_inner ^ 2)
-    radius = sqrt((inner_fcircle_area * 1:ncircles) / pi)
+    area_fcircles = pi * (radius_inner ^ 2)
+    radius = sqrt((area_fcircles * 1:ncircles) / pi)
 
   } else {
-    outer_fcircle_area = pi * (radius_outer ^ 2)
-    area_fcircles = outer_fcircle_area / ncircles
-    radius_inner = sqrt(area_fcircles / pi)
-    inner_fcircle_area = pi * (radius_inner ^ 2)
-    radius = sqrt((inner_fcircle_area * 1:ncircles) / pi)
+    area_outer = pi * (radius_outer ^ 2)
+    area_fcircles = area_outer / ncircles
+    radius = sqrt((area_fcircles * 1:ncircles) / pi)
   }
 
-  df_fmap_radii = data.frame(radius)
+  fcircle_radii = data.frame(radius)
 
   if(is.null(lat) && is.null(lon) && is.null(geo_centre)) {
     stop('no centre coordinates inputted', call. = F)
@@ -88,12 +86,12 @@ fmap_stats = function(ncircles, radius_inner = NULL, radius_outer = NULL, lat = 
 
   crs_aeqd = sprintf("+proj=aeqd +lat_0=%s +lon_0=%s +x_0=0 +y_0=0", coords$lat, coords$lon)
 
-  circles = lapply(1:nrow(df_fmap_radii), function(i) {
+  circles = lapply(1:nrow(fcircle_radii), function(i) {
     coords %>%
       st_as_sf(coords = c("lon", "lat"), crs = 4326) %>%
       st_transform(crs_aeqd) %>%
-      st_buffer(df_fmap_radii[i, "radius"], nQuadSegs = 1375) %>%
-      mutate(circle = df_fmap_radii[i, "circle"])
+      st_buffer(fcircle_radii[i, "radius"], nQuadSegs = 1375) %>%
+      mutate(circle = fcircle_radii[i, "circle"])
   })
 
   inner_fcircle = circles[[1]]
@@ -104,9 +102,9 @@ fmap_stats = function(ncircles, radius_inner = NULL, radius_outer = NULL, lat = 
 
   outer_fcircles = do.call(rbind, outer_fcircles)
 
-  fcircles = inner_fcircle %>%
+  df_fcircles = inner_fcircle %>%
     rbind(outer_fcircles) %>%
-    mutate(zonal_area = 1:ncircles, radius = df_fmap_radii$radius) %>%
+    mutate(zonal_area = 1:ncircles, radius = fcircle_radii$radius) %>%
     arrange(zonal_area) %>%
     st_make_valid(T)
 
@@ -123,45 +121,49 @@ fmap_stats = function(ncircles, radius_inner = NULL, radius_outer = NULL, lat = 
     stop('no aggregation inputted', call. = F)
 
   } else if(is.null(mean) && is.null(sum) && is.null(median) && count == T) {
-    fmap_count = fcircles %>%
+    fm_stats = df_fcircles %>%
       mutate(count = lengths(st_intersects(., geo_points))) %>%
       data.frame() %>%
-      dplyr::select(zonal_area, radius, count)
+      dplyr::select(zonal_area, radius, count) %>%
+      as_tibble()
 
-    fmap_count
+    fm_stats
 
   } else if(is.null(sum) != T && is.null(mean) && is.null(median) && count == F) {
-    fmap_sum = fcircles %>%
+    fm_stats = df_fcircles %>%
       st_join(geo_points) %>%
       data.frame() %>%
       group_by(zonal_area) %>%
       dplyr::summarise(sum = sum(!! sym(sum), na.rm = T)) %>%
-      mutate(radius = df_fmap_radii$radius) %>%
-      dplyr::select(zonal_area, radius, sum)
+      mutate(radius = fcircle_radii$radius) %>%
+      dplyr::select(zonal_area, radius, sum) %>%
+      as_tibble()
 
-    fmap_sum
+    fm_stats
 
   } else if(is.null(mean) != T && is.null(sum) && is.null(median) && count == F) {
-    fmap_mean = fcircles %>%
+    fm_stats = df_fcircles %>%
       st_join(geo_points) %>%
       data.frame() %>%
       group_by(zonal_area) %>%
       dplyr::summarise(mean = mean(!! sym(mean), na.rm = T)) %>%
-      mutate(radius = df_fmap_radii$radius) %>%
-      dplyr::select(zonal_area, radius, mean)
+      mutate(radius = fcircle_radii$radius) %>%
+      dplyr::select(zonal_area, radius, mean) %>%
+      as_tibble()
 
-    fmap_mean
+    fm_stats
 
   } else if(is.null(median) != T && is.null(sum) && is.null(mean) && count == F) {
-    fmap_median = fcircles %>%
+    fm_stats = df_fcircles %>%
       st_join(geo_points) %>%
       data.frame() %>%
       group_by(zonal_area) %>%
       dplyr::summarise(median = median(!! sym(median), na.rm = T)) %>%
-      mutate(radius = df_fmap_radii$radius) %>%
-      dplyr::select(zonal_area, radius, median)
+      mutate(radius = fcircle_radii$radius) %>%
+      dplyr::select(zonal_area, radius, median) %>%
+      as_tibble()
 
-    fmap_median
+    fm_stats
 
   } else {
     stop('error in aggregation parameter', call. = F)
