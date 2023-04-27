@@ -134,7 +134,7 @@ fmap_multi = function(ncircles, radius_inner = NULL, radius_outer = NULL, geo_po
 
     } else if(is.null(mean) && is.null(sum) && is.null(median) && count == T) {
       df_fmm = df_fcircles %>%
-        mutate(circle_count = lengths(st_intersects(., geo_points)), legend = "Count", id = id) %>%
+        mutate(circle_count = lengths(st_intersects(., geo_points)), legend_title = "Count", id = id) %>%
         st_transform(crs)
 
     } else if(is.null(sum) != T && is.null(mean) && is.null(median) && count == F) {
@@ -143,7 +143,7 @@ fmap_multi = function(ncircles, radius_inner = NULL, radius_outer = NULL, geo_po
         group_by(zonal_area, radius) %>%
         dplyr::summarise(sum_calc = sum(!! sym(sum), na.rm = T)) %>%
         st_transform(crs) %>%
-        mutate(legend = paste0("Total ", '("', sum, '")'), id = id) %>%
+        mutate(legend_title = paste0("Total ", '("', sum, '")'), id = id) %>%
         dplyr::rename(sum = sum_calc)
 
     } else if(is.null(mean) != T && is.null(sum) && is.null(median) && count == F) {
@@ -152,7 +152,7 @@ fmap_multi = function(ncircles, radius_inner = NULL, radius_outer = NULL, geo_po
         group_by(zonal_area, radius) %>%
         dplyr::summarise(mean_calc = mean(!! sym(mean), na.rm = T)) %>%
         st_transform(crs) %>%
-        mutate(legend = paste0("Mean ", '("', mean, '")'), id = id) %>%
+        mutate(legend_title = paste0("Mean ", '("', mean, '")'), id = id) %>%
         dplyr::rename(mean = mean_calc)
 
     } else if(is.null(median) != T && is.null(sum) && is.null(mean) && count == F) {
@@ -161,7 +161,7 @@ fmap_multi = function(ncircles, radius_inner = NULL, radius_outer = NULL, geo_po
         group_by(zonal_area, radius) %>%
         dplyr::summarise(median_calc = median(!! sym(median), na.rm = T)) %>%
         st_transform(crs) %>%
-        mutate(legend = paste0("Median ", '("', median, '")'), id = id) %>%
+        mutate(legend_title = paste0("Median ", '("', median, '")'), id = id) %>%
         dplyr::rename(median = median_calc)
 
     } else {
@@ -181,7 +181,7 @@ fmap_multi = function(ncircles, radius_inner = NULL, radius_outer = NULL, geo_po
 
   if(output == 'plot') {
     tm_shape(df_fmm, name = "Fresnel Map") +
-      tm_fill(col = colnames(df_fmm)[3], palette = "plasma", title = df_fmm$legend[1], id = "", popup.vars = c("Zonal Area" = "zonal_area", "Radius (Metres)" = "radius", colnames(df_fmm)[3], df_fmm %>% ungroup() %>% st_drop_geometry() %>% dplyr::select(last_col()) %>% colnames())) +
+      tm_fill(col = colnames(df_fmm)[3], palette = "plasma", title = df_fmm$legend_title[1], id = "", popup.vars = c("Zonal Area" = "zonal_area", "Radius (Metres)" = "radius", colnames(df_fmm)[3], df_fmm %>% ungroup() %>% st_drop_geometry() %>% dplyr::select(last_col()) %>% colnames())) +
       tm_borders(col = "black", lwd = 0.8) +
       tm_facets(by='id', ncol = 2, free.scales = F) +
       tm_basemap(server = c("OpenStreetMap", "Esri.WorldImagery")) +
