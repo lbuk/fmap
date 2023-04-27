@@ -133,9 +133,8 @@ fmap_stats = function(ncircles, radius_inner = NULL, radius_outer = NULL, lat = 
     fm_stats = df_fcircles %>%
       st_join(geo_points) %>%
       data.frame() %>%
-      group_by(zonal_area) %>%
+      group_by(zonal_area, radius) %>%
       dplyr::summarise(sum = sum(!! sym(sum), na.rm = T)) %>%
-      mutate(radius = fcircle_radii$radius) %>%
       dplyr::select(zonal_area, radius, sum) %>%
       as_tibble()
 
@@ -145,9 +144,8 @@ fmap_stats = function(ncircles, radius_inner = NULL, radius_outer = NULL, lat = 
     fm_stats = df_fcircles %>%
       st_join(geo_points) %>%
       data.frame() %>%
-      group_by(zonal_area) %>%
+      group_by(zonal_area, radius) %>%
       dplyr::summarise(mean = mean(!! sym(mean), na.rm = T)) %>%
-      mutate(radius = fcircle_radii$radius) %>%
       dplyr::select(zonal_area, radius, mean) %>%
       as_tibble()
 
@@ -157,9 +155,8 @@ fmap_stats = function(ncircles, radius_inner = NULL, radius_outer = NULL, lat = 
     fm_stats = df_fcircles %>%
       st_join(geo_points) %>%
       data.frame() %>%
-      group_by(zonal_area) %>%
+      group_by(zonal_area, radius) %>%
       dplyr::summarise(median = median(!! sym(median), na.rm = T)) %>%
-      mutate(radius = fcircle_radii$radius) %>%
       dplyr::select(zonal_area, radius, median) %>%
       as_tibble()
 
