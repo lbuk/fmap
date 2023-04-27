@@ -123,7 +123,7 @@ fmap_plot = function(ncircles, radius_inner = NULL, radius_outer = NULL, lat = N
   } else if(is.null(mean) && is.null(sum) && is.null(median) && count == T) {
     fm_plot = df_fcircles %>%
       mutate(circle_count = lengths(st_intersects(., geo_points))) %>%
-      dplyr::select(circle_count, zonal_area, radius)
+      dplyr::select(zonal_area, radius, circle_count)
 
     legend_title = "Count"
 
@@ -132,7 +132,7 @@ fmap_plot = function(ncircles, radius_inner = NULL, radius_outer = NULL, lat = N
       st_join(geo_points) %>%
       group_by(zonal_area, radius) %>%
       dplyr::summarise(sum = sum(!! sym(sum), na.rm = T)) %>%
-      dplyr::select(sum, zonal_area, radius)
+      dplyr::select(zonal_area, radius, sum)
 
     legend_title = paste0("Total ", '("', sum, '")')
 
@@ -141,7 +141,7 @@ fmap_plot = function(ncircles, radius_inner = NULL, radius_outer = NULL, lat = N
       st_join(geo_points) %>%
       group_by(zonal_area, radius) %>%
       dplyr::summarise(mean = mean(!! sym(mean), na.rm = T)) %>%
-      dplyr::select(mean, zonal_area, radius)
+      dplyr::select(zonal_area, radius, mean)
 
     legend_title = paste0("Mean ", '("', mean, '")')
 
@@ -150,7 +150,7 @@ fmap_plot = function(ncircles, radius_inner = NULL, radius_outer = NULL, lat = N
       st_join(geo_points) %>%
       group_by(zonal_area, radius) %>%
       dplyr::summarise(median = median(!! sym(median), na.rm = T)) %>%
-      dplyr::select(median, zonal_area, radius)
+      dplyr::select(zonal_area, radius, median)
 
     legend_title = paste0("Median ", '("', median, '")')
 
@@ -159,7 +159,7 @@ fmap_plot = function(ncircles, radius_inner = NULL, radius_outer = NULL, lat = N
   }
 
   tm_shape(fm_plot, name = "Fresnel Map") +
-    tm_fill(col = colnames(fm_plot)[1], palette = "viridis", title = legend_title, id = "", popup.vars = c("Zonal Area" = "zonal_area", "Radius (Metres)" = "radius", colnames(fm_plot)[1])) +
+    tm_fill(col = colnames(fm_plot)[3], palette = "viridis", title = legend_title, id = "", popup.vars = c("Zonal Area" = "zonal_area", "Radius (Metres)" = "radius", colnames(fm_plot)[3])) +
     tm_borders(col = "black", lwd = 0.8) +
     tm_basemap(server = c("OpenStreetMap", "Esri.WorldImagery")) +
     tm_view(view.legend.position = c("right", "top")) +
