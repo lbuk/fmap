@@ -181,7 +181,7 @@ fmap_multi = function(ncircles, radius_inner = NULL, radius_outer = NULL, geo_po
 
   if(output == 'plot') {
     tm_shape(df_fmm, name = "Fresnel Map") +
-      tm_fill(col = colnames(df_fmm)[3], palette = "plasma", title = df_fmm$legend[1], id = "", popup.vars = c("Zonal Area" = "zonal_area", "Radius (Metres)" = "radius", colnames(df_fmm)[3], colnames(df_fmm)[ncol(df_fmm)])) +
+      tm_fill(col = colnames(df_fmm)[3], palette = "plasma", title = df_fmm$legend[1], id = "", popup.vars = c("Zonal Area" = "zonal_area", "Radius (Metres)" = "radius", colnames(df_fmm)[3], df_fmm %>% ungroup() %>% st_drop_geometry() %>% dplyr::select(last_col()) %>% colnames())) +
       tm_borders(col = "black", lwd = 0.8) +
       tm_facets(by='id', ncol = 2, free.scales = F) +
       tm_basemap(server = c("OpenStreetMap", "Esri.WorldImagery")) +
@@ -202,14 +202,17 @@ fmap_multi = function(ncircles, radius_inner = NULL, radius_outer = NULL, geo_po
 
   } else if(output == 'data') {
     fmm_data = df_fmm %>%
-      dplyr::select(zonal_area, radius, 3, last_col(), id)
+      relocate(1, 2, 3, geometry, everything()) %>%
+      st_as_sf() %>%
+      dplyr::select(1, 2, 3, last_col(), id)
 
     fmm_data
 
   } else if(output == 'stats') {
     fmm_stats = df_fmm %>%
+      relocate(1, 2, 3, geometry, everything()) %>%
       data.frame() %>%
-      dplyr::select(zonal_area, radius, 3, last_col(), id) %>%
+      dplyr::select(1, 2, 3, last_col(), id) %>%
       as_tibble()
 
     fmm_stats
