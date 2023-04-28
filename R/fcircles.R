@@ -100,10 +100,11 @@ fcircles = function(ncircles, radius_inner = NULL, radius_outer = NULL, lat = NU
   df_fcircles = inner_fcircle %>%
     rbind(outer_fcircles) %>%
     mutate(zonal_area = 1:ncircles, radius = fcircle_radii$radius) %>%
+    dplyr::select(zonal_area, radius, geometry) %>%
     arrange(zonal_area) %>%
-    st_make_valid(T) %>%
     as_tibble() %>%
-    st_as_sf()
+    st_as_sf() %>%
+    st_make_valid(T)
 
   df_fcircles
 }
