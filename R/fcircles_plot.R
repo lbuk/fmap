@@ -121,7 +121,7 @@ fcircles_plot = function(ncircles, radius_inner = NULL, radius_outer = NULL, lat
     tm_fill(col = "white", alpha = 0.5, id = "", popup.vars = c("Zonal Area" = "zonal_area", "Radius (Metres)" = "radius")) +
     tm_borders(col = "black", lwd = 1.225) +
     tm_shape(geo_points, name = "geo_points") +
-    tm_dots(col = "dataset", title = "geo_points", size = 0.15, palette = c("#3DE2F1"), alpha = 0.75, id = "", legend.show = T, popup.vars = colnames(st_drop_geometry(geo_points[1:ncol(geo_points)-1]))) +
+    tm_dots(col = "dataset", title = "geo_points", size = 0.15, palette = c("#3DE2F1"), alpha = 0.75, id = "", legend.show = T, popup.vars = geo_points %>% st_drop_geometry() %>% dplyr::select(-dataset) %>% colnames()) +
     tm_view(view.legend.position = c("left", "top")) +
     tm_basemap(server = c("OpenStreetMap", "Esri.WorldImagery")) +
     tm_layout(frame = F,
