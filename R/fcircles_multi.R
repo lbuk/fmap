@@ -139,7 +139,9 @@ fcircles_multi = function(ncircles, radius_inner = NULL, radius_outer = NULL, ge
       tmap_options(show.messages = F, show.warnings = F)
 
   } else if(output == 'data') {
-    fcm_data = df_fcm
+    fcm_data = df_fcm %>%
+      as_tibble() %>%
+      st_as_sf()
 
     fcm_data
 
