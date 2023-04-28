@@ -123,6 +123,7 @@ fmap_data = function(ncircles, radius_inner = NULL, radius_outer = NULL, lat = N
   } else if(is.null(mean) && is.null(sum) && is.null(median) && count == T) {
     fm_data = df_fcircles %>%
       mutate(circle_count = lengths(st_intersects(., geo_points))) %>%
+      dplyr::select(zonal_area, radius, circle_count, geometry) %>%
       as_tibble() %>%
       st_as_sf()
 
