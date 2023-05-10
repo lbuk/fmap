@@ -2,7 +2,7 @@
 #'
 #' Function for plotting or deriving data or stats from multiple Fresnel Maps, or thematic maps that visualise spatial data to the level of equal-area concentric circles (or annuli), centred on different locations.
 #'
-#' @param ncircles Number of concentric circles of equal area
+#' @param ncircles Number of concentric circles of equal area including the inner circle and annuli
 #' @param radius_inner Radius of innermost circle in metres
 #' @param radius_outer Radius of outermost circle in metres
 #' @param geo_points A spatial dataset of points to aggregate
@@ -134,7 +134,7 @@ fmap_multi = function(ncircles, radius_inner = NULL, radius_outer = NULL, geo_po
 
     } else if(is.null(mean) && is.null(sum) && is.null(median) && count == T) {
       df_fmm = df_fcircles %>%
-        mutate(circle_count = lengths(st_intersects(., geo_points)), id = id) %>%
+        mutate(count = lengths(st_intersects(., geo_points)), id = id) %>%
         st_transform(crs)
 
     } else if(is.null(sum) != T && is.null(mean) && is.null(median) && count == F) {

@@ -2,7 +2,7 @@
 #'
 #' Function for plotting or deriving data from multiple Fresnel circles centred on different locations.
 #'
-#' @param ncircles Number of concentric circles of equal area
+#' @param ncircles Number of concentric circles of equal area including the inner circle and annuli
 #' @param radius_inner Radius of innermost circle in metres
 #' @param radius_outer Radius of outermost circle in metres
 #' @param geo_centres A spatial dataset containing the coordinates of the centres of the Fresnel circles

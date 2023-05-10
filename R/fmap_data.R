@@ -2,7 +2,7 @@
 #'
 #' Function for creating Fresnel Map polygons by aggregating data to the level of equal-area concentric circles (or annuli).
 #'
-#' @param ncircles Number of concentric circles of equal area
+#' @param ncircles Number of concentric circles of equal area including the inner circle and annuli
 #' @param radius_inner Radius of innermost circle in metres
 #' @param radius_outer Radius of outermost circle in metres
 #' @param lat Latitude of the centre of the Fresnel Map
@@ -122,8 +122,8 @@ fmap_data = function(ncircles, radius_inner = NULL, radius_outer = NULL, lat = N
 
   } else if(is.null(mean) && is.null(sum) && is.null(median) && count == T) {
     fm_data = df_fcircles %>%
-      mutate(circle_count = lengths(st_intersects(., geo_points))) %>%
-      dplyr::select(zonal_area, radius, circle_count, geometry) %>%
+      mutate(count = lengths(st_intersects(., geo_points))) %>%
+      dplyr::select(zonal_area, radius, count, geometry) %>%
       as_tibble() %>%
       st_as_sf()
 
