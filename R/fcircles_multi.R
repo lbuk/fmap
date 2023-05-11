@@ -140,7 +140,7 @@ fcircles_multi = function(ncircles, radius_inner = NULL, radius_outer = NULL, ge
 
   } else if(output == 'data') {
     fcm_data = df_fcm %>%
-      as_tibble() %>%
+      tibble() %>%
       st_as_sf()
 
     fcm_data

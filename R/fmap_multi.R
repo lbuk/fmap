@@ -218,7 +218,7 @@ fmap_multi = function(ncircles, radius_inner = NULL, radius_outer = NULL, geo_po
       relocate(1, 2, 3, geometry, everything()) %>%
       st_as_sf() %>%
       dplyr::select(1, 2, 3, last_col(), id) %>%
-      as_tibble() %>%
+      tibble() %>%
       st_as_sf()
 
     fmm_data
@@ -226,9 +226,8 @@ fmap_multi = function(ncircles, radius_inner = NULL, radius_outer = NULL, geo_po
   } else if(output == 'stats') {
     fmm_stats = df_fmm %>%
       relocate(1, 2, 3, geometry, everything()) %>%
-      data.frame() %>%
-      dplyr::select(1, 2, 3, last_col(), id) %>%
-      as_tibble()
+      tibble() %>%
+      dplyr::select(1, 2, 3, last_col(), id)
 
     fmm_stats
 

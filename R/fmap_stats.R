@@ -123,42 +123,38 @@ fmap_stats = function(ncircles, radius_inner = NULL, radius_outer = NULL, lat = 
   } else if(is.null(mean) && is.null(sum) && is.null(median) && count == T) {
     fm_stats = df_fcircles %>%
       mutate(count = lengths(st_intersects(., geo_points))) %>%
-      data.frame() %>%
-      dplyr::select(zonal_area, radius, count) %>%
-      as_tibble()
+      tibble() %>%
+      dplyr::select(zonal_area, radius, count)
 
     fm_stats
 
   } else if(is.null(sum) != T && is.null(mean) && is.null(median) && count == F) {
     fm_stats = df_fcircles %>%
       st_join(geo_points) %>%
-      data.frame() %>%
+      tibble() %>%
       group_by(zonal_area, radius) %>%
       dplyr::summarise(sum = sum(!! sym(sum), na.rm = T)) %>%
-      dplyr::select(zonal_area, radius, sum) %>%
-      as_tibble()
+      dplyr::select(zonal_area, radius, sum)
 
     fm_stats
 
   } else if(is.null(mean) != T && is.null(sum) && is.null(median) && count == F) {
     fm_stats = df_fcircles %>%
       st_join(geo_points) %>%
-      data.frame() %>%
+      tibble() %>%
       group_by(zonal_area, radius) %>%
       dplyr::summarise(mean = mean(!! sym(mean), na.rm = T)) %>%
-      dplyr::select(zonal_area, radius, mean) %>%
-      as_tibble()
+      dplyr::select(zonal_area, radius, mean)
 
     fm_stats
 
   } else if(is.null(median) != T && is.null(sum) && is.null(mean) && count == F) {
     fm_stats = df_fcircles %>%
       st_join(geo_points) %>%
-      data.frame() %>%
+      tibble() %>%
       group_by(zonal_area, radius) %>%
       dplyr::summarise(median = median(!! sym(median), na.rm = T)) %>%
-      dplyr::select(zonal_area, radius, median) %>%
-      as_tibble()
+      dplyr::select(zonal_area, radius, median)
 
     fm_stats
 

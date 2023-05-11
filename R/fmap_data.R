@@ -124,7 +124,7 @@ fmap_data = function(ncircles, radius_inner = NULL, radius_outer = NULL, lat = N
     fm_data = df_fcircles %>%
       mutate(count = lengths(st_intersects(., geo_points))) %>%
       dplyr::select(zonal_area, radius, count, geometry) %>%
-      as_tibble() %>%
+      tibble() %>%
       st_as_sf()
 
     fm_data

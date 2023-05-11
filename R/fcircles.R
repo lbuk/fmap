@@ -102,7 +102,7 @@ fcircles = function(ncircles, radius_inner = NULL, radius_outer = NULL, lat = NU
     mutate(zonal_area = 1:ncircles, radius = fcircle_radii$radius) %>%
     dplyr::select(zonal_area, radius, geometry) %>%
     arrange(zonal_area) %>%
-    as_tibble() %>%
+    tibble() %>%
     st_as_sf() %>%
     st_make_valid(T)
 
