@@ -216,8 +216,7 @@ fmap_multi = function(ncircles, radius_inner = NULL, radius_outer = NULL, geo_po
   } else if(output == 'data') {
     fmm_data = df_fmm %>%
       relocate(1, 2, 3, geometry, everything()) %>%
-      st_as_sf() %>%
-      dplyr::select(1, 2, 3, last_col(), id) %>%
+      dplyr::select(1, 2, 3, last_col(), id, geometry) %>%
       tibble() %>%
       st_as_sf()
 
