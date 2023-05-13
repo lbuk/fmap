@@ -44,13 +44,13 @@ fmap_plot = function(ncircles, radius_inner = NULL, radius_outer = NULL, lat = N
 
   } else if(is.null(radius_inner) != T && is.null(radius_outer)) {
     area_fcircles = pi * (radius_inner ^ 2)
-    radius = sqrt((area_fcircles * 1:ncircles) / pi)
 
   } else {
     area_outer = pi * (radius_outer ^ 2)
     area_fcircles = area_outer / ncircles
-    radius = sqrt((area_fcircles * 1:ncircles) / pi)
   }
+
+  radius = sqrt((area_fcircles * 1:ncircles) / pi)
 
   fcircle_radii = data.frame(radius)
 
