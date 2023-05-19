@@ -33,6 +33,9 @@ fmap_stats = function(ncircles, radius_inner = NULL, radius_outer = NULL, lat = 
   } else if(is.null(radius_inner) != T && is.null(radius_outer) != T) {
     stop('radius_inner and radius_outer inputted', call. = F)
 
+  } else if(radius_inner <= 0 && is.null(radius_outer) || radius_outer <= 0 && is.null(radius_inner)) {
+    stop('radius should not be <= 0', call. = F)
+
   } else if(ncircles <= 1 && ncircles%%1 != 0) {
     stop('ncircles should not be <= 1 or a decimal number', call. = F)
 
