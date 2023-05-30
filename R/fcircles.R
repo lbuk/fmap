@@ -41,16 +41,16 @@ fcircles = function(ncircles, radius_inner = NULL, radius_outer = NULL, lat = NU
     stop('ncircles should not be a decimal number', call. = F)
 
   } else if(is.null(radius_inner) != T && is.null(radius_outer)) {
-    area_fcircles = pi * (radius_inner ^ 2)
+    area_fc = pi * (radius_inner ^ 2)
 
   } else {
-    area_outer = pi * (radius_outer ^ 2)
-    area_fcircles = area_outer / ncircles
+    area_c = pi * (radius_outer ^ 2)
+    area_fc = area_c / ncircles
   }
 
-  radius = sqrt((area_fcircles * 1:ncircles) / pi)
+  radius = sqrt((area_fc * 1:ncircles) / pi)
 
-  fcircle_radii = data.frame(radius)
+  radii_fc = data.frame(radius)
 
   if(is.null(lat) && is.null(lon) && is.null(geo_centre)) {
     stop('no centre coordinates inputted', call. = F)
@@ -84,30 +84,30 @@ fcircles = function(ncircles, radius_inner = NULL, radius_outer = NULL, lat = NU
 
   crs_aeqd = sprintf("+proj=aeqd +lat_0=%s +lon_0=%s +x_0=0 +y_0=0", coords$lat, coords$lon)
 
-  circles = lapply(1:nrow(fcircle_radii), function(i) {
+  cs = lapply(1:nrow(radii_fc), function(i) {
     coords %>%
       st_as_sf(coords = c("lon", "lat"), crs = 4326) %>%
       st_transform(crs_aeqd) %>%
-      st_buffer(fcircle_radii[i, "radius"], nQuadSegs = 1375) %>%
-      mutate(circle = fcircle_radii[i, "circle"])
+      st_buffer(radii_fc[i, "radius"], nQuadSegs = 1375) %>%
+      mutate(circle = radii_fc[i, "circle"])
   })
 
-  inner_fcircle = circles[[1]]
+  i_fc = cs[[1]]
 
-  outer_fcircles = lapply(2:length(circles), function(i)  {
-    st_difference(circles[[i]], circles[[i-1]])
+  o_fc = lapply(2:length(cs), function(i)  {
+    st_difference(cs[[i]], cs[[i-1]])
   })
 
-  outer_fcircles = do.call(rbind, outer_fcircles)
+  o_fc = do.call(rbind, o_fc)
 
-  df_fcircles = inner_fcircle %>%
-    rbind(outer_fcircles) %>%
-    mutate(zonal_area = 1:ncircles, radius = fcircle_radii$radius) %>%
+  fcircles = i_fc %>%
+    rbind(o_fc) %>%
+    mutate(zonal_area = 1:ncircles, radius = radii_fc$radius) %>%
     dplyr::select(zonal_area, radius, geometry) %>%
     arrange(zonal_area) %>%
     tibble() %>%
     st_as_sf() %>%
     st_make_valid(T)
 
-  df_fcircles
+  fcircles
 }

@@ -46,16 +46,16 @@ fmap_plot = function(ncircles, radius_inner = NULL, radius_outer = NULL, lat = N
     stop('ncircles should not be a decimal number', call. = F)
 
   } else if(is.null(radius_inner) != T && is.null(radius_outer)) {
-    area_fcircles = pi * (radius_inner ^ 2)
+    area_fc = pi * (radius_inner ^ 2)
 
   } else {
-    area_outer = pi * (radius_outer ^ 2)
-    area_fcircles = area_outer / ncircles
+    area_c = pi * (radius_outer ^ 2)
+    area_fc = area_c / ncircles
   }
 
-  radius = sqrt((area_fcircles * 1:ncircles) / pi)
+  radius = sqrt((area_fc * 1:ncircles) / pi)
 
-  fcircle_radii = data.frame(radius)
+  radii_fc = data.frame(radius)
 
   if(is.null(lat) && is.null(lon) && is.null(geo_centre)) {
     stop('no centre coordinates inputted', call. = F)
@@ -89,25 +89,25 @@ fmap_plot = function(ncircles, radius_inner = NULL, radius_outer = NULL, lat = N
 
   crs_aeqd = sprintf("+proj=aeqd +lat_0=%s +lon_0=%s +x_0=0 +y_0=0", coords$lat, coords$lon)
 
-  circles = lapply(1:nrow(fcircle_radii), function(i) {
+  cs = lapply(1:nrow(radii_fc), function(i) {
     coords %>%
       st_as_sf(coords = c("lon", "lat"), crs = 4326) %>%
       st_transform(crs_aeqd) %>%
-      st_buffer(fcircle_radii[i, "radius"], nQuadSegs = 1375) %>%
-      mutate(circle = fcircle_radii[i, "circle"])
+      st_buffer(radii_fc[i, "radius"], nQuadSegs = 1375) %>%
+      mutate(circle = radii_fc[i, "circle"])
   })
 
-  inner_fcircle = circles[[1]]
+  i_fc = cs[[1]]
 
-  outer_fcircles = lapply(2:length(circles), function(i)  {
-    st_difference(circles[[i]], circles[[i-1]])
+  o_fc = lapply(2:length(cs), function(i)  {
+    st_difference(cs[[i]], cs[[i-1]])
   })
 
-  outer_fcircles = do.call(rbind, outer_fcircles)
+  o_fc = do.call(rbind, o_fc)
 
-  df_fcircles = inner_fcircle %>%
-    rbind(outer_fcircles) %>%
-    mutate(zonal_area = 1:ncircles, radius = fcircle_radii$radius) %>%
+  df_fc = i_fc %>%
+    rbind(o_fc) %>%
+    mutate(zonal_area = 1:ncircles, radius = radii_fc$radius) %>%
     arrange(zonal_area) %>%
     st_make_valid(T)
 
@@ -124,14 +124,14 @@ fmap_plot = function(ncircles, radius_inner = NULL, radius_outer = NULL, lat = N
     stop('no aggregation inputted', call. = F)
 
   } else if(is.null(mean) && is.null(sum) && is.null(median) && count == T) {
-    fm_plot = df_fcircles %>%
+    fmap_plot = df_fc %>%
       mutate(count = lengths(st_intersects(., geo_points))) %>%
       dplyr::select(zonal_area, radius, count)
 
     legend_title = "Count"
 
   } else if(is.null(sum) != T && is.null(mean) && is.null(median) && count == F) {
-    fm_plot = df_fcircles %>%
+    fmap_plot = df_fc %>%
       st_join(geo_points) %>%
       group_by(zonal_area, radius) %>%
       dplyr::summarise(sum = sum(!! sym(sum), na.rm = T)) %>%
@@ -140,7 +140,7 @@ fmap_plot = function(ncircles, radius_inner = NULL, radius_outer = NULL, lat = N
     legend_title = paste0("Total ", '("', sum, '")')
 
   } else if(is.null(mean) != T && is.null(sum) && is.null(median) && count == F) {
-    fm_plot = df_fcircles %>%
+    fmap_plot = df_fc %>%
       st_join(geo_points) %>%
       group_by(zonal_area, radius) %>%
       dplyr::summarise(mean = mean(!! sym(mean), na.rm = T)) %>%
@@ -149,7 +149,7 @@ fmap_plot = function(ncircles, radius_inner = NULL, radius_outer = NULL, lat = N
     legend_title = paste0("Mean ", '("', mean, '")')
 
   } else if(is.null(median) != T && is.null(sum) && is.null(mean) && count == F) {
-    fm_plot = df_fcircles %>%
+    fmap_plot = df_fc %>%
       st_join(geo_points) %>%
       group_by(zonal_area, radius) %>%
       dplyr::summarise(median = median(!! sym(median), na.rm = T)) %>%
@@ -161,8 +161,8 @@ fmap_plot = function(ncircles, radius_inner = NULL, radius_outer = NULL, lat = N
     stop('error in aggregation parameter', call. = F)
   }
 
-  tm_shape(fm_plot, name = "Fresnel Map") +
-    tm_fill(col = colnames(fm_plot)[3], palette = "viridis", title = legend_title, id = "", popup.vars = c("Zonal Area" = "zonal_area", "Radius (Metres)" = "radius", colnames(fm_plot)[3])) +
+  tm_shape(fmap_plot, name = "Fresnel Map") +
+    tm_fill(col = colnames(fmap_plot)[3], palette = "viridis", title = legend_title, id = "", popup.vars = c("Zonal Area" = "zonal_area", "Radius (Metres)" = "radius", colnames(fmap_plot)[3])) +
     tm_borders(col = "black", lwd = 0.8) +
     tm_basemap(server = c("OpenStreetMap", "Esri.WorldImagery")) +
     tm_view(view.legend.position = c("right", "top")) +

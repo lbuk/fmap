@@ -49,16 +49,16 @@ fmap_multi = function(ncircles, radius_inner = NULL, radius_outer = NULL, geo_po
     stop('ncircles should not be a decimal number', call. = F)
 
   } else if(is.null(radius_inner) != T && is.null(radius_outer)) {
-    area_fcircles = pi * (radius_inner ^ 2)
+    area_fc = pi * (radius_inner ^ 2)
 
   } else {
-    area_outer = pi * (radius_outer ^ 2)
-    area_fcircles = area_outer / ncircles
+    area_c = pi * (radius_outer ^ 2)
+    area_fc = area_c / ncircles
   }
 
-  radius = sqrt((area_fcircles * 1:ncircles) / pi)
+  radius = sqrt((area_fc * 1:ncircles) / pi)
 
-  fcircle_radii = data.frame(radius)
+  radii_fc = data.frame(radius)
 
   if(grepl(x = class(geo_points)[1], pattern = "sf", ignore.case = T) != T && grepl(x = class(geo_points)[1], pattern = "sp", ignore.case = T) != T) {
     stop('input geo_points as a points-based spatial dataset', call. = F)
@@ -97,7 +97,7 @@ fmap_multi = function(ncircles, radius_inner = NULL, radius_outer = NULL, geo_po
       mutate(id = geo_centres$id)
   }
 
-  df_fmm = lapply(1:nrow(geo_centres), function(i) {
+  fmap_multi = lapply(1:nrow(geo_centres), function(i) {
     lat = geo_centres[i, "lat"]
     lon = geo_centres[i, "lon"]
 
@@ -107,25 +107,25 @@ fmap_multi = function(ncircles, radius_inner = NULL, radius_outer = NULL, geo_po
 
     crs_aeqd = sprintf("+proj=aeqd +lat_0=%s +lon_0=%s +x_0=0 +y_0=0", coords$lat, coords$lon)
 
-    circles = lapply(1:nrow(fcircle_radii), function(i) {
+    cs = lapply(1:nrow(radii_fc), function(i) {
       coords %>%
         st_as_sf(coords = c("lon", "lat"), crs = 4326) %>%
         st_transform(crs_aeqd) %>%
-        st_buffer(fcircle_radii[i, "radius"], nQuadSegs = 1375) %>%
-        mutate(circle = fcircle_radii[i, "circle"])
+        st_buffer(radii_fc[i, "radius"], nQuadSegs = 1375) %>%
+        mutate(circle = radii_fc[i, "circle"])
     })
 
-    inner_fcircle = circles[[1]]
+    i_fc = cs[[1]]
 
-    outer_fcircles = lapply(2:length(circles), function(i)  {
-      st_difference(circles[[i]], circles[[i-1]])
+    o_fc = lapply(2:length(cs), function(i)  {
+      st_difference(cs[[i]], cs[[i-1]])
     })
 
-    outer_fcircles = do.call(rbind, outer_fcircles)
+    o_fc = do.call(rbind, o_fc)
 
-    df_fcircles = inner_fcircle %>%
-      rbind(outer_fcircles) %>%
-      mutate(zonal_area = 1:ncircles, radius = fcircle_radii$radius) %>%
+    df_fc = i_fc %>%
+      rbind(o_fc) %>%
+      mutate(zonal_area = 1:ncircles, radius = radii_fc$radius) %>%
       arrange(zonal_area) %>%
       st_make_valid(T)
 
@@ -136,12 +136,12 @@ fmap_multi = function(ncircles, radius_inner = NULL, radius_outer = NULL, geo_po
       stop('no aggregation inputted', call. = F)
 
     } else if(is.null(mean) && is.null(sum) && is.null(median) && count == T) {
-      df_fmm = df_fcircles %>%
+      fmap_multi = df_fc %>%
         mutate(count = lengths(st_intersects(., geo_points)), id = id) %>%
         st_transform(crs)
 
     } else if(is.null(sum) != T && is.null(mean) && is.null(median) && count == F) {
-      df_fmm = df_fcircles %>%
+      fmap_multi = df_fc %>%
         st_join(geo_points) %>%
         group_by(zonal_area, radius) %>%
         dplyr::summarise(sum_calc = sum(!! sym(sum), na.rm = T)) %>%
@@ -150,7 +150,7 @@ fmap_multi = function(ncircles, radius_inner = NULL, radius_outer = NULL, geo_po
         dplyr::rename(sum = sum_calc)
 
     } else if(is.null(mean) != T && is.null(sum) && is.null(median) && count == F) {
-      df_fmm = df_fcircles %>%
+      fmap_multi = df_fc %>%
         st_join(geo_points) %>%
         group_by(zonal_area, radius) %>%
         dplyr::summarise(mean_calc = mean(!! sym(mean), na.rm = T)) %>%
@@ -159,7 +159,7 @@ fmap_multi = function(ncircles, radius_inner = NULL, radius_outer = NULL, geo_po
         dplyr::rename(mean = mean_calc)
 
     } else if(is.null(median) != T && is.null(sum) && is.null(mean) && count == F) {
-      df_fmm = df_fcircles %>%
+      fmap_multi = df_fc %>%
         st_join(geo_points) %>%
         group_by(zonal_area, radius) %>%
         dplyr::summarise(median_calc = median(!! sym(median), na.rm = T)) %>%
@@ -172,15 +172,15 @@ fmap_multi = function(ncircles, radius_inner = NULL, radius_outer = NULL, geo_po
     }
 
     if(is.null(id_var) != T) {
-      df_fmm = df_fmm %>%
+      fmap_multi = fmap_multi %>%
         dplyr::mutate(!!paste(id_var) := id)
 
     } else {
-      df_fmm = df_fmm
+      fmap_multi = fmap_multi
     }
   })
 
-  df_fmm = do.call(rbind, df_fmm)
+  fmap_multi = do.call(rbind, fmap_multi)
 
   if(count == T) {
     legend_title = "Count"
@@ -196,8 +196,8 @@ fmap_multi = function(ncircles, radius_inner = NULL, radius_outer = NULL, geo_po
   }
 
   if(output == 'plot') {
-    tm_shape(df_fmm, name = "Fresnel Map") +
-      tm_fill(col = colnames(df_fmm)[3], palette = "plasma", title = legend_title, id = "", popup.vars = c("Zonal Area" = "zonal_area", "Radius (Metres)" = "radius", colnames(df_fmm)[3], df_fmm %>% ungroup() %>% st_drop_geometry() %>% dplyr::select(last_col()) %>% colnames())) +
+    tm_shape(fmap_multi, name = "Fresnel Map") +
+      tm_fill(col = colnames(fmap_multi)[3], palette = "plasma", title = legend_title, id = "", popup.vars = c("Zonal Area" = "zonal_area", "Radius (Metres)" = "radius", colnames(fmap_multi)[3], fmap_multi %>% ungroup() %>% st_drop_geometry() %>% dplyr::select(last_col()) %>% colnames())) +
       tm_borders(col = "black", lwd = 0.8) +
       tm_facets(by='id', ncol = 2, free.scales = F) +
       tm_basemap(server = c("OpenStreetMap", "Esri.WorldImagery")) +
@@ -217,21 +217,21 @@ fmap_multi = function(ncircles, radius_inner = NULL, radius_outer = NULL, geo_po
       tmap_options(show.messages = F, show.warnings = F)
 
   } else if(output == 'data') {
-    fmm_data = df_fmm %>%
+    fmap_multi_data = fmap_multi %>%
       relocate(1, 2, 3, geometry, everything()) %>%
       dplyr::select(1, 2, 3, last_col(), id, geometry) %>%
       tibble() %>%
       st_as_sf()
 
-    fmm_data
+    fmap_multi_data
 
   } else if(output == 'stats') {
-    fmm_stats = df_fmm %>%
+    fmap_multi_stats = fmap_multi %>%
       relocate(1, 2, 3, geometry, everything()) %>%
       tibble() %>%
       dplyr::select(1, 2, 3, last_col(), id)
 
-    fmm_stats
+    fmap_multi_stats
 
   } else {
     stop('error in output parameter', call. = F)
