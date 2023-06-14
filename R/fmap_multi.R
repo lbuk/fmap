@@ -182,20 +182,20 @@ fmap_multi = function(ncircles, radius_inner = NULL, radius_outer = NULL, geo_po
 
   fmap_multi = do.call(rbind, fmap_multi)
 
-  if(count == T) {
-    legend_title = "Count"
-
-  } else if(is.null(sum) != T) {
-    legend_title = paste0("Total ", '("', sum, '")')
-
-  } else if(is.null(mean) != T) {
-    legend_title = paste0("Mean ", '("', mean, '")')
-
-  } else {
-    legend_title = paste0("Median ", '("', median, '")')
-  }
-
   if(output == 'plot') {
+    if(count == T) {
+      legend_title = "Count"
+
+    } else if(is.null(sum) != T) {
+      legend_title = paste0("Total ", '("', sum, '")')
+
+    } else if(is.null(mean) != T) {
+      legend_title = paste0("Mean ", '("', mean, '")')
+
+    } else {
+      legend_title = paste0("Median ", '("', median, '")')
+    }
+
     tm_shape(fmap_multi, name = "Fresnel Map") +
       tm_fill(col = colnames(fmap_multi)[3], palette = "plasma", title = legend_title, id = "", popup.vars = c("Zonal Area" = "zonal_area", "Radius (Metres)" = "radius", colnames(fmap_multi)[3], fmap_multi %>% ungroup() %>% st_drop_geometry() %>% dplyr::select(last_col()) %>% colnames())) +
       tm_borders(col = "black", lwd = 0.8) +
