@@ -111,8 +111,7 @@ fmap_multi = function(ncircles, radius_inner = NULL, radius_outer = NULL, geo_po
       coords %>%
         st_as_sf(coords = c("lon", "lat"), crs = 4326) %>%
         st_transform(crs_aeqd) %>%
-        st_buffer(radii_fc[i, "radius"], nQuadSegs = 1375) %>%
-        mutate(circle = radii_fc[i, "circle"])
+        st_buffer(radii_fc[i, "radius"], nQuadSegs = 1375)
     })
 
     i_fc = cs[[1]]
@@ -125,9 +124,15 @@ fmap_multi = function(ncircles, radius_inner = NULL, radius_outer = NULL, geo_po
 
     df_fc = i_fc %>%
       rbind(o_fc) %>%
-      mutate(zonal_area = 1:ncircles, radius = radii_fc$radius) %>%
-      arrange(zonal_area) %>%
-      st_make_valid(T)
+      mutate(zonal_area = 1:ncircles, radius = radii_fc$radius)
+
+    if(any(st_is_valid(df_fc) == FALSE) == T) {
+      df_fc = df_fc %>%
+        st_make_valid(T)
+
+    } else {
+      df_fc = df_fc
+    }
 
     geo_points = geo_points %>%
       st_transform(crs_aeqd)

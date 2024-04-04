@@ -88,8 +88,7 @@ fcircles = function(ncircles, radius_inner = NULL, radius_outer = NULL, lat = NU
     coords %>%
       st_as_sf(coords = c("lon", "lat"), crs = 4326) %>%
       st_transform(crs_aeqd) %>%
-      st_buffer(radii_fc[i, "radius"], nQuadSegs = 1375) %>%
-      mutate(circle = radii_fc[i, "circle"])
+      st_buffer(radii_fc[i, "radius"], nQuadSegs = 1375)
   })
 
   i_fc = cs[[1]]
@@ -104,10 +103,16 @@ fcircles = function(ncircles, radius_inner = NULL, radius_outer = NULL, lat = NU
     rbind(o_fc) %>%
     mutate(zonal_area = 1:ncircles, radius = radii_fc$radius) %>%
     dplyr::select(zonal_area, radius, geometry) %>%
-    arrange(zonal_area) %>%
     tibble() %>%
-    st_as_sf() %>%
-    st_make_valid(T)
+    st_as_sf()
 
-  fcircles
+  if(any(st_is_valid(fcircles) == FALSE) == T) {
+    fcircles = fcircles %>%
+      st_make_valid(T)
+
+    fcircles
+
+  } else {
+    fcircles
+  }
 }
