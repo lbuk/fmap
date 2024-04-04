@@ -1,10 +1,10 @@
 #' Polygonal Data from the Fresnel Map
 #'
-#' Function for creating Fresnel Map polygons by aggregating data to the level of equal-area concentric circles (or annuli).
+#' Function for creating Fresnel Map polygons by aggregating data to the level of equal-area concentric circular zones (or annuli).
 #'
-#' @param ncircles Number of concentric circles of equal area including the inner circle and annuli
-#' @param radius_inner Radius of innermost circle in metres
-#' @param radius_outer Radius of outermost circle in metres
+#' @param ncircles Number of concentric circular zones of equal area including the inner circle and annuli
+#' @param radius_inner Radius of innermost Fresnel circle in metres
+#' @param radius_outer Radius of outermost Fresnel circle in metres
 #' @param lat Latitude of the centre of the Fresnel Map
 #' @param lon Longitude of the centre of the Fresnel Map
 #' @param geo_centre A spatial dataset containing the coordinates of the centre of the Fresnel Map

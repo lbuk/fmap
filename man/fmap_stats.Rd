@@ -19,11 +19,11 @@ fmap_stats(
 )
 }
 \arguments{
-\item{ncircles}{Number of concentric circles of equal area including the inner circle and annuli}
+\item{ncircles}{Number of concentric circular zones of equal area including the inner circle and annuli}
 
-\item{radius_inner}{Radius of innermost circle in metres}
+\item{radius_inner}{Radius of innermost Fresnel circle in metres}
 
-\item{radius_outer}{Radius of outermost circle in metres}
+\item{radius_outer}{Radius of outermost Fresnel circle in metres}
 
 \item{lat}{Latitude of the centre of the Fresnel Map}
 
@@ -45,7 +45,7 @@ fmap_stats(
 Summary statistics from the Fresnel Map based on aggregated data from the Fresnel circles.
 }
 \description{
-Function for calculating summary statistics from Fresnel Maps, or thematic maps that visualise spatial data to the level of equal-area concentric circles (or annuli).
+Function for calculating summary statistics from Fresnel Maps, or thematic maps that visualise spatial data to the level of equal-area concentric circular zones (or annuli).
 }
 \examples{
 # Load the sf datasets of cholera deaths and Soho pumps

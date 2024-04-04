@@ -19,11 +19,11 @@ fmap_data(
 )
 }
 \arguments{
-\item{ncircles}{Number of concentric circles of equal area including the inner circle and annuli}
+\item{ncircles}{Number of concentric circular zones of equal area including the inner circle and annuli}
 
-\item{radius_inner}{Radius of innermost circle in metres}
+\item{radius_inner}{Radius of innermost Fresnel circle in metres}
 
-\item{radius_outer}{Radius of outermost circle in metres}
+\item{radius_outer}{Radius of outermost Fresnel circle in metres}
 
 \item{lat}{Latitude of the centre of the Fresnel Map}
 
@@ -45,7 +45,7 @@ fmap_data(
 An sf dataset of Fresnel Map polygons based on aggregations of points-based data with a custom Azimuthal Equidistant (AEQD) CRS.
 }
 \description{
-Function for creating Fresnel Map polygons by aggregating data to the level of equal-area concentric circles (or annuli).
+Function for creating Fresnel Map polygons by aggregating data to the level of equal-area concentric circular zones (or annuli).
 }
 \examples{
 # Load the sf datasets of cholera deaths and Soho pumps
