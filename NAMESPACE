@@ -2,6 +2,5 @@
 
 export(fcircles)
 export(fmap_data)
-export(fmap_multi)
 export(fmap_plot)
 export(fmap_stats)
