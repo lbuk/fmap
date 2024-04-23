@@ -1,10 +1,10 @@
 #' Fresnel Circles
 #'
-#' Function for creating Fresnel circles polygons for mapping.
+#' Function for creating Fresnel circles polygons for mapping. Fresnel circles consist of a central circle as well as concentric annuli, all of which are equal in area.
 #'
-#' @param ncircles Number of concentric circular zones of equal area including the inner_circle circle and annuli
-#' @param radius_inner Radius of inner_circlemost Fresnel circle in metres
-#' @param radius_outer Radius of outer_circlesmost Fresnel circle in metres
+#' @param ncircles Number of concentric circular zones of equal area (i.e. Fresnel circles) including the inner circle and annuli
+#' @param radius_inner Radius of innermost Fresnel circle in metres
+#' @param radius_outer Radius of outermost Fresnel circle in metres
 #' @param lat Latitude of the centre of the Fresnel circles
 #' @param lon Longitude of the centre of the Fresnel circles
 #' @param geo_centre A spatial dataset containing the coordinates of the centre of the Fresnel circles

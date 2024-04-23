@@ -14,11 +14,11 @@ fcircles(
 )
 }
 \arguments{
-\item{ncircles}{Number of concentric circular zones of equal area including the inner_circle circle and annuli}
+\item{ncircles}{Number of concentric circular zones of equal area (i.e. Fresnel circles) including the inner circle and annuli}
 
-\item{radius_inner}{Radius of inner_circlemost Fresnel circle in metres}
+\item{radius_inner}{Radius of innermost Fresnel circle in metres}
 
-\item{radius_outer}{Radius of outer_circlesmost Fresnel circle in metres}
+\item{radius_outer}{Radius of outermost Fresnel circle in metres}
 
 \item{lat}{Latitude of the centre of the Fresnel circles}
 
@@ -30,7 +30,7 @@ fcircles(
 An sf dataset of Fresnel circle polygons with a custom Azimuthal Equidistant (AEQD) CRS.
 }
 \description{
-Function for creating Fresnel circles polygons for mapping.
+Function for creating Fresnel circles polygons for mapping. Fresnel circles consist of a central circle as well as concentric annuli, all of which are equal in area.
 }
 \examples{
 # Load the sf dataset of Soho pumps

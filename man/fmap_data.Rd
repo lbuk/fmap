@@ -19,7 +19,7 @@ fmap_data(
 )
 }
 \arguments{
-\item{ncircles}{Number of concentric circular zones of equal area including the inner circle and annuli}
+\item{ncircles}{Number of concentric circular zones of equal area (i.e. Fresnel circles) including the inner circle and annuli}
 
 \item{radius_inner}{Radius of innermost Fresnel circle in metres}
 
