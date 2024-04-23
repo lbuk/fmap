@@ -58,7 +58,7 @@ fcircles = function(ncircles, radius_inner = NULL, radius_outer = NULL, lat = NU
   } else if(is.null(lat) && is.null(lon) && grepl(x = class(geo_centre)[1], pattern = "sf", ignore.case = T) != T && grepl(x = class(geo_centre)[1], pattern = "sp", ignore.case = T) != T) {
     stop('input geo_centre as a point-based spatial dataset', call. = F)
 
-  } else if(nrow(geo_centre) > 1) {
+  } else if(is.null(lat) && is.null(lon) && nrow(geo_centre) > 1) {
     stop('geo_centre contains multiple points', call. = F)
 
   } else if(is.null(lat) != T && is.null(lon) != T && is.null(geo_centre) != T || is.null(lat) && is.null(lon) != T && is.null(geo_centre) != T || is.null(lat) != T && is.null(lon) && is.null(geo_centre) != T) {
