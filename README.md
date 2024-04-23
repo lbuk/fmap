@@ -25,6 +25,6 @@ fmap can be installed from Github.
     tmap_mode("plot")
 
     # Visualise the Fresnel Map
-    fmap_plot(radius_inner = 125, ncircles = 6, geo_centre = bstreet_pump, geo_points = cholera_deaths, sum = "cholera.deaths")
+    fmap_plot(radius_inner = 150, ncircles = 6, geo_centre = bstreet_pump, geo_points = cholera_deaths, sum = "cholera.deaths")
 
-![](https://github.com/lbuk/fmap/blob/master/img/example_map.png)
+![](https://github.com/lbuk/fmap/blob/master/img/map_example.png)
