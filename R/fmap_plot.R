@@ -48,7 +48,7 @@ fmap_plot = function(ncircles, radius_inner = NULL, radius_outer = NULL, lat = N
     stop('error in aggregation parameter', call. = F)
   }
 
-  tm_shape(df, name = "Fresnel Map") +
+  map = tm_shape(df, name = "Fresnel Map") +
     tm_fill(col = colnames(df)[3], palette = "viridis", title = legend_title, id = "", popup.vars = c("Zonal Area" = "zonal_area", "Radius (Metres)" = "radius", colnames(df)[3])) +
     tm_borders(col = "black", lwd = 0.8) +
     tm_basemap(server = c("OpenStreetMap", "Esri.WorldImagery")) +
@@ -61,4 +61,6 @@ fmap_plot = function(ncircles, radius_inner = NULL, radius_outer = NULL, lat = N
               legend.title.fontface = "bold",
               legend.position = c("left", "top")) +
     tmap_options(show.messages = F, show.warnings = F)
+
+  map
 }
