@@ -27,9 +27,9 @@
 
 fmap_data = function(ncircles, radius_inner = NULL, radius_outer = NULL, lat = NULL, lon = NULL, geo_centre = NULL, geo_points, sum = NULL, mean = NULL, median = NULL, count = F) {
 
-  df_fc = fmap::fcircles(ncircles = ncircles, radius_inner = radius_inner, radius_outer = radius_outer, lat = lat, lon = lon, geo_centre = geo_centre)
+  df = fcircles(ncircles = ncircles, radius_inner = radius_inner, radius_outer = radius_outer, lat = lat, lon = lon, geo_centre = geo_centre)
 
-  crs_aeqd = st_crs(df_fc)
+  crs_aeqd = st_crs(df)
 
   if(grepl(x = class(geo_points)[1], pattern = "sf", ignore.case = T) != T && grepl(x = class(geo_points)[1], pattern = "sp", ignore.case = T) != T) {
     stop('input geo_points as a points-based spatial dataset', call. = F)
@@ -44,37 +44,37 @@ fmap_data = function(ncircles, radius_inner = NULL, radius_outer = NULL, lat = N
     stop('no aggregation inputted', call. = F)
 
   } else if(is.null(mean) && is.null(sum) && is.null(median) && count == T) {
-    fmap_data = df_fc %>%
+    data = df %>%
       mutate(count = lengths(st_intersects(., geo_points))) %>%
       dplyr::select(zonal_area, radius, count, geometry) %>%
       tibble() %>%
       st_as_sf()
 
-    fmap_data
+    data
 
   } else if(is.null(sum) != T && is.null(mean) && is.null(median) && count == F) {
-    fmap_data = df_fc %>%
+    data = df %>%
       st_join(geo_points) %>%
       group_by(zonal_area, radius) %>%
       dplyr::summarise(sum = sum(!! sym(sum), na.rm = T))
 
-    fmap_data
+    data
 
   } else if(is.null(mean) != T && is.null(sum) && is.null(median) && count == F) {
-    fmap_data = df_fc %>%
+    data = df %>%
       st_join(geo_points) %>%
       group_by(zonal_area, radius) %>%
       dplyr::summarise(mean = mean(!! sym(mean), na.rm = T))
 
-    fmap_data
+    data
 
   } else if(is.null(median) != T && is.null(sum) && is.null(mean) && count == F) {
-    fmap_data = df_fc %>%
+    data = df %>%
       st_join(geo_points) %>%
       group_by(zonal_area, radius) %>%
       dplyr::summarise(median = median(!! sym(median), na.rm = T))
 
-    fmap_data
+    data
 
   } else {
     stop('error in aggregation parameter', call. = F)

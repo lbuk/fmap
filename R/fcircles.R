@@ -2,9 +2,9 @@
 #'
 #' Function for creating Fresnel circles polygons for mapping.
 #'
-#' @param ncircles Number of concentric circular zones of equal area including the inner circle and annuli
-#' @param radius_inner Radius of innermost Fresnel circle in metres
-#' @param radius_outer Radius of outermost Fresnel circle in metres
+#' @param ncircles Number of concentric circular zones of equal area including the inner_circle circle and annuli
+#' @param radius_inner Radius of inner_circlemost Fresnel circle in metres
+#' @param radius_outer Radius of outer_circlesmost Fresnel circle in metres
 #' @param lat Latitude of the centre of the Fresnel circles
 #' @param lon Longitude of the centre of the Fresnel circles
 #' @param geo_centre A spatial dataset containing the coordinates of the centre of the Fresnel circles
@@ -50,7 +50,7 @@ fcircles = function(ncircles, radius_inner = NULL, radius_outer = NULL, lat = NU
 
   radius = sqrt((area_fc * 1:ncircles) / pi)
 
-  radii_fc = data.frame(radius)
+  df_radii = data.frame(radius)
 
   if(is.null(lat) && is.null(lon) && is.null(geo_centre)) {
     stop('no centre coordinates inputted', call. = F)
@@ -84,35 +84,35 @@ fcircles = function(ncircles, radius_inner = NULL, radius_outer = NULL, lat = NU
 
   crs_aeqd = sprintf("+proj=aeqd +lat_0=%s +lon_0=%s +x_0=0 +y_0=0", coords$lat, coords$lon)
 
-  cs = lapply(1:nrow(radii_fc), function(i) {
+  circles = lapply(1:nrow(df_radii), function(i) {
     coords %>%
       st_as_sf(coords = c("lon", "lat"), crs = 4326) %>%
       st_transform(crs_aeqd) %>%
-      st_buffer(radii_fc[i, "radius"], nQuadSegs = 1375)
+      st_buffer(df_radii[i, "radius"], nQuadSegs = 1375)
   })
 
-  i_fc = cs[[1]]
+  inner_circle = circles[[1]]
 
-  o_fc = lapply(2:length(cs), function(i)  {
-    st_difference(cs[[i]], cs[[i-1]])
+  outer_circles = lapply(2:length(circles), function(i)  {
+    st_difference(circles[[i]], circles[[i-1]])
   })
 
-  o_fc = do.call(rbind, o_fc)
+  outer_circles = do.call(rbind, outer_circles)
 
-  fcircles = i_fc %>%
-    rbind(o_fc) %>%
-    mutate(zonal_area = 1:ncircles, radius = radii_fc$radius) %>%
+  data = inner_circle %>%
+    rbind(outer_circles) %>%
+    mutate(zonal_area = 1:ncircles, radius = df_radii$radius) %>%
     dplyr::select(zonal_area, radius, geometry) %>%
     tibble() %>%
     st_as_sf()
 
-  if(any(st_is_valid(fcircles) == FALSE) == T) {
-    fcircles = fcircles %>%
+  if(any(st_is_valid(data) == FALSE) == T) {
+    data = data %>%
       st_make_valid(T)
 
-    fcircles
+    data
 
   } else {
-    fcircles
+    data
   }
 }

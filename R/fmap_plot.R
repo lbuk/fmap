@@ -27,62 +27,29 @@
 
 fmap_plot = function(ncircles, radius_inner = NULL, radius_outer = NULL, lat = NULL, lon = NULL, geo_centre = NULL, geo_points, sum = NULL, mean = NULL, median = NULL, count = F) {
 
-  df_fc = fmap::fcircles(ncircles = ncircles, radius_inner = radius_inner, radius_outer = radius_outer, lat = lat, lon = lon, geo_centre = geo_centre)
+  df = fmap_data(ncircles, radius_inner = radius_inner, radius_outer = radius_outer, lat = lat, lon = lon, geo_centre = geo_centre, geo_points, sum = sum, mean = mean, median = median, count = count)
 
-  crs_aeqd = st_crs(df_fc)
+  df = df %>%
+    dplyr::select(-geometry)
 
-  if(grepl(x = class(geo_points)[1], pattern = "sf", ignore.case = T) != T && grepl(x = class(geo_points)[1], pattern = "sp", ignore.case = T) != T) {
-    stop('input geo_points as a points-based spatial dataset', call. = F)
-
-  } else {
-    geo_points = geo_points %>%
-      st_as_sf() %>%
-      st_transform(crs_aeqd)
-  }
-
-  if(is.null(sum) && is.null(mean) && is.null(median) && count != T) {
-    stop('no aggregation inputted', call. = F)
-
-  } else if(is.null(mean) && is.null(sum) && is.null(median) && count == T) {
-    fmap_plot = df_fc %>%
-      mutate(count = lengths(st_intersects(., geo_points))) %>%
-      dplyr::select(zonal_area, radius, count)
-
+  if(is.null(mean) && is.null(sum) && is.null(median) && count == T) {
     legend_title = "Count"
 
   } else if(is.null(sum) != T && is.null(mean) && is.null(median) && count == F) {
-    fmap_plot = df_fc %>%
-      st_join(geo_points) %>%
-      group_by(zonal_area, radius) %>%
-      dplyr::summarise(sum = sum(!! sym(sum), na.rm = T)) %>%
-      dplyr::select(zonal_area, radius, sum)
-
     legend_title = paste0("Total ", '("', sum, '")')
 
   } else if(is.null(mean) != T && is.null(sum) && is.null(median) && count == F) {
-    fmap_plot = df_fc %>%
-      st_join(geo_points) %>%
-      group_by(zonal_area, radius) %>%
-      dplyr::summarise(mean = mean(!! sym(mean), na.rm = T)) %>%
-      dplyr::select(zonal_area, radius, mean)
-
     legend_title = paste0("Mean ", '("', mean, '")')
 
   } else if(is.null(median) != T && is.null(sum) && is.null(mean) && count == F) {
-    fmap_plot = df_fc %>%
-      st_join(geo_points) %>%
-      group_by(zonal_area, radius) %>%
-      dplyr::summarise(median = median(!! sym(median), na.rm = T)) %>%
-      dplyr::select(zonal_area, radius, median)
-
     legend_title = paste0("Median ", '("', median, '")')
 
   } else {
     stop('error in aggregation parameter', call. = F)
   }
 
-  tm_shape(fmap_plot, name = "Fresnel Map") +
-    tm_fill(col = colnames(fmap_plot)[3], palette = "viridis", title = legend_title, id = "", popup.vars = c("Zonal Area" = "zonal_area", "Radius (Metres)" = "radius", colnames(fmap_plot)[3])) +
+  tm_shape(df, name = "Fresnel Map") +
+    tm_fill(col = colnames(df)[3], palette = "viridis", title = legend_title, id = "", popup.vars = c("Zonal Area" = "zonal_area", "Radius (Metres)" = "radius", colnames(df)[3])) +
     tm_borders(col = "black", lwd = 0.8) +
     tm_basemap(server = c("OpenStreetMap", "Esri.WorldImagery")) +
     tm_view(view.legend.position = c("right", "top")) +

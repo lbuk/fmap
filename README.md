@@ -6,6 +6,8 @@ fmap is an R package for creating [Fresnel Maps](https://www.liamthomasbolton.co
 
 ### Installation
 
+fmap can be installed from Github.
+
     library(devtools)
     install_github("lbuk/fmap")
 
@@ -23,6 +25,6 @@ fmap is an R package for creating [Fresnel Maps](https://www.liamthomasbolton.co
     tmap_mode("plot")
 
     # Visualise the Fresnel Map
-    fmap_plot(radius_inner = 125, ncircles = 8, geo_centre = bstreet_pump, geo_points = cholera_deaths, sum = "cholera.deaths")
+    fmap_plot(radius_inner = 125, ncircles = 6, geo_centre = bstreet_pump, geo_points = cholera_deaths, sum = "cholera.deaths")
 
-![](https://github.com/lbuk/fmap/blob/master/img/fmap_plot_example.png)
+![](https://github.com/lbuk/fmap/blob/master/img/example_map.png)

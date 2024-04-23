@@ -27,61 +27,11 @@
 
 fmap_stats = function(ncircles, radius_inner = NULL, radius_outer = NULL, lat = NULL, lon = NULL, geo_centre = NULL, geo_points, sum = NULL, mean = NULL, median = NULL, count = F) {
 
-  df_fc = fmap::fcircles(ncircles = ncircles, radius_inner = radius_inner, radius_outer = radius_outer, lat = lat, lon = lon, geo_centre = geo_centre)
+  df = fmap_data(ncircles, radius_inner = radius_inner, radius_outer = radius_outer, lat = lat, lon = lon, geo_centre = geo_centre, geo_points, sum = sum, mean = mean, median = median, count = count)
 
-  crs_aeqd = st_crs(df_fc)
+  stats = df %>%
+    tibble() %>%
+    dplyr::select(-geometry)
 
-  if(grepl(x = class(geo_points)[1], pattern = "sf", ignore.case = T) != T && grepl(x = class(geo_points)[1], pattern = "sp", ignore.case = T) != T) {
-    stop('input geo_points as a points-based spatial dataset', call. = F)
-
-  } else {
-    geo_points = geo_points %>%
-      st_as_sf() %>%
-      st_transform(crs_aeqd)
-  }
-
-  if(is.null(sum) && is.null(mean) && is.null(median) && count != T) {
-    stop('no aggregation inputted', call. = F)
-
-  } else if(is.null(mean) && is.null(sum) && is.null(median) && count == T) {
-    fmap_stats = df_fc %>%
-      mutate(count = lengths(st_intersects(., geo_points))) %>%
-      tibble() %>%
-      dplyr::select(zonal_area, radius, count)
-
-    fmap_stats
-
-  } else if(is.null(sum) != T && is.null(mean) && is.null(median) && count == F) {
-    fmap_stats = df_fc %>%
-      st_join(geo_points) %>%
-      tibble() %>%
-      group_by(zonal_area, radius) %>%
-      dplyr::summarise(sum = sum(!! sym(sum), na.rm = T)) %>%
-      dplyr::select(zonal_area, radius, sum)
-
-    fmap_stats
-
-  } else if(is.null(mean) != T && is.null(sum) && is.null(median) && count == F) {
-    fmap_stats = df_fc %>%
-      st_join(geo_points) %>%
-      tibble() %>%
-      group_by(zonal_area, radius) %>%
-      dplyr::summarise(mean = mean(!! sym(mean), na.rm = T)) %>%
-      dplyr::select(zonal_area, radius, mean)
-
-    fmap_stats
-
-  } else if(is.null(median) != T && is.null(sum) && is.null(mean) && count == F) {
-    fmap_stats = df_fc %>%
-      st_join(geo_points) %>%
-      tibble() %>%
-      group_by(zonal_area, radius) %>%
-      dplyr::summarise(median = median(!! sym(median), na.rm = T)) %>%
-      dplyr::select(zonal_area, radius, median)
-
-    fmap_stats
-
-  } else {
-    stop('error in aggregation parameter', call. = F)
-  }
+  stats
 }
