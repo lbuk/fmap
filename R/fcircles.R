@@ -22,35 +22,10 @@
 
 fcircles = function(ncircles, radius_inner = NULL, radius_outer = NULL, lat = NULL, lon = NULL, geo_centre = NULL) {
 
-  if(is.null(radius_inner) && is.null(radius_outer)) {
-    stop('radius_inner or radius_outer not inputted', call. = F)
+  df_radii = fcircles_radii(ncircles = ncircles, radius_inner = radius_inner, radius_outer = radius_outer)
 
-  } else if(is.null(radius_inner) != T && is.null(radius_outer) != T) {
-    stop('radius_inner and radius_outer inputted', call. = F)
-
-  } else if(radius_inner <= 0 && is.null(radius_outer) || radius_outer <= 0 && is.null(radius_inner)) {
-    stop('radius should not be <= 0', call. = F)
-
-  } else if(ncircles <= 1 && ncircles%%1 != 0) {
-    stop('ncircles should not be <= 1 or a decimal number', call. = F)
-
-  } else if(ncircles <= 1) {
-    stop('ncircles should not be <= 1', call. = F)
-
-  } else if(ncircles%%1 != 0) {
-    stop('ncircles should not be a decimal number', call. = F)
-
-  } else if(is.null(radius_inner) != T && is.null(radius_outer)) {
-    area_fc = pi * (radius_inner ^ 2)
-
-  } else {
-    area_c = pi * (radius_outer ^ 2)
-    area_fc = area_c / ncircles
-  }
-
-  radius = sqrt((area_fc * 1:ncircles) / pi)
-
-  df_radii = data.frame(radius)
+  df_radii = df_radii %>%
+    dplyr::select(-zone)
 
   if(is.null(lat) && is.null(lon) && is.null(geo_centre)) {
     stop('no centre coordinates inputted', call. = F)
