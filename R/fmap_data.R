@@ -23,8 +23,11 @@
 #' # Filter the Broad Street Pump from the Soho pumps dataset
 #' bstreet_pump = soho_pumps %>% filter(soho.pump == "Broad Street")
 #'
-#' # Polygonal data from the Fresnel Map
+#' # Polygonal data from the Fresnel Map for the Broad Street Pump
 #' fmap_data(radius_inner = 125, ncircles = 8, geo_centre = bstreet_pump, geo_points = cholera_deaths, sum = "cholera.deaths")
+#'
+#' # Polygonal data from multiple Fresnel Maps based on each Soho pump
+#' fmap_data(radius_outer = 150, ncircles = 2, geo_points = cholera_deaths, geo_centres = soho_pumps, id_var = "soho.pump", sum = "cholera.deaths")
 #' @export
 
 fmap_data = function(ncircles, radius_inner = NULL, radius_outer = NULL, geo_points, lat = NULL, lon = NULL, geo_centre = NULL, geo_centres = NULL, id_var = NULL, sum = NULL, mean = NULL, median = NULL, count = F) {

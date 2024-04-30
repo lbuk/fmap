@@ -60,6 +60,9 @@ data(cholera_deaths, soho_pumps)
 # Filter the Broad Street Pump from the Soho pumps dataset
 bstreet_pump = soho_pumps \%>\% filter(soho.pump == "Broad Street")
 
-# Summary stats from the Fresnel Map
+# Summary stats from the Fresnel Map for the Broad Street Pump
 fmap_stats(radius_inner = 125, ncircles = 8, geo_centre = bstreet_pump, geo_points = cholera_deaths, sum = "cholera.deaths")
+
+# Summary stats from multiple Fresnel Maps based on each Soho pump
+fmap_stats(radius_outer = 150, ncircles = 2, geo_centres = soho_pumps, id_var = "soho.pump", geo_points = cholera_deaths, sum = "cholera.deaths")
 }
