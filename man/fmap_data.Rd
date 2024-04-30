@@ -8,10 +8,12 @@ fmap_data(
   ncircles,
   radius_inner = NULL,
   radius_outer = NULL,
+  geo_points,
   lat = NULL,
   lon = NULL,
   geo_centre = NULL,
-  geo_points,
+  geo_centres = NULL,
+  id_var = NULL,
   sum = NULL,
   mean = NULL,
   median = NULL,
@@ -25,13 +27,17 @@ fmap_data(
 
 \item{radius_outer}{Radius of outermost Fresnel circle in metres}
 
+\item{geo_points}{A spatial dataset of points to aggregate}
+
 \item{lat}{Latitude of the centre of the Fresnel Map}
 
 \item{lon}{Longitude of the centre of the Fresnel Map}
 
 \item{geo_centre}{A spatial dataset containing the coordinates of the centre of the Fresnel Map}
 
-\item{geo_points}{A spatial dataset of points to aggregate}
+\item{geo_centres}{A spatial dataset containing the coordinates of the centres of each separate Fresnel Map}
+
+\item{id_var}{Variable from geo_centres containing the location ID}
 
 \item{sum}{Variable from geo_points for calculating sum}
 

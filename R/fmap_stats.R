@@ -8,6 +8,8 @@
 #' @param lat Latitude of the centre of the Fresnel Map
 #' @param lon Longitude of the centre of the Fresnel Map
 #' @param geo_centre A spatial dataset containing the coordinates of the centre of the Fresnel Map
+#' @param geo_centres A spatial dataset containing the coordinates of the centres of each separate Fresnel Map
+#' @param id_var Variable from geo_centres containing the location ID
 #' @param geo_points A spatial dataset of points to aggregate
 #' @param sum Variable from geo_points for calculating sum
 #' @param mean Variable from geo_points for calculating mean
@@ -25,9 +27,9 @@
 #' fmap_stats(radius_inner = 125, ncircles = 8, geo_centre = bstreet_pump, geo_points = cholera_deaths, sum = "cholera.deaths")
 #' @export
 
-fmap_stats = function(ncircles, radius_inner = NULL, radius_outer = NULL, lat = NULL, lon = NULL, geo_centre = NULL, geo_points, sum = NULL, mean = NULL, median = NULL, count = F) {
+fmap_stats = function(ncircles, radius_inner = NULL, radius_outer = NULL, geo_points, lat = NULL, lon = NULL, geo_centre = NULL, geo_centres = NULL, id_var = NULL, sum = NULL, mean = NULL, median = NULL, count = F) {
 
-  df = fmap_data(ncircles, radius_inner = radius_inner, radius_outer = radius_outer, lat = lat, lon = lon, geo_centre = geo_centre, geo_points, sum = sum, mean = mean, median = median, count = count)
+  df = fmap_data(ncircles = ncircles, radius_inner = radius_inner, radius_outer = radius_outer, geo_points = geo_points, lat = lat, lon = lon, geo_centre = geo_centre, geo_centres = geo_centres, id_var = id_var, sum = sum, mean = mean, median = median, count = count)
 
   stats = df %>%
     tibble() %>%
