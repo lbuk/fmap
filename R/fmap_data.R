@@ -47,6 +47,9 @@ fmap_data = function(ncircles, radius_inner = NULL, radius_outer = NULL, geo_poi
   } else if(is.null(geo_centre) != T && nrow(geo_centre) > 1) {
     stop('geo_centre should not contain multiple points', call. = F)
 
+  } else if(is.null(geo_centre) != T && is.null(id_var) != T || is.null(lat) != T && is.null(lon) != T && is.null(id_var) != T) {
+    stop('id_var should contain the ID from geo_centres not the geo_centre or lat and lon parameters', call. = F)
+
   } else if(is.null(geo_centre) != T || is.null(lat) != T && is.null(lon) != T) {
     df = fcircles(ncircles = ncircles, radius_inner = radius_inner, radius_outer = radius_outer, lat = lat, lon = lon, geo_centre = geo_centre)
 

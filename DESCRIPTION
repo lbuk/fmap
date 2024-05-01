@@ -1,6 +1,6 @@
 Package: fmap
 Title: Fresnel Maps with Equal-Area Concentric Circular Zones (or Annuli)
-Version: 3.2.1
+Version: 3.2.2
 Authors@R: 
     person(given = "Liam Thomas", family = "Bolton", email = "liamthomasbolton@gmail.com", role = c("aut", "cre"))
 Description: fmap is a package for producing Fresnel Maps, a new thematic mapping technique in which data is visualised to equal-area concentric circular zones (or annuli).
