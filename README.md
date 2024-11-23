@@ -15,6 +15,7 @@ fmap can be installed from Github.
 
     library(fmap)
     library(dplyr)
+    library(sf)
 
     # Load the sf datasets of cholera deaths and Soho pumps
     data(cholera_deaths, soho_pumps)
