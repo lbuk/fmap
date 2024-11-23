@@ -54,11 +54,14 @@ An sf dataset of Fresnel Map polygons based on aggregations of points-based data
 Function for creating Fresnel Map polygons by aggregating data to the level of equal-area concentric circular zones (or annuli).
 }
 \examples{
+library(sf)
+library(dplyr)
+
 # Load the sf datasets of cholera deaths and Soho pumps
 data(cholera_deaths, soho_pumps)
 
 # Filter the Broad Street Pump from the Soho pumps dataset
-bstreet_pump = soho_pumps \%>\% filter(soho.pump == "Broad Street")
+bstreet_pump <- soho_pumps \%>\% filter(soho.pump == "Broad Street")
 
 # Polygonal data from the Fresnel Map for the Broad Street Pump
 fmap_data(radius_inner = 125, ncircles = 8, geo_centre = bstreet_pump, geo_points = cholera_deaths, sum = "cholera.deaths")

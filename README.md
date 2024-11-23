@@ -14,12 +14,13 @@ fmap can be installed from Github.
 ### Use
 
     library(fmap)
+    library(dplyr)
 
     # Load the sf datasets of cholera deaths and Soho pumps
     data(cholera_deaths, soho_pumps)
 
     # Filter the Broad Street Pump from the Soho pumps dataset
-    bstreet_pump = soho_pumps %>% filter(soho.pump == "Broad Street")
+    bstreet_pump <- soho_pumps %>% filter(soho.pump == "Broad Street")
 
     # Set to static mapping in tmap. For interactive mapping use tmap_mode("view")
     tmap_mode("plot")

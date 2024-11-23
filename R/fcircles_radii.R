@@ -11,7 +11,7 @@
 #' fcircles_radii(ncircles = 7, radius_outer = 300)
 #' @export
 
-fcircles_radii = function(ncircles, radius_inner = NULL, radius_outer = NULL) {
+fcircles_radii <- function(ncircles, radius_inner = NULL, radius_outer = NULL) {
 
   if(is.null(radius_inner) && is.null(radius_outer)) {
     stop('radius_inner or radius_outer not inputted', call. = F)
@@ -32,16 +32,16 @@ fcircles_radii = function(ncircles, radius_inner = NULL, radius_outer = NULL) {
     stop('ncircles should not be a decimal number', call. = F)
 
   } else if(is.null(radius_inner) != T && is.null(radius_outer)) {
-    area_fc = pi * (radius_inner ^ 2)
+    area_fc <- pi * (radius_inner ^ 2)
 
   } else {
-    area_c = pi * (radius_outer ^ 2)
-    area_fc = area_c / ncircles
+    area_c <- pi * (radius_outer ^ 2)
+    area_fc <- area_c / ncircles
   }
 
-  radius = sqrt((area_fc * 1:ncircles) / pi)
+  radius <- sqrt((area_fc * 1:ncircles) / pi)
 
-  df_radii = data.frame(radius, zone = 1:ncircles)
+  df_radii <- data.frame(radius, zone = 1:ncircles)
 
   df_radii
 }

@@ -54,11 +54,14 @@ A Fresnel Map based on aggregations of points-based data and visualised using tm
 Function for plotting Fresnel Maps, or thematic maps that visualise spatial data to the level of equal-area concentric circular zones (or annuli).
 }
 \examples{
+library(sf)
+library(dplyr)
+
 # Load the sf datasets of cholera deaths and Soho pumps
 data(cholera_deaths, soho_pumps)
 
 # Filter the Broad Street Pump from the Soho pumps dataset
-bstreet_pump = soho_pumps \%>\% filter(soho.pump == "Broad Street")
+bstreet_pump <- soho_pumps \%>\% filter(soho.pump == "Broad Street")
 
 # The Fresnel Map based on the Broad Street Pump
 fmap_plot(radius_inner = 125, ncircles = 8, geo_centre = bstreet_pump, geo_points = cholera_deaths, sum = "cholera.deaths")

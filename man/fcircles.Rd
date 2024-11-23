@@ -33,11 +33,14 @@ An sf dataset of Fresnel circle polygons with a custom Azimuthal Equidistant (AE
 Function for creating Fresnel circles polygons for mapping. Fresnel circles consist of a central circle as well as concentric annuli, all of which are equal in area.
 }
 \examples{
+library(sf)
+library(dplyr)
+
 # Load the sf dataset of Soho pumps
 data(soho_pumps)
 
 # Filter the Broad Street Pump from the Soho pumps dataset
-bstreet_pump = soho_pumps \%>\% filter(soho.pump == "Broad Street")
+bstreet_pump <- soho_pumps \%>\% filter(soho.pump == "Broad Street")
 
 # Polygonal data from the Fresnel circles
 fcircles(radius_inner = 125, ncircles = 8, geo_centre = bstreet_pump)

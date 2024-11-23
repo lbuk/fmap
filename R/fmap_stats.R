@@ -15,13 +15,18 @@
 #' @param mean Variable from geo_points for calculating mean
 #' @param median Variable from geo_points for calculating median
 #' @param count Count the number of points from geo_points. Input TRUE to count points. Defaults to FALSE
+#' @importFrom dplyr "%>%"
+#' @export
 #' @return Summary statistics from the Fresnel Map based on aggregated data from the Fresnel circles.
 #' @examples
+#' library(sf)
+#' library(dplyr)
+#'
 #' # Load the sf datasets of cholera deaths and Soho pumps
 #' data(cholera_deaths, soho_pumps)
 #'
 #' # Filter the Broad Street Pump from the Soho pumps dataset
-#' bstreet_pump = soho_pumps %>% filter(soho.pump == "Broad Street")
+#' bstreet_pump <- soho_pumps %>% filter(soho.pump == "Broad Street")
 #'
 #' # Summary stats from the Fresnel Map for the Broad Street Pump
 #' fmap_stats(radius_inner = 125, ncircles = 8, geo_centre = bstreet_pump, geo_points = cholera_deaths, sum = "cholera.deaths")
@@ -30,11 +35,11 @@
 #' fmap_stats(radius_outer = 150, ncircles = 2, geo_centres = soho_pumps, id_var = "soho.pump", geo_points = cholera_deaths, sum = "cholera.deaths")
 #' @export
 
-fmap_stats = function(ncircles, radius_inner = NULL, radius_outer = NULL, geo_points, lat = NULL, lon = NULL, geo_centre = NULL, geo_centres = NULL, id_var = NULL, sum = NULL, mean = NULL, median = NULL, count = F) {
+fmap_stats <- function(ncircles, radius_inner = NULL, radius_outer = NULL, geo_points, lat = NULL, lon = NULL, geo_centre = NULL, geo_centres = NULL, id_var = NULL, sum = NULL, mean = NULL, median = NULL, count = F) {
 
-  df = fmap_data(ncircles = ncircles, radius_inner = radius_inner, radius_outer = radius_outer, geo_points = geo_points, lat = lat, lon = lon, geo_centre = geo_centre, geo_centres = geo_centres, id_var = id_var, sum = sum, mean = mean, median = median, count = count)
+  df <- fmap_data(ncircles = ncircles, radius_inner = radius_inner, radius_outer = radius_outer, geo_points = geo_points, lat = lat, lon = lon, geo_centre = geo_centre, geo_centres = geo_centres, id_var = id_var, sum = sum, mean = mean, median = median, count = count)
 
-  stats = df %>%
+  stats <- df %>%
     tibble() %>%
     dplyr::select(-geometry)
 
