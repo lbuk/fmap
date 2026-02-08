@@ -9,7 +9,6 @@
 #' @param lon Longitude of the centre of the Fresnel circles
 #' @param geo_centre A spatial dataset containing the coordinates of the centre of the Fresnel circles
 #' @importFrom dplyr "%>%"
-#' @export
 #' @return An sf dataset of Fresnel circle polygons with a custom Azimuthal Equidistant (AEQD) CRS.
 #' @examples
 #' library(sf)
@@ -25,74 +24,83 @@
 #' fcircles(radius_inner = 125, ncircles = 8, geo_centre = bstreet_pump)
 #' @export
 
-fcircles <- function(ncircles, radius_inner = NULL, radius_outer = NULL, lat = NULL, lon = NULL, geo_centre = NULL) {
+fcircles <- function(ncircles, 
+                     radius_inner = NULL, radius_outer = NULL, 
+                     geo_centre = NULL, lat = NULL, lon = NULL) {
 
-  df_radii <- fcircles_radii(ncircles = ncircles, radius_inner = radius_inner, radius_outer = radius_outer)
-
+  df_radii <- fcircles_radii(ncircles = ncircles, 
+                             radius_inner = radius_inner, radius_outer = radius_outer)
+  
   df_radii <- df_radii %>%
     dplyr::select(-zone)
-
-  if(is.null(lat) && is.null(lon) && is.null(geo_centre)) {
-    stop('no centre coordinates inputted', call. = F)
-
-  } else if(is.null(lat) && is.null(lon) && grepl(x = class(geo_centre)[1], pattern = "sf", ignore.case = T) != T && grepl(x = class(geo_centre)[1], pattern = "sp", ignore.case = T) != T) {
-    stop('input geo_centre as a point-based spatial dataset', call. = F)
-
-  } else if(is.null(lat) && is.null(lon) && nrow(geo_centre) > 1) {
-    stop('geo_centre contains multiple points', call. = F)
-
-  } else if(is.null(lat) != T && is.null(lon) != T && is.null(geo_centre) != T || is.null(lat) && is.null(lon) != T && is.null(geo_centre) != T || is.null(lat) != T && is.null(lon) && is.null(geo_centre) != T) {
-    stop('input geo_centre or lat and lon', call. = F)
-
-  } else if(is.null(lat) && is.null(lon) && is.null(geo_centre) != T) {
+  
+  latlon <- !is.null(lat) && !is.null(lon)
+  
+  one_centre <- !is.null(geo_centre)
+  
+  if(!latlon && !one_centre) {
+    stop('no centre coordinates provided', call. = FALSE)
+  }
+  
+  if(latlon && one_centre) {
+    stop('input either geo_centre or lat and lon', call. = FALSE)
+  }
+  
+  if(!is.null(lat) && is.null(lon) || is.null(lat) && !is.null(lon)) {
+    stop('input lat and lon', call. = FALSE)
+  }
+    
+  if(one_centre) {
+    validate_geo(geo_centre, "geo_centre")
+    
+    if(nrow(geo_centre) > 1) {
+      stop('geo_centre should contain only one point', call. = FALSE)
+    }
+    
     geo_centre <- geo_centre %>%
       sf::st_as_sf() %>%
       sf::st_transform(4326) %>%
       sf::st_coordinates() %>%
       data.frame() %>%
       dplyr::rename(lat = Y, lon = X)
-
+    
     lat <- geo_centre$lat
     lon <- geo_centre$lon
-
-  } else {
-    lat <- lat
-    lon <- lon
   }
-
+  
   coords <- data.frame(lat, lon)
-
+  
   crs_aeqd <- sprintf("+proj=aeqd +lat_0=%s +lon_0=%s +x_0=0 +y_0=0", coords$lat, coords$lon)
-
-  circles <- lapply(1:nrow(df_radii), function(i) {
+  
+  coords <- coords %>%
+    sf::st_as_sf(coords = c("lon", "lat"), crs = 4326) %>%
+    sf::st_transform(crs_aeqd)
+  
+  circles <- Map(function(r) {
     coords %>%
-      sf::st_as_sf(coords = c("lon", "lat"), crs = 4326) %>%
-      sf::st_transform(crs_aeqd) %>%
-      sf::st_buffer(df_radii[i, "radius"], nQuadSegs = 1375)
-  })
-
+      sf::st_buffer(r, nQuadSegs = 1375)
+      
+  }, df_radii$radius)
+  
   inner_circle <- circles[[1]]
-
-  outer_circles <- lapply(2:length(circles), function(i)  {
-    sf::st_difference(circles[[i]], circles[[i-1]])
-  })
-
-  outer_circles <- do.call(rbind, outer_circles)
-
+  
+  outer_fcircles <- Map(function(outer, inner) {
+    sf::st_difference(outer, inner)
+  }, circles[-1], circles[-length(circles)])
+  
+  outer_fcircles <- do.call(rbind, outer_fcircles)
+  
   data <- inner_circle %>%
-    rbind(outer_circles) %>%
+    rbind(outer_fcircles) %>%
     dplyr::mutate(zonal_area = 1:ncircles, radius = df_radii$radius) %>%
     dplyr::select(zonal_area, radius, geometry) %>%
-    tibble() %>%
+    tibble::tibble() %>%
     sf::st_as_sf()
-
-  if(any(sf::st_is_valid(data) == FALSE) == T) {
-    data <- data %>%
-      sf::st_make_valid(T)
-
-    data
-
-  } else {
-    data
+  
+  if(any(!sf::st_is_valid(data))) {
+    data <- data %>% 
+      sf::st_make_valid(TRUE)
   }
+  
+  data
 }

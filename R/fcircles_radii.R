@@ -11,37 +11,48 @@
 #' fcircles_radii(ncircles = 7, radius_outer = 300)
 #' @export
 
-fcircles_radii <- function(ncircles, radius_inner = NULL, radius_outer = NULL) {
-
-  if(is.null(radius_inner) && is.null(radius_outer)) {
-    stop('radius_inner or radius_outer not inputted', call. = F)
-
-  } else if(is.null(radius_inner) != T && is.null(radius_outer) != T) {
-    stop('radius_inner and radius_outer inputted', call. = F)
-
-  } else if(radius_inner <= 0 && is.null(radius_outer) || radius_outer <= 0 && is.null(radius_inner)) {
-    stop('radius should not be <= 0', call. = F)
-
-  } else if(ncircles <= 1 && ncircles%%1 != 0) {
-    stop('ncircles should not be <= 1 or a decimal number', call. = F)
-
-  } else if(ncircles <= 1) {
-    stop('ncircles should not be <= 1', call. = F)
-
-  } else if(ncircles%%1 != 0) {
-    stop('ncircles should not be a decimal number', call. = F)
-
-  } else if(is.null(radius_inner) != T && is.null(radius_outer)) {
+fcircles_radii <- function(ncircles, 
+                           radius_inner = NULL, radius_outer = NULL) {
+  
+  inner <- !is.null(radius_inner)
+  
+  outer <- !is.null(radius_outer)
+  
+  if(!inner && !outer) {
+    stop('input either radius_inner or radius_outer', call. = FALSE)
+  }
+  
+  if(inner && outer) {
+    stop('input either radius_inner or radius_outer', call. = FALSE)
+  }
+  
+  if(inner && radius_inner <= 0) {
+    stop('radius_inner must be > 0', call. = FALSE)
+  }
+  
+  if(outer && radius_outer <= 0) {
+    stop('radius_outer must be > 0', call. = FALSE)
+  }
+  
+  if(ncircles <= 1) {
+    stop('ncircles must be >= 2', call. = FALSE)
+  }
+  
+  if(ncircles != round(ncircles)) {
+    stop('ncircles must be an integer', call. = FALSE)
+  }
+  
+  if(inner) {
     area_fc <- pi * (radius_inner ^ 2)
 
   } else {
     area_c <- pi * (radius_outer ^ 2)
     area_fc <- area_c / ncircles
   }
-
+  
   radius <- sqrt((area_fc * 1:ncircles) / pi)
-
-  df_radii <- data.frame(radius, zone = 1:ncircles)
+  
+  df_radii <- data.frame(zone = 1:ncircles, radius = radius)
 
   df_radii
 }

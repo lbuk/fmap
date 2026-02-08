@@ -9,15 +9,15 @@ fmap_data(
   radius_inner = NULL,
   radius_outer = NULL,
   geo_points,
+  geo_centre = NULL,
   lat = NULL,
   lon = NULL,
-  geo_centre = NULL,
   geo_centres = NULL,
   id_var = NULL,
   sum = NULL,
   mean = NULL,
   median = NULL,
-  count = F
+  count = FALSE
 )
 }
 \arguments{
@@ -29,11 +29,11 @@ fmap_data(
 
 \item{geo_points}{A spatial dataset of points to aggregate}
 
+\item{geo_centre}{A spatial dataset containing the coordinates of the centre of the Fresnel Map}
+
 \item{lat}{Latitude of the centre of the Fresnel Map}
 
 \item{lon}{Longitude of the centre of the Fresnel Map}
-
-\item{geo_centre}{A spatial dataset containing the coordinates of the centre of the Fresnel Map}
 
 \item{geo_centres}{A spatial dataset containing the coordinates of the centres of each separate Fresnel Map}
 

@@ -16,7 +16,6 @@
 #' @param median Variable from geo_points for calculating median
 #' @param count Count the number of points from geo_points. Input TRUE to count points. Defaults to FALSE
 #' @importFrom dplyr "%>%"
-#' @export
 #' @return Summary statistics from the Fresnel Map based on aggregated data from the Fresnel circles.
 #' @examples
 #' library(sf)
@@ -35,13 +34,22 @@
 #' fmap_stats(radius_outer = 150, ncircles = 2, geo_centres = soho_pumps, id_var = "soho.pump", geo_points = cholera_deaths, sum = "cholera.deaths")
 #' @export
 
-fmap_stats <- function(ncircles, radius_inner = NULL, radius_outer = NULL, geo_points, lat = NULL, lon = NULL, geo_centre = NULL, geo_centres = NULL, id_var = NULL, sum = NULL, mean = NULL, median = NULL, count = F) {
-
-  df <- fmap_data(ncircles = ncircles, radius_inner = radius_inner, radius_outer = radius_outer, geo_points = geo_points, lat = lat, lon = lon, geo_centre = geo_centre, geo_centres = geo_centres, id_var = id_var, sum = sum, mean = mean, median = median, count = count)
-
-  stats <- df %>%
-    tibble() %>%
-    dplyr::select(-geometry)
-
+fmap_stats <- function(ncircles, 
+                       radius_inner = NULL, radius_outer = NULL, 
+                       geo_points, 
+                       geo_centre = NULL, lat = NULL, lon = NULL, 
+                       geo_centres = NULL, id_var = NULL, 
+                       sum = NULL, mean = NULL, median = NULL, count = FALSE) {
+  
+  df <- fmap_data(ncircles = ncircles, 
+                  radius_inner = radius_inner, radius_outer = radius_outer, 
+                  geo_points = geo_points, 
+                  geo_centre = geo_centre, lat = lat, lon = lon, 
+                  geo_centres = geo_centres, id_var = id_var, 
+                  sum = sum, mean = mean, median = median, count = count)
+  
+  stats <- df %>% 
+    sf::st_drop_geometry()
+  
   stats
 }

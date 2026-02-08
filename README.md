@@ -23,9 +23,6 @@ fmap can be installed from Github.
     # Filter the Broad Street Pump from the Soho pumps dataset
     bstreet_pump <- soho_pumps %>% filter(soho.pump == "Broad Street")
 
-    # Set to static mapping in tmap. For interactive mapping use tmap_mode("view")
-    tmap_mode("plot")
-
     # Visualise the Fresnel Map
     fmap_plot(radius_inner = 150, ncircles = 6, geo_centre = bstreet_pump, geo_points = cholera_deaths, sum = "cholera.deaths")
 

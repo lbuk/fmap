@@ -16,7 +16,7 @@
 #' @param median Variable from geo_points for calculating median
 #' @param count Count the number of points from geo_points. Input TRUE to count points. Defaults to FALSE
 #' @importFrom dplyr "%>%"
-#' @export
+#' @importFrom rlang sym
 #' @return An sf dataset of Fresnel Map polygons based on aggregations of points-based data with a custom Azimuthal Equidistant (AEQD) CRS.
 #' @examples
 #' library(sf)
@@ -35,93 +35,68 @@
 #' fmap_data(radius_outer = 150, ncircles = 2, geo_points = cholera_deaths, geo_centres = soho_pumps, id_var = "soho.pump", sum = "cholera.deaths")
 #' @export
 
-fmap_data <- function(ncircles, radius_inner = NULL, radius_outer = NULL, geo_points, lat = NULL, lon = NULL, geo_centre = NULL, geo_centres = NULL, id_var = NULL, sum = NULL, mean = NULL, median = NULL, count = F) {
+fmap_data <- function(ncircles, 
+                      radius_inner = NULL, radius_outer = NULL, 
+                      geo_points, 
+                      geo_centre = NULL, lat = NULL, lon = NULL, 
+                      geo_centres = NULL, id_var = NULL, 
+                      sum = NULL, mean = NULL, median = NULL, count = FALSE) {
+  
+  centres <- validate_centres(geo_centre = geo_centre, lat = lat, lon = lon, 
+                              geo_centres = geo_centres, id_var = id_var)
 
-  if(is.null(lat) && is.null(lon) && is.null(geo_centre) && is.null(geo_centres)) {
-    stop('no centre coordinates inputted', call. = F)
-
-  } else if(is.null(lat) != T && is.null(lon) != T && is.null(geo_centre) != T && is.null(geo_centres) != T || is.null(lat) != T &&  is.null(lon) || is.null(lon) != T &&  is.null(lat) || is.null(lat) && is.null(lon) != T && is.null(geo_centre) != T || is.null(lat) != T && is.null(lon) && is.null(geo_centre) != T || is.null(lat) != T && is.null(lon) != T && is.null(geo_centres) != T) {
-    stop('input geo_centre or geo_centres or lat and lon', call. = F)
-
-  } else if(is.null(geo_centre) != T && is.null(geo_centres) != T) {
-    stop('input geo_centre or geo_centres', call. = F)
-
-  } else if(is.null(geo_centres) != T && nrow(geo_centres) == 1) {
-    stop('geo_centres should contain multiple points', call. = F)
-
-  } else if(is.null(geo_centre) != T && nrow(geo_centre) > 1) {
-    stop('geo_centre should not contain multiple points', call. = F)
-
-  } else if(is.null(geo_centre) != T && is.null(id_var) != T || is.null(lat) != T && is.null(lon) != T && is.null(id_var) != T) {
-    stop('id_var should contain the ID from geo_centres not the geo_centre or lat and lon parameters', call. = F)
-
-  } else if(is.null(geo_centre) != T || is.null(lat) != T && is.null(lon) != T) {
-    df <- fcircles(ncircles = ncircles, radius_inner = radius_inner, radius_outer = radius_outer, lat = lat, lon = lon, geo_centre = geo_centre)
-
+  validate_geo(geo_points, "geo_points")
+  
+  validate_aggregation(sum, mean, median, count)
+  
+  geo_points <- geo_points %>% 
+    sf::st_as_sf()
+  
+  if(centres$single) {
+    df <- fcircles(ncircles = ncircles, 
+                   radius_inner = radius_inner, radius_outer = radius_outer, 
+                   geo_centre = geo_centre, lat = lat, lon = lon)
+    
     crs_aeqd <- sf::st_crs(df)
-
-    if(grepl(x = class(geo_points)[1], pattern = "sf", ignore.case = T) != T && grepl(x = class(geo_points)[1], pattern = "sp", ignore.case = T) != T) {
-      stop('input geo_points as a points-based spatial dataset', call. = F)
-
-    } else {
-      geo_points <- geo_points %>%
-        sf::st_as_sf() %>%
-        sf::st_transform(crs_aeqd)
-    }
-
-    if(is.null(sum) && is.null(mean) && is.null(median) && count != T) {
-      stop('no aggregation inputted', call. = F)
-
-    } else if(is.null(mean) && is.null(sum) && is.null(median) && count == T) {
+    
+    geo_points <- geo_points %>% 
+      sf::st_transform(crs_aeqd)
+    
+    if(count) {
       data <- df %>%
         dplyr::mutate(count = lengths(sf::st_intersects(., geo_points))) %>%
         dplyr::select(zonal_area, radius, count, geometry) %>%
-        tibble() %>%
+        tibble::tibble() %>%
         sf::st_as_sf()
-
-      data
-
-    } else if(is.null(sum) != T && is.null(mean) && is.null(median) && count == F) {
+      
+    } else if(!is.null(sum)) {
       data <- df %>%
         sf::st_join(geo_points) %>%
         dplyr::group_by(zonal_area, radius) %>%
-        dplyr::summarise(sum = sum(!! sym(sum), na.rm = T))
-
-      data
-
-    } else if(is.null(mean) != T && is.null(sum) && is.null(median) && count == F) {
+        dplyr::summarise(sum = sum(!!sym(sum), na.rm = TRUE), .groups = 'drop')
+      
+    } else if(!is.null(mean)) {
       data <- df %>%
         sf::st_join(geo_points) %>%
         dplyr::group_by(zonal_area, radius) %>%
-        dplyr::summarise(mean = mean(!! sym(mean), na.rm = T))
-
-      data
-
-    } else if(is.null(median) != T && is.null(sum) && is.null(mean) && count == F) {
+        dplyr::summarise(mean = mean(!!sym(mean), na.rm = TRUE), .groups = 'drop')
+      
+    } else if(!is.null(median)) {
       data <- df %>%
         sf::st_join(geo_points) %>%
         dplyr::group_by(zonal_area, radius) %>%
-        dplyr::summarise(median = median(!! sym(median), na.rm = T))
-
-      data
-
-    } else {
-      stop('error in aggregation parameter', call. = F)
+        dplyr::summarise(median = median(!!sym(median), na.rm = TRUE), .groups = 'drop')
     }
-
-  } else if(is.null(geo_centres) != T && is.null(geo_centre) && is.null(lat) && is.null(lon)) {
-    df_radii <- fcircles_radii(ncircles = ncircles, radius_inner = radius_inner, radius_outer = radius_outer)
-
-    if(grepl(x = class(geo_points)[1], pattern = "sf", ignore.case = T) != T && grepl(x = class(geo_points)[1], pattern = "sp", ignore.case = T) != T) {
-      stop('input geo_points as a points-based spatial dataset', call. = F)
-
-    } else {
-      geo_points <- geo_points %>%
-        sf::st_as_sf()
-
-      crs <- sf::st_crs(geo_points)
-    }
-
+    
+    return(data)
+  }
+  
+  if(centres$multiple) {
+    df_radii <- fcircles_radii(ncircles = ncircles, 
+                               radius_inner = radius_inner, radius_outer = radius_outer)
+    
+    crs <- sf::st_crs(geo_points)
+    
     if(is.null(id_var)) {
       geo_centres <- geo_centres %>%
         sf::st_as_sf() %>%
@@ -132,114 +107,97 @@ fmap_data <- function(ncircles, radius_inner = NULL, radius_outer = NULL, geo_po
         sf::st_as_sf() %>%
         dplyr::mutate(id = geo_centres[[id_var]])
     }
-
-    if(grepl(x = class(geo_centres)[1], pattern = "sf", ignore.case = T) != T && grepl(x = class(geo_centres)[1], pattern = "sp", ignore.case = T) != T) {
-      stop('input geo_centres as a points-based spatial dataset', call. = F)
-
-    } else {
-      geo_centres <- geo_centres %>%
-        sf::st_as_sf() %>%
-        sf::st_transform(crs) %>%
-        sf::st_transform(4326) %>%
-        sf::st_coordinates() %>%
-        data.frame() %>%
-        dplyr::rename(lon = X, lat = Y) %>%
-        dplyr::mutate(id = geo_centres$id)
-    }
-
-    df <- lapply(1:nrow(geo_centres), function(i) {
-      lat <- geo_centres[i, "lat"]
-      lon <- geo_centres[i, "lon"]
-
-      id <- geo_centres[i, "id"]
-
+    
+    geo_centres <- geo_centres %>%
+      sf::st_transform(crs) %>%
+      sf::st_transform(4326) %>%
+      sf::st_coordinates() %>%
+      data.frame() %>%
+      dplyr::rename(lon = X, lat = Y) %>%
+      dplyr::mutate(id = geo_centres$id)
+    
+    df <- Map(function(lat, lon, id) {
       coords <- data.frame(lat, lon)
-
-      crs_aeqd <- sprintf("+proj=aeqd +lat_0=%s +lon_0=%s +x_0=0 +y_0=0", coords$lat, coords$lon)
-
-      circles <- lapply(1:nrow(df_radii), function(i) {
+      
+      crs_aeqd <- sprintf("+proj=aeqd +lat_0=%s +lon_0=%s +x_0=0 +y_0=0", lat, lon)
+      
+      coords <- coords %>%
+        sf::st_as_sf(coords = c("lon", "lat"), crs = 4326) %>%
+        sf::st_transform(crs_aeqd)
+      
+      circles <- Map(function(r) {
         coords %>%
-          sf::st_as_sf(coords = c("lon", "lat"), crs = 4326) %>%
-          sf::st_transform(crs_aeqd) %>%
-          sf::st_buffer(df_radii[i, "radius"], nQuadSegs = 1375)
-      })
-
+          sf::st_buffer(r, nQuadSegs = 1375)
+      }, df_radii$radius)
+      
       inner_circle <- circles[[1]]
-
-      outer_circles <- lapply(2:length(circles), function(i)  {
-        sf::st_difference(circles[[i]], circles[[i-1]])
-      })
-
-      outer_circles <- do.call(rbind, outer_circles)
-
+      
+      outer_fcircles <- Map(function(outer, inner) {
+        sf::st_difference(outer, inner)
+      }, circles[-1], circles[-length(circles)])
+      
+      outer_fcircles <- do.call(rbind, outer_fcircles)
+      
       fcircles_data <- inner_circle %>%
-        rbind(outer_circles) %>%
+        rbind(outer_fcircles) %>%
         dplyr::mutate(zonal_area = 1:ncircles, radius = df_radii$radius) %>%
         dplyr::arrange(zonal_area) %>%
-        sf::st_make_valid(T)
-
+        sf::st_make_valid(TRUE)
+      
       geo_points <- geo_points %>%
         sf::st_transform(crs_aeqd)
-
-      if(is.null(sum) && is.null(mean) && is.null(median) && count != T) {
-        stop('no aggregation inputted', call. = F)
-
-      } else if(is.null(mean) && is.null(sum) && is.null(median) && count == T) {
-        df <- fcircles_data %>%
+      
+      if(count) {
+        result <- fcircles_data %>%
           dplyr::mutate(count = lengths(sf::st_intersects(., geo_points)), id = id) %>%
           sf::st_transform(crs)
-
-      } else if(is.null(sum) != T && is.null(mean) && is.null(median) && count == F) {
-        df <- fcircles_data %>%
+        
+      } else if(!is.null(sum)) {
+        result <- fcircles_data %>%
           sf::st_join(geo_points) %>%
           dplyr::group_by(zonal_area, radius) %>%
-          dplyr::summarise(sum_calc = sum(!! sym(sum), na.rm = T)) %>%
+          dplyr::summarise(sum_calc = sum(!!sym(sum), na.rm = TRUE), .groups = 'drop') %>%
           sf::st_transform(crs) %>%
           dplyr::mutate(id = id) %>%
           dplyr::rename(sum = sum_calc)
-
-      } else if(is.null(mean) != T && is.null(sum) && is.null(median) && count == F) {
-        df <- fcircles_data %>%
+        
+      } else if(!is.null(mean)) {
+        result <- fcircles_data %>%
           sf::st_join(geo_points) %>%
           dplyr::group_by(zonal_area, radius) %>%
-          dplyr::summarise(mean_calc = mean(!! sym(mean), na.rm = T)) %>%
+          dplyr::summarise(mean_calc = mean(!!sym(mean), na.rm = TRUE), .groups = 'drop') %>%
           sf::st_transform(crs) %>%
           dplyr::mutate(id = id) %>%
           dplyr::rename(mean = mean_calc)
-
-      } else if(is.null(median) != T && is.null(sum) && is.null(mean) && count == F) {
-        df <- fcircles_data %>%
+        
+      } else if(!is.null(median)) {
+        result <- fcircles_data %>%
           sf::st_join(geo_points) %>%
           dplyr::group_by(zonal_area, radius) %>%
-          dplyr::summarise(median_calc = median(!! sym(median), na.rm = T)) %>%
+          dplyr::summarise(median_calc = median(!!sym(median), na.rm = TRUE), .groups = 'drop') %>%
           sf::st_transform(crs) %>%
           dplyr::mutate(id = id) %>%
           dplyr::rename(median = median_calc)
-
-      } else {
-        stop('error in aggregation parameter', call. = F)
       }
-
-      if(is.null(id_var) != T) {
-        df <- df %>%
+      
+      if(!is.null(id_var)) {
+        result <- result %>%
           dplyr::mutate(!!paste(id_var) := id)
-
-      } else {
-        df <- df
       }
-    })
-
+      
+      result
+    }, geo_centres$lat, geo_centres$lon, geo_centres$id)
+    
     df <- do.call(rbind, df)
-
+    
     data <- df %>%
-      dplyr::relocate(1, 2, 3, geometry, everything()) %>%
-      tibble() %>%
+      dplyr::relocate(1, 2, 3, geometry, dplyr::everything()) %>%
+      tibble::tibble() %>%
       sf::st_as_sf() %>%
-      dplyr::select(1, 2, 3, id, last_col(), geometry)
-
-    data
-
-  } else {
-    stop('error in input of parameters', call. = F)
+      dplyr::select(1, 2, 3, id, dplyr::last_col(), geometry)
+    
+    return(data)
   }
+  
+  stop('error in parameter handling', call. = FALSE)
 }

@@ -10,6 +10,8 @@ Depends:
 Imports:
     sf,
     dplyr,
+    tibble,
+    rlang,
     tmap
 License: GPL-3
 Encoding: UTF-8

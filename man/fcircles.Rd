@@ -8,9 +8,9 @@ fcircles(
   ncircles,
   radius_inner = NULL,
   radius_outer = NULL,
+  geo_centre = NULL,
   lat = NULL,
-  lon = NULL,
-  geo_centre = NULL
+  lon = NULL
 )
 }
 \arguments{
@@ -20,11 +20,11 @@ fcircles(
 
 \item{radius_outer}{Radius of outermost Fresnel circle in metres}
 
+\item{geo_centre}{A spatial dataset containing the coordinates of the centre of the Fresnel circles}
+
 \item{lat}{Latitude of the centre of the Fresnel circles}
 
 \item{lon}{Longitude of the centre of the Fresnel circles}
-
-\item{geo_centre}{A spatial dataset containing the coordinates of the centre of the Fresnel circles}
 }
 \value{
 An sf dataset of Fresnel circle polygons with a custom Azimuthal Equidistant (AEQD) CRS.
