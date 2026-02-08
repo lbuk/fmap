@@ -100,7 +100,7 @@ fmap_plot <- function(ncircles,
                     popup.vars = c("Zonal Area" = "zonal_area",
                                    "Radius (Metres)" = "radius",
                                    fill_col, id_col)) +
-      tmap::tm_facets(by = "id", ncol = 2, free.scales = FALSE)
+      tmap::tm_facets(by = "id", ncol = 2)
   }
 
   map <- map +
@@ -135,7 +135,6 @@ fmap_plot <- function(ncircles,
                                                   text.size = 0.5,
                                                   title.size = 0.7,
                                                   title.fontface = "bold",
-                                                  item.padding = c(0, 0, 0, 0),
                                                   position = tmap::tm_pos_out("left", "center"),
                                                   frame = FALSE)) +
       tmap::tm_borders(col = "black", lwd = 0.8)
@@ -144,19 +143,19 @@ fmap_plot <- function(ncircles,
     map <- tmap::tm_shape(df, name = "Fresnel Map") +
       tmap::tm_fill(fill = fill_col,
                     fill.scale = tmap::tm_scale_continuous(values = "viridis"),
+                    fill.free = FALSE,
                     fill.legend = tmap::tm_legend(title = legend_title,
                                                   text.size = 0.5,
                                                   title.size = 0.7,
                                                   title.fontface = "bold",
-                                                  item.padding = c(0, 0, 0, 0),
                                                   position = tmap::tm_pos_out("left", "center"),
                                                   frame = FALSE)) +
       tmap::tm_borders(col = "black", lwd = 0.8) +
-      tmap::tm_facets(by = "id", ncol = 2, free.scales = FALSE)
+      tmap::tm_facets(by = "id", ncol = 2)
   }
 
   map <- map +
-    tmap::tm_layout(frame = FALSE) +
+    tmap::tm_layout(frame = FALSE, panel.label.bg.color = "#ffffff", panel.label.frame = FALSE) +
     tmap::tmap_options(show.messages = FALSE, show.warnings = FALSE)
 
   map
