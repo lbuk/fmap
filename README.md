@@ -23,6 +23,14 @@ fmap can be installed from Github.
     # Filter the Broad Street Pump from the Soho pumps dataset
     bstreet_pump <- soho_pumps %>% filter(soho.pump == "Broad Street")
 
+    # Create some example Fresnel circles
+    zones_example <- fcircles(radius_inner = 125, ncircles = 8, geo_centre = bstreet_pump)
+
+    # Visualise the Fresnel circles
+    plot(st_geometry(zones_example))
+
+![](https://github.com/lbuk/fmap/blob/master/img/zones_example.png)
+
     # Visualise the Fresnel Map
     fmap_plot(radius_inner = 150, ncircles = 6, geo_centre = bstreet_pump, geo_points = cholera_deaths, sum = "cholera.deaths")
 
